@@ -12,6 +12,9 @@ class _StartPageState extends State<StartPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeIn;
+  late Animation<Offset> _slideInDo;
+  late Animation<Offset> _slideInIt;
+  late Animation<Offset> _slideInWise;
 
   @override
   void initState() {
@@ -23,6 +26,21 @@ class _StartPageState extends State<StartPage>
     );
 
     _fadeIn = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+
+    _slideInDo = Tween<Offset>(
+      begin: const Offset(-0.3, 0), // start slightly below
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _slideInIt = Tween<Offset>(
+      begin: const Offset(0.3, 0), // start slightly below
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _slideInWise = Tween<Offset>(
+      begin: const Offset(0, 0.3), // start slightly below
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward(); // Start animation when page loads
   }
@@ -45,43 +63,52 @@ class _StartPageState extends State<StartPage>
             children: [
               const Spacer(),
 
-              const Column(
+              Column(
                 children: [
                   Padding(
                     // offset the word to the left
                     padding: EdgeInsets.only(right: 50),
-                    child: Text(
-                      "DO",
-                      style: TextStyle(
-                        fontSize: 70,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black,
-                        letterSpacing: 2,
+                    child: SlideTransition(
+                      position: _slideInDo,
+                      child: Text(
+                        "DO",
+                        style: TextStyle(
+                          fontSize: 70,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black,
+                          letterSpacing: 2,
+                        ),
                       ),
                     ),
                   ),
                   SizedBox(height: 10),
                   Padding(
-                    // offset the word to the right 
+                    // offset the word to the right
                     padding: EdgeInsets.only(left: 120),
+                    child: SlideTransition(
+                      position: _slideInIt,
+                      child: Text(
+                        "IT",
+                        style: TextStyle(
+                          fontSize: 60,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  SlideTransition(
+                    position: _slideInWise,
                     child: Text(
-                      "IT",
+                      "WISE",
                       style: TextStyle(
                         fontSize: 60,
                         fontWeight: FontWeight.w800,
                         color: Colors.black,
                         letterSpacing: 2,
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "WISE",
-                    style: TextStyle(
-                      fontSize: 60,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                      letterSpacing: 2,
                     ),
                   ),
                 ],

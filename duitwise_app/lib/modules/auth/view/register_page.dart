@@ -1,4 +1,5 @@
 import 'package:duitwise_app/core/widgets/custom_text_field.dart';
+import 'package:duitwise_app/core/widgets/social_icon_button.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -31,18 +32,12 @@ class RegisterPage extends StatelessWidget {
               // Subtitle
               const Text(
                 "Create an account",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 5),
               const Text(
                 "Register with email",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
 
               const SizedBox(height: 40),
@@ -59,11 +54,6 @@ class RegisterPage extends StatelessWidget {
 
               // Password
               const CustomTextField(hint: "Password", obscure: true),
-
-              const SizedBox(height: 16),
-
-              // Date of birth
-              const CustomTextField(hint: "Date of birth"),
 
               const SizedBox(height: 26),
 
@@ -84,10 +74,7 @@ class RegisterPage extends StatelessWidget {
                   },
                   child: const Text(
                     "Continue",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -97,25 +84,12 @@ class RegisterPage extends StatelessWidget {
               // OR divider
               Row(
                 children: const [
-                  Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Colors.black26,
-                    ),
-                  ),
+                  Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      "or",
-                      style: TextStyle(color: Colors.black54),
-                    ),
+                    child: Text("or", style: TextStyle(color: Colors.black54)),
                   ),
-                  Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Colors.black26,
-                    ),
-                  ),
+                  Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                 ],
               ),
 
@@ -123,7 +97,10 @@ class RegisterPage extends StatelessWidget {
 
               // Continue with...
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(14),
@@ -142,7 +119,7 @@ class RegisterPage extends StatelessWidget {
                     Row(
                       children: [
                         // Google Button
-                        _SocialIconButton(
+                        SocialIconButton(
                           icon: "assets/icons/google.png",
                           onTap: () {
                             // TODO: Google Sign-In
@@ -152,7 +129,7 @@ class RegisterPage extends StatelessWidget {
                         const SizedBox(width: 12),
 
                         // Apple Button
-                        _SocialIconButton(
+                        SocialIconButton(
                           icon: "assets/icons/apple.png",
                           onTap: () {
                             // TODO: Apple Sign-In
@@ -172,48 +149,13 @@ class RegisterPage extends StatelessWidget {
                 child: Text(
                   "By clicking continue, you agree to our Terms of Service\nand Privacy Policy",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.black87),
                 ),
               ),
 
               const SizedBox(height: 40),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-
-// TODO : add to core/widgets for reusable
-/// Reusable social button
-class _SocialIconButton extends StatelessWidget {
-  final String icon;
-  final VoidCallback onTap;
-
-  const _SocialIconButton({
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Image.asset(
-          icon,
-          width: 28,
-          height: 28,
         ),
       ),
     );
