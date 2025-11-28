@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -105,7 +106,7 @@ class _StartPageState extends State<StartPage>
                       ),
                     ),
                     onPressed: () {
-                      // TODO: navigate to next screen
+                      context.push('/signin');
                     },
                     child: const Text(
                       "Get Started",
