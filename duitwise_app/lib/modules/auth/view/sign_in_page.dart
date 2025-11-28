@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
@@ -14,7 +15,6 @@ class SignInPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
               const SizedBox(height: 80),
 
               // Title
@@ -54,18 +54,12 @@ class SignInPage extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Email Field
-              _CustomTextField(
-                hint: "Email",
-                obscure: false,
-              ),
+              _CustomTextField(hint: "Email", obscure: false),
 
               const SizedBox(height: 16),
 
               // Password Field
-              _CustomTextField(
-                hint: "Password",
-                obscure: true,
-              ),
+              _CustomTextField(hint: "Password", obscure: true),
 
               const SizedBox(height: 25),
 
@@ -73,10 +67,7 @@ class SignInPage extends StatelessWidget {
               RichText(
                 text: TextSpan(
                   text: "Doesn’t have an account? ",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
                   children: [
                     TextSpan(
                       text: "Register here",
@@ -86,8 +77,7 @@ class SignInPage extends StatelessWidget {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          // Navigate to register screen
-                          // context.push('/register');
+                          context.push('/register');
                         },
                     ),
                   ],
@@ -95,7 +85,6 @@ class SignInPage extends StatelessWidget {
               ),
 
               const SizedBox(height: 40),
-
             ],
           ),
         ),
@@ -108,10 +97,7 @@ class _CustomTextField extends StatelessWidget {
   final String hint;
   final bool obscure;
 
-  const _CustomTextField({
-    required this.hint,
-    required this.obscure,
-  });
+  const _CustomTextField({required this.hint, required this.obscure});
 
   @override
   Widget build(BuildContext context) {
@@ -124,10 +110,7 @@ class _CustomTextField extends StatelessWidget {
         obscureText: obscure,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(
-            color: Colors.grey,
-            fontSize: 16,
-          ),
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 18,

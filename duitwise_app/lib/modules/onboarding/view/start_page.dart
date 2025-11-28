@@ -10,7 +10,6 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _fadeIn;
 
@@ -23,10 +22,7 @@ class _StartPageState extends State<StartPage>
       duration: const Duration(milliseconds: 1200),
     );
 
-    _fadeIn = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    );
+    _fadeIn = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
 
     _controller.forward(); // Start animation when page loads
   }
@@ -52,6 +48,7 @@ class _StartPageState extends State<StartPage>
               const Column(
                 children: [
                   Padding(
+                    // offset the word to the left
                     padding: EdgeInsets.only(right: 50),
                     child: Text(
                       "DO",
@@ -65,6 +62,7 @@ class _StartPageState extends State<StartPage>
                   ),
                   SizedBox(height: 10),
                   Padding(
+                    // offset the word to the right 
                     padding: EdgeInsets.only(left: 120),
                     child: Text(
                       "IT",
@@ -92,7 +90,10 @@ class _StartPageState extends State<StartPage>
               const Spacer(),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 30,
+                ),
                 child: SizedBox(
                   width: double.infinity,
                   height: 55,
