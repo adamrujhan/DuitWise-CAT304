@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -47,22 +48,22 @@ class RegisterPage extends StatelessWidget {
               const SizedBox(height: 40),
 
               // Username
-              const _AuthField(hint: "Username"),
+              const CustomTextField(hint: "Username"),
 
               const SizedBox(height: 16),
 
               // Email
-              const _AuthField(hint: "Email"),
+              const CustomTextField(hint: "Email"),
 
               const SizedBox(height: 16),
 
               // Password
-              const _AuthField(hint: "Password", obscure: true),
+              const CustomTextField(hint: "Password", obscure: true),
 
               const SizedBox(height: 16),
 
               // Date of birth
-              const _AuthField(hint: "Date of birth"),
+              const CustomTextField(hint: "Date of birth"),
 
               const SizedBox(height: 26),
 
@@ -188,39 +189,7 @@ class RegisterPage extends StatelessWidget {
 }
 
 
-/// Reusable text field widget
-class _AuthField extends StatelessWidget {
-  final String hint;
-  final bool obscure;
-
-  const _AuthField({
-    required this.hint,
-    this.obscure = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: TextField(
-        obscureText: obscure,
-        decoration: InputDecoration(
-          hintText: hint,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 18,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
+// TODO : add to core/widgets for reusable
 /// Reusable social button
 class _SocialIconButton extends StatelessWidget {
   final String icon;

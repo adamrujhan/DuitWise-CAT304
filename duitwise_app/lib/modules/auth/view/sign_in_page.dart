@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -54,12 +55,12 @@ class SignInPage extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Email Field
-              _CustomTextField(hint: "Email", obscure: false),
+              CustomTextField(hint: "Email", obscure: false),
 
               const SizedBox(height: 16),
 
               // Password Field
-              _CustomTextField(hint: "Password", obscure: true),
+              CustomTextField(hint: "Password", obscure: true),
 
               const SizedBox(height: 25),
 
@@ -86,35 +87,6 @@ class SignInPage extends StatelessWidget {
 
               const SizedBox(height: 40),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CustomTextField extends StatelessWidget {
-  final String hint;
-  final bool obscure;
-
-  const _CustomTextField({required this.hint, required this.obscure});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: TextField(
-        obscureText: obscure,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 18,
           ),
         ),
       ),
