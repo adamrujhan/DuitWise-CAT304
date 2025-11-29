@@ -1,12 +1,32 @@
 import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:duitwise_app/core/widgets/social_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:duitwise_app/services/firebase_auth/auth_controller.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final username = TextEditingController();
+    final email = TextEditingController();
+    final password = TextEditingController();
+
+    final authState = ref.watch(authControllerProvider);
+    final loading = authState.isLoading;
+
+    // ---- ERROR LISTENER ----
+    ref.listen(authControllerProvider, (prev, next) {
+      next.whenOrNull(
+        error: (err, _) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(err.toString())));
+        },
+      );
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),
       body: SafeArea(
@@ -29,7 +49,6 @@ class RegisterPage extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // Subtitle
               const Text(
                 "Create an account",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
@@ -43,17 +62,21 @@ class RegisterPage extends StatelessWidget {
               const SizedBox(height: 40),
 
               // Username
-              const CustomTextField(hint: "Username"),
+              CustomTextField(hint: "Username", controller: username),
 
               const SizedBox(height: 16),
 
               // Email
-              const CustomTextField(hint: "Email"),
+              CustomTextField(hint: "Email", controller: email),
 
               const SizedBox(height: 16),
 
               // Password
-              const CustomTextField(hint: "Password", obscure: true),
+              CustomTextField(
+                hint: "Password",
+                obscure: true,
+                controller: password,
+              ),
 
               const SizedBox(height: 26),
 
@@ -69,13 +92,29 @@ class RegisterPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  onPressed: () {
-                    // TODO: Register user
-                  },
-                  child: const Text(
-                    "Continue",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
+                  onPressed: loading
+                      ? null
+                      : () {
+                          ref
+                              .read(authControllerProvider.notifier)
+                              .register(email.text, password.text);
+                        },
+                  child: loading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          "Continue",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
 
@@ -118,7 +157,6 @@ class RegisterPage extends StatelessWidget {
 
                     Row(
                       children: [
-                        // Google Button
                         SocialIconButton(
                           icon: "assets/icons/google.png",
                           onTap: () {
@@ -128,7 +166,6 @@ class RegisterPage extends StatelessWidget {
 
                         const SizedBox(width: 12),
 
-                        // Apple Button
                         SocialIconButton(
                           icon: "assets/icons/apple.png",
                           onTap: () {
@@ -143,7 +180,6 @@ class RegisterPage extends StatelessWidget {
 
               const SizedBox(height: 22),
 
-              // Terms text
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Text(

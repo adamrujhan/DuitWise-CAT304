@@ -1,5 +1,7 @@
+import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:duitwise_app/modules/auth/view/register_page.dart';
 import 'package:duitwise_app/modules/auth/view/sign_in_page.dart';
@@ -12,22 +14,36 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authControllerProvider);
 
   return GoRouter(
-    initialLocation: '/signin',
+    initialLocation: '/',
 
-    // ---------- AUTH REDIRECT LOGIC ----------
     redirect: (context, state) {
-      final user = authState.value;
-      final atAuthPages =
-          state.matchedLocation == '/signin' ||
-          state.matchedLocation == '/register';
+      final User? user = authState.asData?.value;
 
-      // User NOT logged in → force to /signin
-      if (user == null && !atAuthPages) {
+      // Public pages everyone can access
+      const publicRoutes = [
+        '/', // Start page
+        '/signin',
+        '/register',
+      ];
+
+      final isPublic = publicRoutes.contains(state.matchedLocation);
+
+      // -------------------------
+      // USER NOT LOGGED IN
+      // -------------------------
+      if (user == null) {
+        // Allow staying on public pages
+        if (isPublic) return null;
+
+        // Block all protected pages (e.g. /home)
         return '/signin';
       }
 
-      // User logged in → prevent visiting signin/register
-      if (user != null && atAuthPages) {
+      // -------------------------
+      // USER LOGGED IN
+      // -------------------------
+      // ignore: unnecessary_null_comparison
+      if (user != null && isPublic) {
         return '/home';
       }
 
@@ -39,7 +55,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (_, _) => const StartPage()),
       GoRoute(path: '/signin', builder: (_, _) => const SignInPage()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterPage()),
-      //GoRoute(path: '/home', builder: (_, _) => const HomePage()),
+      GoRoute(path: '/home', builder: (_, _) => const HomePage()),
     ],
   );
 });

@@ -14,6 +14,16 @@ class SignInPage extends ConsumerWidget {
     final password = TextEditingController();
 
     // Watch auth state (loading, data, error)
+    ref.listen(authControllerProvider, (prev, next) {
+      next.whenOrNull(
+        error: (err, _) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(err.toString())));
+        },
+      );
+    });
+
     final authState = ref.watch(authControllerProvider);
 
     final loading = authState.isLoading;
@@ -30,10 +40,7 @@ class SignInPage extends ConsumerWidget {
 
               const Text(
                 "DuitWise",
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.w800),
               ),
 
               const SizedBox(height: 15),
@@ -52,18 +59,12 @@ class SignInPage extends ConsumerWidget {
 
               const Text(
                 "Sign in",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ),
 
               const SizedBox(height: 20),
 
-              CustomTextField(
-                hint: "Email",
-                controller: email,
-              ),
+              CustomTextField(hint: "Email", controller: email),
 
               const SizedBox(height: 16),
 
