@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
-import 'app.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/routing/routes.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize services here when needed:
-  // await Firebase.initializeApp();
-  // await dotenv.load();
-  // ServiceLocator.init();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(const App());
+  runApp(const ProviderScope(child: App()));
+}
+
+class App extends ConsumerWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      routerConfig: router,
+    );
+  }
 }

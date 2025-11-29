@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "304363613786",
+    "project_id": "duitwise-dc914",
+    "storage_bucket": "duitwise-dc914.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304363613786:android:dd5c19be56bea43350f263",
+        "android_client_info": {
+          "package_name": "com.example.duitwise_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDInjWcRoImBWB1q0xds-FysOdTn-557-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

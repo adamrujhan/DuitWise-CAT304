@@ -1,15 +1,25 @@
 import 'package:duitwise_app/core/widgets/custom_text_field.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:duitwise_app/services/firebase_auth/auth_controller.dart';
+import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends ConsumerWidget {
   const SignInPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final email = TextEditingController();
+    final password = TextEditingController();
+
+    // Watch auth state (loading, data, error)
+    final authState = ref.watch(authControllerProvider);
+
+    final loading = authState.isLoading;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFA0E5C7), // Mint green
+      backgroundColor: const Color(0xFFA0E5C7),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -18,21 +28,18 @@ class SignInPage extends StatelessWidget {
             children: [
               const SizedBox(height: 80),
 
-              // Title
               const Text(
                 "DuitWise",
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.w800,
-                  color: Colors.black,
                 ),
               ),
 
               const SizedBox(height: 15),
 
-              // Subtitle
               const Text(
-                "Where financial is\nyour best friend !",
+                "Where financial is\nyour best friend!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22,
@@ -48,26 +55,68 @@ class SignInPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
                 ),
               ),
 
               const SizedBox(height: 20),
 
-              // Email Field
-              CustomTextField(hint: "Email", obscure: false),
+              CustomTextField(
+                hint: "Email",
+                controller: email,
+              ),
 
               const SizedBox(height: 16),
 
-              // Password Field
-              CustomTextField(hint: "Password", obscure: true),
+              CustomTextField(
+                hint: "Password",
+                obscure: true,
+                controller: password,
+              ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 30),
 
-              // Register Link
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: loading
+                      ? null
+                      : () {
+                          ref
+                              .read(authControllerProvider.notifier)
+                              .signIn(email.text, password.text);
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: loading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          "Sign In",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
               RichText(
                 text: TextSpan(
-                  text: "Doesn’t have an account? ",
+                  text: "Doesn't have an account? ",
                   style: const TextStyle(fontSize: 16, color: Colors.black),
                   children: [
                     TextSpan(
@@ -77,9 +126,7 @@ class SignInPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          context.push('/register');
-                        },
+                        ..onTap = () => context.go('/register'),
                     ),
                   ],
                 ),
