@@ -1,11 +1,10 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class BudgetPage extends StatelessWidget {
+  const BudgetPage({super.key});
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7), // Mint green
@@ -57,12 +56,12 @@ class HomePage extends StatelessWidget {
 
               const SizedBox(height: 25),
 
-              // Welcome Card
+              // Welcome Card to Budget Page
               RoundedCard(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: const Text(
-                    "Welcome, Amrul",
+                    "Welcome to Budget Tracking !",
                     style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -70,7 +69,7 @@ class HomePage extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // Dashboard Card (with Chart)
+              // Monthly Income
               RoundedCard(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -78,16 +77,11 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Dashboard",
+                        "Please enter your monthly income.",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w700,
                         ),
-                      ),
-                      const SizedBox(height: 18),
-                      SizedBox(
-                        height: 220,
-                        child: LineChart(_sampleChartData()),
                       ),
                     ],
                   ),
@@ -114,41 +108,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}
-
-// linechart
-LineChartData _sampleChartData() {
-  return LineChartData(
-    gridData: FlGridData(show: false),
-    titlesData: FlTitlesData(show: false),
-    borderData: FlBorderData(show: false),
-    lineBarsData: [
-      LineChartBarData(
-        isCurved: true,
-        color: Colors.blue,
-        barWidth: 4,
-        dotData: FlDotData(show: true),
-        belowBarData: BarAreaData(
-          show: true,
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.withValues(alpha: 0.25),
-              Colors.blue.withValues(alpha: 0),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        spots: const [
-          FlSpot(0, 35),
-          FlSpot(1, 36),
-          FlSpot(2, 38),
-          FlSpot(3, 41),
-          FlSpot(4, 39),
-          FlSpot(5, 42),
-          FlSpot(6, 48),
-        ],
-      ),
-    ],
-  );
 }
