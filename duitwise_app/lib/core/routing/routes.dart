@@ -1,3 +1,4 @@
+import 'package:duitwise_app/modules/financial_tracking/budget_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -56,6 +57,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/signin', builder: (_, _) => const SignInPage()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterPage()),
       GoRoute(path: '/home', builder: (_, _) => const HomePage()),
+      GoRoute(path: '/budget', builder: (_, _) => const BudgetPage()),
     ],
   );
 });

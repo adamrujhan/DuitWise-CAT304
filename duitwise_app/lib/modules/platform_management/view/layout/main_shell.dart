@@ -1,3 +1,4 @@
+import 'package:duitwise_app/modules/financial_tracking/budget_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +17,7 @@ class MainShell extends ConsumerWidget {
 
     final pages = [
       const HomePage(),
-      const HomePage(), //TODO: add more pages
+      const BudgetPage(), //TODO: add more pages
     ];
 
     return AppScaffold(
