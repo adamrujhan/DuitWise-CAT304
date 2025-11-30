@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class BottomNavBar extends ConsumerWidget {
   const BottomNavBar({super.key});
@@ -15,6 +16,20 @@ class BottomNavBar extends ConsumerWidget {
       indicatorColor: Colors.greenAccent.withValues(alpha: 0.2),
       onDestinationSelected: (index) {
         ref.read(bottomNavProvider.notifier).state = index;
+        switch (index) {
+          case 0:
+            context.go('/home');
+            break;
+          // case 1: TODO: fix after adding analytics
+          //   context.go('/analytics');
+          //   break;
+          case 2:
+            context.go('/budget');
+            break;
+          // case 3: TODO: fix after adding profile
+          //   context.go('/profile');
+          //   break;
+        }
       },
       destinations: const [
         NavigationDestination(
