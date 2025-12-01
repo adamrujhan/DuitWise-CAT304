@@ -38,14 +38,14 @@ class BottomNavBar extends ConsumerWidget {
           label: "Home",
         ),
         NavigationDestination(
-          icon: Icon(Icons.bar_chart_outlined),
-          selectedIcon: Icon(Icons.bar_chart_rounded),
-          label: "Analytics",
-        ),
-        NavigationDestination(
           icon: Icon(Icons.account_balance_wallet_outlined),
           selectedIcon: Icon(Icons.account_balance_wallet_rounded),
           label: "Tracking",
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.menu_book_outlined),
+          selectedIcon: Icon(Icons.menu_book_rounded),
+          label: "Learn",
         ),
         NavigationDestination(
           icon: Icon(Icons.person_outline),

@@ -10,7 +10,7 @@ import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_pr
 
 // Feature pages
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
-import 'package:duitwise_app/modules/financial_tracking/budget_page.dart';
+import 'package:duitwise_app/modules/financial_tracking/budget_setup_page.dart';
 
 class MainShell extends ConsumerWidget {
   final Widget child;
@@ -25,7 +25,7 @@ class MainShell extends ConsumerWidget {
     final pages = [
       const HomePage(),
       //const AnalyticsPage(),
-      const BudgetPage(),
+      const BudgetSetupPage(),
       //const ProfilePage(),
     ];
 

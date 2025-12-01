@@ -1,5 +1,7 @@
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/budget_page.dart';
+import 'package:duitwise_app/modules/financial_tracking/budget_setup_page.dart';
+
 
 import 'package:duitwise_app/modules/onboarding/view/start_page.dart';
 import 'package:duitwise_app/modules/auth/view/sign_in_page.dart';
@@ -65,8 +67,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/budget',
-            builder: (_, _) => const BudgetPage(),
-          ), // TODO: add analytics page
+            builder: (_, _) => const BudgetSetupPage(),
+          ), 
+          // TODO: add analytics page
           // TODO add profile page
           // GoRoute(
           //   path: '/analytics',

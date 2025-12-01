@@ -71,19 +71,6 @@ class BudgetPage extends StatelessWidget {
               ),
 
               const SizedBox(height: 20),
-
-              // Weekly spending card
-              RoundedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: const Text(
-                    "This week spending",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 120), // Scroll spacing above navbar
             ],
           ),
         ),

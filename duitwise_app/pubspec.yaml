@@ -24,7 +24,7 @@ dependencies:
   dio: ^5.4.0
 
   # Local storage for caching (budgets, analytics, etc.)
-  shared_preferences: ^2.3.2
+  shared_preferences: ^2.5.3
 
   # JSON serialization
   json_annotation: ^4.9.0
