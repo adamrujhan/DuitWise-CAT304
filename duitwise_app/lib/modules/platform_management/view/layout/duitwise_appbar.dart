@@ -1,7 +1,9 @@
+import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
+class DuitWiseAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
 
   const DuitWiseAppBar({super.key, this.title = "DuitWise"});
@@ -11,7 +13,7 @@ class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
   // Tune the height depending on your design.
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       bottom: false,
       child: Container(
@@ -30,7 +32,7 @@ class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             InkWell(
               onTap: () {
-                context.go('/profile');
+                ref.read(bottomNavProvider.notifier).state = 3;
               },
               child: const CircleAvatar(
                 radius: 20,
