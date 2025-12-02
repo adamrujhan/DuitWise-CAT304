@@ -1,4 +1,4 @@
-import 'package:duitwise_app/modules/learning/view/learning_page.dart';
+import 'package:duitwise_app/modules/financial_literacy/views/fin_lit_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/duitwise_appbar.dart';
 import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class MainShell extends ConsumerWidget {
     final pages = [
       const HomePage(),
       const BudgetSetupPage(),
-      const LearningPage(),
+      LearningPage(),
       const ProfilePage(),
     ];
 
