@@ -12,23 +12,6 @@ class BudgetPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7), // Mint green
-      // Bottom Navigation
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(Icons.home, size: 30, color: Colors.grey),
-            Icon(Icons.book, size: 30, color: Colors.grey),
-            Icon(Icons.grid_view, size: 30, color: Color(0xFF4E7D61)),
-            Icon(Icons.person, size: 30, color: Colors.grey),
-          ],
-        ),
-      ),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -108,19 +91,6 @@ class BudgetPage extends StatelessWidget {
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Weekly spending card
-              RoundedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: const Text(
-                    "This week spending",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:duitwise_app/modules/learning/view/learning_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,9 +25,9 @@ class MainShell extends ConsumerWidget {
     // Pages for the 4 bottom nav destinations
     final pages = [
       const HomePage(),
-      //const AnalyticsPage(),
       const BudgetSetupPage(),
-      //const ProfilePage(),
+      const LearningPage(),
+      //const ProfilePage(), //TODO: add profile page
     ];
 
     return AppScaffold(
