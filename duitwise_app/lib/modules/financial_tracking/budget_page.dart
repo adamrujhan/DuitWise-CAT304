@@ -19,26 +19,6 @@ class BudgetPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // App Name + Profile
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "DuitWise",
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                    ),
-                  ),
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage(
-                      "https://picsum.photos/200", // Placeholder avatar
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 25),
 
               // Welcome Card to Budget Page

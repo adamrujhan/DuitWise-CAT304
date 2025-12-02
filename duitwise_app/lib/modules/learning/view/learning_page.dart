@@ -6,51 +6,24 @@ class LearningPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFAEEBC4), // same mint background
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        title: const Text(
-          "DuitWise",
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.grey,
-            ),
-          )
-        ],
-      ),
-
+      backgroundColor: const Color(0xFFA0E5C7), // same mint background
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _placeholderCard(title: "Module"),
-              const SizedBox(height: 20),
-        
               _placeholderContentCard(title: "Spending tips"),
               const SizedBox(height: 20),
-        
+
               _placeholderContentCard(title: "How to make a budget tracker"),
               const SizedBox(height: 20),
-        
+
               _placeholderContentCard(title: "Saving behaviour"),
             ],
           ),
         ),
       ),
-
     );
   }
 

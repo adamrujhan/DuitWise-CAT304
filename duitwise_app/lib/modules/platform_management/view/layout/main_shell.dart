@@ -1,4 +1,5 @@
 import 'package:duitwise_app/modules/learning/view/learning_page.dart';
+import 'package:duitwise_app/modules/platform_management/view/layout/duitwise_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,6 +32,7 @@ class MainShell extends ConsumerWidget {
     ];
 
     return AppScaffold(
+      appBar: DuitWiseAppBar(),
       body: pages[tab],
       navBar: const BottomNavBar(),
     );
