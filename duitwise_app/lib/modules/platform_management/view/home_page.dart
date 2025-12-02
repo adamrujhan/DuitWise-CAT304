@@ -9,24 +9,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7), // Mint green
-      // Bottom Navigation
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.9),
-
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(Icons.home, size: 30, color: Color(0xFF4E7D61)),
-            Icon(Icons.book, size: 30, color: Colors.grey),
-            Icon(Icons.grid_view, size: 30, color: Colors.grey),
-            Icon(Icons.person, size: 30, color: Colors.grey),
-          ],
-        ),
-      ),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -34,28 +16,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // App Name + Profile
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "DuitWise",
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                    ),
-                  ),
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage(
-                      "https://picsum.photos/200", // Placeholder avatar
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               // Welcome Card
               RoundedCard(
@@ -68,7 +29,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
               // Dashboard Card (with Chart)
               RoundedCard(
@@ -94,7 +55,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
               // Weekly spending card
               RoundedCard(
