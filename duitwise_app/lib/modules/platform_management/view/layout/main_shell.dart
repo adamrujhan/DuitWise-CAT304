@@ -1,5 +1,6 @@
 import 'package:duitwise_app/modules/learning/view/learning_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/duitwise_appbar.dart';
+import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +29,7 @@ class MainShell extends ConsumerWidget {
       const HomePage(),
       const BudgetSetupPage(),
       const LearningPage(),
-      //const ProfilePage(), //TODO: add profile page
+      const ProfilePage(),
     ];
 
     return AppScaffold(

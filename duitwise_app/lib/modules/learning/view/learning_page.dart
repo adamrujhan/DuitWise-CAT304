@@ -27,21 +27,6 @@ class LearningPage extends StatelessWidget {
     );
   }
 
-  // --- MODULE HEADER CARD ---
-  Widget _placeholderCard({required String title}) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-
   // --- CONTENT CARD WITH GREY IMAGE PLACEHOLDER ---
   Widget _placeholderContentCard({required String title}) {
     return Container(

@@ -25,10 +25,10 @@ class BottomNavBar extends ConsumerWidget {
             break;
           case 2: 
             context.go('/learn');
-          //   break;
-          // case 3: TODO: fix after adding profile
-          //   context.go('/profile');
-          //   break;
+            break;
+          case 3: 
+            context.go('/profile');
+            break;
         }
       },
       destinations: const [

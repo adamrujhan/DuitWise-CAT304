@@ -8,6 +8,7 @@ import 'package:duitwise_app/modules/onboarding/view/start_page.dart';
 import 'package:duitwise_app/modules/auth/view/sign_in_page.dart';
 import 'package:duitwise_app/modules/auth/view/register_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/main_shell.dart';
+import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,10 +75,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/learn',
             builder: (_, _) => const LearningPage(),
           ),
-          // GoRoute(
-          //   path: '/profile',
-          //   builder: (_, _) => const ProfilePage(),
-          // ),
+          GoRoute(
+            path: '/profile',
+            builder: (_, _) => const ProfilePage(),
+          ),
         ],
       ),
     ],
