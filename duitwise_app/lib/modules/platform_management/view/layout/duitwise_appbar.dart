@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -6,7 +7,7 @@ class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DuitWiseAppBar({super.key, this.title = "DuitWise"});
 
   @override
-  Size get preferredSize => const Size.fromHeight(80); 
+  Size get preferredSize => const Size.fromHeight(80);
   // Tune the height depending on your design.
 
   @override
@@ -27,9 +28,14 @@ class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: Colors.black,
               ),
             ),
-            const CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage("https://picsum.photos/200"),
+            InkWell(
+              onTap: () {
+                context.go('/profile');
+              },
+              child: const CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage("https://picsum.photos/200"),
+              ),
             ),
           ],
         ),

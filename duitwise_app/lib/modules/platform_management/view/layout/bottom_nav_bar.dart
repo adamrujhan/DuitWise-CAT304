@@ -23,33 +23,49 @@ class BottomNavBar extends ConsumerWidget {
           case 1:
             context.go('/budget');
             break;
-          case 2: 
+          case 2:
             context.go('/learn');
             break;
-          case 3: 
+          case 3:
             context.go('/profile');
             break;
         }
       },
       destinations: const [
         NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home_rounded),
+          icon: Icon(Icons.home_outlined, color: Colors.grey),
+          selectedIcon: Icon(
+            Icons.home_outlined,
+            color: Colors.green,
+            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
+          ),
           label: "Home",
         ),
         NavigationDestination(
-          icon: Icon(Icons.account_balance_wallet_outlined),
-          selectedIcon: Icon(Icons.account_balance_wallet_rounded),
+          icon: Icon(Icons.account_balance_wallet_outlined, color: Colors.grey),
+          selectedIcon: Icon(
+            Icons.account_balance_wallet_outlined,
+            color: Colors.green,
+            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
+          ),
           label: "Tracking",
         ),
         NavigationDestination(
-          icon: Icon(Icons.menu_book_outlined),
-          selectedIcon: Icon(Icons.menu_book_rounded),
+          icon: Icon(Icons.menu_book_outlined, color: Colors.grey),
+          selectedIcon: Icon(
+            Icons.menu_book_outlined,
+            color: Colors.green,
+            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
+          ),
           label: "Learn",
         ),
         NavigationDestination(
-          icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person_rounded),
+          icon: Icon(Icons.person_outline, color: Colors.grey),
+          selectedIcon: Icon(
+            Icons.person_outline,
+            color: Colors.green,
+            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
+          ),
           label: "Profile",
         ),
       ],

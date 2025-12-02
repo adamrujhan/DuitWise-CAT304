@@ -1,6 +1,6 @@
 import 'package:duitwise_app/modules/learning/view/learning_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
-//import 'package:duitwise_app/modules/financial_tracking/budget_page.dart';
+//import 'package:duitwise_app/modules/financial_tracking/budget_page.dart'; //TODO: remove this
 import 'package:duitwise_app/modules/financial_tracking/budget_setup_page.dart';
 
 
@@ -9,20 +9,25 @@ import 'package:duitwise_app/modules/auth/view/sign_in_page.dart';
 import 'package:duitwise_app/modules/auth/view/register_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/main_shell.dart';
 import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
+import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:duitwise_app/services/firebase_auth/auth_controller.dart';
 
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authControllerProvider);
 
   return GoRouter(
+    navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
     initialLocation: '/',
 
     redirect: (context, state) {
+      if (authState.isLoading) return null;
       final User? user = authState.asData?.value;
 
       const publicRoutes = [
