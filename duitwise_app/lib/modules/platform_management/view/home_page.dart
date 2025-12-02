@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               // Welcome Card
               RoundedCard(
@@ -50,7 +50,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
               // Dashboard Card (with Chart)
               RoundedCard(
@@ -76,7 +76,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
               // Weekly spending card
               RoundedCard(

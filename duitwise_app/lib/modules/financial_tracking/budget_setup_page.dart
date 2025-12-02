@@ -1,5 +1,4 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
-import 'package:duitwise_app/services/budget_setup_services.dart';
 import 'package:flutter/material.dart';
 
 class BudgetSetupPage extends StatefulWidget {
@@ -11,44 +10,60 @@ class BudgetSetupPage extends StatefulWidget {
 
 class _BudgetSetupPageState extends State<BudgetSetupPage> {
   final TextEditingController incomeCtrl = TextEditingController();
+  List<TextEditingController> commitments = [];
 
-  /// Pre-filled commitment categories
-  final Map<String, TextEditingController> commitments = {
-    "Food": TextEditingController(),
-    "Groceries": TextEditingController(),
-    "Transport": TextEditingController(),
-    "Bill": TextEditingController(),
-  };
+  @override
+  void initState() {
+    super.initState();
+    commitments.add(TextEditingController());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFD0F3E1), // Mint green background
+      backgroundColor: const Color(0xFFA0E5C7),
+
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // App title
-              const Text(
-                "DuitWise",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+              // App Name + Profile
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "DuitWise",
+                    style: TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage("https://picsum.photos/200"),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
 
-              const Text(
-                "Welcome to Budget Tracking!",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
               const SizedBox(height: 15),
 
-              // ----------------------------
-              // Monthly Income Card
-              // ----------------------------
+              // Welcome Card
+              RoundedCard(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: const Text(
+                    "Welcome to Budget Tracking!",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              // Monthly Income Input
               RoundedCard(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -57,14 +72,17 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
                     children: [
                       const Text(
                         "Please enter your monthly income.",
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       TextField(
                         controller: incomeCtrl,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          hintText: "RM 0.00",
+                          hintText: "RM",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -75,97 +93,87 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
-              // ----------------------------
-              // Commitments Card
-              // ----------------------------
-              Expanded(
-                child: RoundedCard(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Please enter your commitment.",
-                          style: TextStyle(fontSize: 16),
+              // Commitments List
+              RoundedCard(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Please enter your commitment.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
                         ),
-                        const SizedBox(height: 15),
+                      ),
+                      const SizedBox(height: 15),
 
-                        Expanded(
-                          child: ListView(
-                            children: commitments.entries.map((entry) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: Row(
-                                  children: [
-                                    // Category Tag
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Text(entry.key),
-                                    ),
-
-                                    const SizedBox(width: 10),
-
-                                    // Amount Input
-                                    Expanded(
-                                      child: TextField(
-                                        controller: entry.value,
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          hintText: "RM 0.00",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                        ),
+                      ListView(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: commitments.asMap().entries.map((entry) {
+                          TextEditingController crtl = entry.value;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: crtl,
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          "Enter commitment (e.g. Food, Bills)",
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                     ),
-
-                                    const SizedBox(width: 10),
-
-                                    // "+" Icon Button
-                                    Container(
-                                      width: 32,
-                                      height: 32,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Center(
-                                        child: Icon(Icons.add, size: 20),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
-                    ),
+
+                                const SizedBox(width: 10),
+
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      commitments.add(TextEditingController());
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.add,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
 
-              // ----------------------------
               // Next Button
-              // ----------------------------
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Save data
-                    // TODO: Navigate
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     backgroundColor: Colors.black,
@@ -178,7 +186,9 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
-              )
+              ),
+
+              const SizedBox(height: 15),
             ],
           ),
         ),
@@ -186,4 +196,3 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
     );
   }
 }
-
