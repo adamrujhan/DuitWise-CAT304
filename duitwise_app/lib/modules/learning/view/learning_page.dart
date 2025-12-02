@@ -30,22 +30,24 @@ class LearningPage extends StatelessWidget {
         ],
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _placeholderCard(title: "Module"),
-            const SizedBox(height: 20),
-
-            _placeholderContentCard(title: "Spending tips"),
-            const SizedBox(height: 20),
-
-            _placeholderContentCard(title: "How to make a budget tracker"),
-            const SizedBox(height: 20),
-
-            _placeholderContentCard(title: "Saving behaviour"),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _placeholderCard(title: "Module"),
+              const SizedBox(height: 20),
+        
+              _placeholderContentCard(title: "Spending tips"),
+              const SizedBox(height: 20),
+        
+              _placeholderContentCard(title: "How to make a budget tracker"),
+              const SizedBox(height: 20),
+        
+              _placeholderContentCard(title: "Saving behaviour"),
+            ],
+          ),
         ),
       ),
 
