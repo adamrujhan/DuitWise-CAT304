@@ -16,20 +16,6 @@ class BottomNavBar extends ConsumerWidget {
       indicatorColor: Colors.greenAccent.withValues(alpha: 0.2),
       onDestinationSelected: (index) {
         ref.read(bottomNavProvider.notifier).state = index;
-        switch (index) {
-          case 0:
-            context.go('/home');
-            break;
-          case 1:
-            context.go('/budget');
-            break;
-          case 2:
-            context.go('/learn');
-            break;
-          case 3:
-            context.go('/profile');
-            break;
-        }
       },
       destinations: const [
         NavigationDestination(

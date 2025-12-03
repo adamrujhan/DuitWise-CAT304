@@ -1,12 +1,16 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
+import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(userStreamProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7), // Mint green
 
@@ -19,14 +23,23 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 15),
 
               // Welcome Card
-              RoundedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: const Text(
-                    "Welcome, Amrul",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
-                  ),
-                ),
+              userAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text("Error: $e")),
+                data: (user) {
+                  return RoundedCard(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        "Welcome, ${user?.name ?? ''}",
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 15),

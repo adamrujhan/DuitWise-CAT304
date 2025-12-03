@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Provider for the controller
@@ -44,14 +45,44 @@ class AuthController extends AsyncNotifier<User?> {
     }
   }
 
+  // ---------- ADD USER TO RTDB ----------
+  Future<void> _createUserInDatabase(
+    String uid,
+    String username,
+    String email,
+  ) async {
+    final db = FirebaseDatabase.instance.ref();
+
+    await db.child("users/$uid").set({
+      "name": username,
+      "email": email,
+      "photoUrl": "",
+      "financial": {
+        "income": 0,
+        "food": 0,
+        "groceries": 0,
+        "transport": 0,
+        "bill": 0,
+        "saving": 0,
+        "transaction": "",
+      },
+      "learning": {"completedLessons": {}, "quizScores": {}},
+      "settings": {"language": "en", "notifications": true, "theme": "light"},
+    });
+  }
+
   // ---------- REGISTER ----------
-  Future<void> register(String email, String password) async {
+  Future<void> register(String username, String email, String password) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      final credential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
-      // Firebase stream will emit new user
+
+      final uid = credential.user!.uid;
+
+      // NOW call your repository/service to create user profile in RTDB
+      await _createUserInDatabase(uid, username, email);
     } on FirebaseAuthException catch (e) {
       state = AsyncValue.error(
         e.message ?? "Registration error",
