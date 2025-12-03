@@ -13,7 +13,10 @@ import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_pr
 
 // Feature pages
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
-import 'package:duitwise_app/modules/financial_tracking/budget_setup_page.dart';
+//import 'package:duitwise_app/modules/financial_tracking/budget_setup_page.dart';
+//import 'package:duitwise_app/modules/financial_tracking/budget_page.dart';
+import 'package:duitwise_app/modules/financial_tracking/mybudget_page.dart';
+//import 'package:duitwise_app/modules/financial_tracking/budget_allocation_page.dart';
 
 class MainShell extends ConsumerWidget {
   final Widget child;
@@ -27,7 +30,7 @@ class MainShell extends ConsumerWidget {
     // Pages for the 4 bottom nav destinations
     final pages = [
       const HomePage(),
-      const BudgetSetupPage(),
+      const MyBudgetPage(),
       LearningPage(),
       const ProfilePage(),
     ];
