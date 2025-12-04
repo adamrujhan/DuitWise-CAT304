@@ -23,7 +23,7 @@ class UserModel {
   // =====================================================
   factory UserModel.fromMap(Map<String, dynamic> map, {required String uid}) {
     return UserModel(
-      uid: uid,
+      uid: map["uid"] ?? 0,
       name: map["name"] ?? "",
       email: map["email"] ?? "",
       photoUrl: map["photoUrl"] ?? "",
@@ -46,6 +46,7 @@ class UserModel {
     return {
       "name": name,
       "email": email,
+      "uid": uid,
       "photoUrl": photoUrl,
       "financial": financial.toMap(),
       "learning": learning.toMap(),
@@ -78,8 +79,15 @@ class FinancialModel {
   });
 
   factory FinancialModel.fromMap(Map<String, dynamic> map) {
+    int parseInt(dynamic value) {
+      if (value == null) return 0; // default if null
+      if (value is int) return value; // already int
+      if (value is String) return int.tryParse(value) ?? 0; // convert string to int
+      return 0; // fallback
+    }
+
     return FinancialModel(
-      income: map["income"] ?? 0,
+      income: parseInt(map["income"]),
       food: map["food"] ?? 0,
       groceries: map["groceries"] ?? 0,
       transport: map["transport"] ?? 0,
@@ -110,10 +118,7 @@ class LearningModel {
   final Map<String, bool> completedLessons;
   final Map<String, int> quizScores;
 
-  LearningModel({
-    required this.completedLessons,
-    required this.quizScores,
-  });
+  LearningModel({required this.completedLessons, required this.quizScores});
 
   factory LearningModel.fromMap(Map<String, dynamic> map) {
     return LearningModel(
@@ -127,10 +132,7 @@ class LearningModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      "completedLessons": completedLessons,
-      "quizScores": quizScores,
-    };
+    return {"completedLessons": completedLessons, "quizScores": quizScores};
   }
 }
 

@@ -1,74 +1,88 @@
-  import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
+import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 
-  import 'package:duitwise_app/modules/onboarding/view/start_page.dart';
-  import 'package:duitwise_app/modules/auth/view/sign_in_page.dart';
-  import 'package:duitwise_app/modules/auth/view/register_page.dart';
-  import 'package:duitwise_app/modules/platform_management/view/layout/main_shell.dart';
-  import 'package:flutter/material.dart';
+import 'package:duitwise_app/modules/onboarding/view/start_page.dart';
+import 'package:duitwise_app/modules/auth/view/sign_in_page.dart';
+import 'package:duitwise_app/modules/auth/view/register_page.dart';
+import 'package:duitwise_app/modules/platform_management/view/layout/main_shell.dart';
+import 'package:duitwise_app/modules/financial_tracking/view/budget_setup_page.dart';
+import 'package:duitwise_app/modules/financial_tracking/view/budget_allocation_page.dart';
+import 'package:duitwise_app/data/models/user_model.dart';
 
-  import 'package:go_router/go_router.dart';
-  import 'package:flutter_riverpod/flutter_riverpod.dart';
-  import 'package:firebase_auth/firebase_auth.dart';
-  import 'package:duitwise_app/services/firebase_auth/auth_controller.dart';
+import 'package:flutter/material.dart';
 
-  final _rootNavigatorKey = GlobalKey<NavigatorState>();
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:duitwise_app/services/firebase_auth/auth_controller.dart';
 
-  final routerProvider = Provider<GoRouter>((ref) {
-    final authState = ref.watch(authControllerProvider);
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-    return GoRouter(
-      navigatorKey: _rootNavigatorKey,
-      debugLogDiagnostics: true,
-      initialLocation: '/',
+final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authControllerProvider);
 
-      redirect: (context, state) {
-        if (authState.isLoading) return null;
-        final User? user = authState.asData?.value;
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    debugLogDiagnostics: true,
+    initialLocation: '/',
 
-        const publicRoutes = [
-          '/',
-          '/signin',
-          '/register',
-        ];
+    redirect: (context, state) {
+      if (authState.isLoading) return null;
+      final User? user = authState.asData?.value;
 
-        final isPublic = publicRoutes.contains(state.matchedLocation);
+      const publicRoutes = ['/', '/signin', '/register'];
 
-        // NOT LOGGED IN → block protected routes
-        if (user == null) {
-          if (isPublic) return null;
-          return '/signin';
-        }
+      final isPublic = publicRoutes.contains(state.matchedLocation);
 
-        // LOGGED IN → block sign in / register
-        // ignore: unnecessary_null_comparison
-        if (user != null && isPublic) {
-          return '/home';
-        }
+      // NOT LOGGED IN → block protected routes
+      if (user == null) {
+        if (isPublic) return null;
+        return '/signin';
+      }
 
-        return null;
-      },
+      // LOGGED IN → block sign in / register
+      // ignore: unnecessary_null_comparison
+      if (user != null && isPublic) {
+        return '/home';
+      }
 
-      routes: [
-        // ---------------------------
-        // PUBLIC ROUTES (No Shell)
-        // ---------------------------
-        GoRoute(path: '/', builder: (_, _) => const StartPage()),
-        GoRoute(path: '/signin', builder: (_, _) => const SignInPage()),
-        GoRoute(path: '/register', builder: (_, _) => const RegisterPage()),
+      return null;
+    },
 
-        // ---------------------------
-        // PROTECTED APP (Shell)
-        // ---------------------------
-        ShellRoute(
-          builder: (context, state, child) => MainShell(child: child),
+    routes: [
+      // ---------------------------
+      // PUBLIC ROUTES (No Shell)
+      // ---------------------------
+      GoRoute(path: '/', builder: (_, _) => const StartPage()),
+      GoRoute(path: '/signin', builder: (_, _) => const SignInPage()),
+      GoRoute(path: '/register', builder: (_, _) => const RegisterPage()),
 
-          routes: [
-            GoRoute(
-              path: '/home',
-              builder: (_, _) => const HomePage(),
-            ),
-          ],
-        ),
-      ],
-    );
-  });
+      // ---------------------------
+      // PROTECTED APP (Shell)
+      // ---------------------------
+      ShellRoute(
+        builder: (context, state, child) => MainShell(child: child),
+
+        routes: [
+          GoRoute(path: '/home', builder: (_, _) => const HomePage()),
+
+          // Add BudgetAllocationPage route
+          GoRoute(
+            path: '/budget-setup',
+            builder: (context, state) {
+              final user = state.extra as UserModel; // Retrieve user
+              return BudgetSetupPage(user: user);
+            },
+          ),
+          
+          GoRoute(
+            path: '/budget-allocation',
+            builder: (context, state) {
+              final user = state.extra as UserModel; // Retrieve user
+              return BudgetAllocationPage(user: user);
+            },
+          ),
+        ],
+      ),
+    ],
+  );
+});

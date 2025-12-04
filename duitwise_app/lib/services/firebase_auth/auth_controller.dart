@@ -56,6 +56,7 @@ class AuthController extends AsyncNotifier<User?> {
     await db.child("users/$uid").set({
       "name": username,
       "email": email,
+      "uid": uid,
       "photoUrl": "",
       "financial": {
         "income": 0,

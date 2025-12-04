@@ -54,7 +54,8 @@ class FirebaseRealtimeService {
 
   /// Update only the financial section
   Future<void> updateFinancial(String uid, Map<String, dynamic> data) async {
-    await _db.child("users/$uid/financial").update(data);
+    print("uid: {$uid}");
+    await _db.child('users/$uid/financial').update(data);
   }
 
   /// Update only the learning section

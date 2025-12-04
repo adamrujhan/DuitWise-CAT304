@@ -8,7 +8,6 @@ class AnalyticsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Spending Analytics"),
         backgroundColor: Color(0xFF70D28C), // Light green color
       ),
       body: Padding(

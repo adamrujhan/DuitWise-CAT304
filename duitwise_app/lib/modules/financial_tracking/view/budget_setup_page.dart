@@ -1,20 +1,27 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
+import 'package:duitwise_app/data/models/user_model.dart';
+import 'package:duitwise_app/modules/financial_tracking/provider/budget_service_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class BudgetSetupPage extends StatefulWidget {
-  const BudgetSetupPage({super.key});
+class BudgetSetupPage extends ConsumerStatefulWidget {
+  final UserModel user;
+
+  const BudgetSetupPage({super.key, required this.user});
 
   @override
-  State<BudgetSetupPage> createState() => _BudgetSetupPageState();
+  ConsumerState<BudgetSetupPage> createState() => _BudgetSetupPageState();
 }
 
-class _BudgetSetupPageState extends State<BudgetSetupPage> {
+class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
   final TextEditingController incomeCtrl = TextEditingController();
   List<TextEditingController> commitments = [];
 
   @override
   void initState() {
     super.initState();
+    // Start with one commitment field by default
     commitments.add(TextEditingController());
   }
 
@@ -22,13 +29,9 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),
-
       body: SafeArea(
         child: Column(
           children: [
-            // ---------------------------
-            // MAIN CONTENT (scrollable)
-            // ---------------------------
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
@@ -96,7 +99,7 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Please enter your commitment.",
+                              "Please enter your commitments.",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -128,9 +131,7 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
                                           ),
                                         ),
                                       ),
-
                                       const SizedBox(width: 10),
-
                                       GestureDetector(
                                         onTap: () {
                                           setState(() {
@@ -160,13 +161,44 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
                                 );
                               }).toList(),
                             ),
-                            // ---------------------------
-                            // BOTTOM "NEXT" BUTTON
-                            // ---------------------------
+
+                            const SizedBox(height: 20),
+
+                            // NEXT BUTTON
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  final uid = widget.user.uid;
+
+                                  final financialData = {
+                                    "income":
+                                        int.tryParse(incomeCtrl.text.trim()) ??
+                                        0,
+                                    "commitments": commitments
+                                        .map((c) => c.text.trim())
+                                        .toList(),
+                                  };
+
+                                  // Save to Firebase via Riverpod provider
+                                  await ref
+                                      .read(budgetServiceProvider)
+                                      .updateFinancial(uid, financialData);
+
+                                  if (!mounted) return;
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Financial data updated!"),
+                                    ),
+                                  );
+
+                                  // Navigate to BudgetAllocationPage
+                                  context.push(
+                                    '/budget-allocation',
+                                    extra: widget.user,
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 14,
@@ -185,12 +217,12 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
                                 ),
                               ),
                             ),
+
+                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -199,5 +231,14 @@ class _BudgetSetupPageState extends State<BudgetSetupPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    incomeCtrl.dispose();
+    for (var ctrl in commitments) {
+      ctrl.dispose();
+    }
+    super.dispose();
   }
 }
