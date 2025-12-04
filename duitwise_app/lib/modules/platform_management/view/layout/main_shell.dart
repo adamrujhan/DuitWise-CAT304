@@ -1,3 +1,4 @@
+import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
 import 'package:duitwise_app/modules/financial_literacy/views/fin_lit_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/duitwise_appbar.dart';
 import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
@@ -55,6 +56,7 @@ class MainShell extends ConsumerWidget {
         final pages = [
           HomePage(),
           BudgetSetupPage(),
+          AnalyticsPage(),
           LearningPage(),
           ProfilePage(user: user),
         ];

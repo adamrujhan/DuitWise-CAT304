@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_provider.dart';
-import 'package:go_router/go_router.dart';
 
 class BottomNavBar extends ConsumerWidget {
   const BottomNavBar({super.key});
@@ -35,6 +34,15 @@ class BottomNavBar extends ConsumerWidget {
             shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
           ),
           label: "Tracking",
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.pie_chart_outline_outlined, color: Colors.grey),
+          selectedIcon: Icon(
+            Icons.pie_chart_outline_outlined,
+            color: Colors.green,
+            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
+          ),
+          label: "Analytics",
         ),
         NavigationDestination(
           icon: Icon(Icons.menu_book_outlined, color: Colors.grey),
