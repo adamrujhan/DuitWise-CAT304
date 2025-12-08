@@ -42,6 +42,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         return isPublic ? null : '/signin';
       }
 
+      // ignore: unnecessary_null_comparison
       if (user != null && isPublic) {
         return '/home';
       }
