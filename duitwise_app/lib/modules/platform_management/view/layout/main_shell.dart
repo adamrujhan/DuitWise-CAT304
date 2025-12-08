@@ -1,5 +1,5 @@
 import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
-import 'package:duitwise_app/modules/financial_literacy/views/fin_lit_page.dart';
+import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_setup_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/duitwise_appbar.dart';
 import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
@@ -26,7 +26,7 @@ class MainShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Step 1: Read authenticated UID
+    // Step 1: Check authentication
     final uid = ref.watch(uidProvider);
 
     if (uid == null) {
@@ -35,7 +35,7 @@ class MainShell extends ConsumerWidget {
       );
     }
 
-    // Step 2: Listen to real-time user profile
+    // Step 2: Stream user profile
     final userAsync = ref.watch(userStreamProvider);
 
     return userAsync.when(
@@ -52,21 +52,41 @@ class MainShell extends ConsumerWidget {
           );
         }
 
-        // Step 3: Read selected bottom navigation tab
+        // Step 3: Current selected nav tab
         final tab = ref.watch(bottomNavProvider);
 
-        // Step 4: Inject user into pages that require it
-        final pages = [
-          HomePage(),
-          BudgetSetupPage(user: user),
-          AnalyticsPage(),
-          LearningPage(),
-          ProfilePage(user: user),
-        ];
+        // Step 4: Switch-case page selector
+        Widget page;
 
+        switch (tab) {
+          case 0:
+            page = const HomePage();
+            break;
+
+          case 1:
+            page = BudgetSetupPage(user: user);
+            break;
+
+          case 2:
+            page = const AnalyticsPage();
+            break;
+
+          case 3:
+            page =  LearningPage();
+            break;
+
+          case 4:
+            page = ProfilePage(user: user);
+            break;
+
+          default:
+            page = const HomePage();
+        }
+
+        // Step 5: Render layout scaffold
         return AppScaffold(
-          appBar: DuitWiseAppBar(),
-          body: pages[tab],
+          appBar: const DuitWiseAppBar(),
+          body: page,
           navBar: const BottomNavBar(),
         );
       },

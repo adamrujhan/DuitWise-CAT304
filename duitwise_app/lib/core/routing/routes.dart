@@ -1,3 +1,5 @@
+import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
+import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 
 import 'package:duitwise_app/modules/onboarding/view/start_page.dart';
@@ -6,7 +8,8 @@ import 'package:duitwise_app/modules/auth/view/register_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/main_shell.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_setup_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_allocation_page.dart';
-import 'package:duitwise_app/data/models/user_model.dart';
+import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
+import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
 
 import 'package:flutter/material.dart';
 
@@ -25,22 +28,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     initialLocation: '/',
 
+    // ==================================
+    // REDIRECT LOGIC (unchanged)
+    // ==================================
     redirect: (context, state) {
       if (authState.isLoading) return null;
+
       final User? user = authState.asData?.value;
-
       const publicRoutes = ['/', '/signin', '/register'];
-
       final isPublic = publicRoutes.contains(state.matchedLocation);
 
-      // NOT LOGGED IN → block protected routes
       if (user == null) {
-        if (isPublic) return null;
-        return '/signin';
+        return isPublic ? null : '/signin';
       }
 
-      // LOGGED IN → block sign in / register
-      // ignore: unnecessary_null_comparison
       if (user != null && isPublic) {
         return '/home';
       }
@@ -48,37 +49,77 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
 
+    // ==================================
+    // ROUTE TREE
+    // ==================================
     routes: [
-      // ---------------------------
-      // PUBLIC ROUTES (No Shell)
-      // ---------------------------
+      // ---------- PUBLIC ROUTES ----------
       GoRoute(path: '/', builder: (_, _) => const StartPage()),
       GoRoute(path: '/signin', builder: (_, _) => const SignInPage()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterPage()),
 
-      // ---------------------------
-      // PROTECTED APP (Shell)
-      // ---------------------------
+      // ---------- PROTECTED ROUTES ----------
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),
-
         routes: [
-          GoRoute(path: '/home', builder: (_, _) => const HomePage()),
-
-          // Add BudgetAllocationPage route
+          // -------------------------------
+          // TAB: HOME
+          // -------------------------------
           GoRoute(
-            path: '/budget-setup',
-            builder: (context, state) {
-              final user = state.extra as UserModel; // Retrieve user
+            path: '/home',
+            builder: (_, _) => const HomePage(),
+          ),
+
+          // -------------------------------
+          // TAB: BUDGET (Root)
+          // -------------------------------
+          GoRoute(
+            path: '/budget',
+            builder: (_, _) {
+              final user = ref.read(userStreamProvider).value;
+              if (user == null) return const Scaffold(body: Text("Loading user..."));
               return BudgetSetupPage(user: user);
             },
+
+            // Nested routes under Budget
+            routes: [
+              GoRoute(
+                path: 'allocation',
+                name: 'budget_allocation',
+                builder: (context, state) {
+                  final user = ref.read(userStreamProvider).value;
+                  if (user == null) return const Scaffold(body: Text("No user found"));
+                  return BudgetAllocationPage(user: user);
+                },
+              ),
+            ],
           ),
-          
+
+          // -------------------------------
+          // TAB: ANALYTICS
+          // -------------------------------
           GoRoute(
-            path: '/budget-allocation',
-            builder: (context, state) {
-              final user = state.extra as UserModel; // Retrieve user
-              return BudgetAllocationPage(user: user);
+            path: '/analytics',
+            builder: (_, _) => const AnalyticsPage(),
+          ),
+
+          // -------------------------------
+          // TAB: LEARNING / FINANCIAL LITERACY
+          // -------------------------------
+          GoRoute(
+            path: '/learn',
+            builder: (_, _) =>  LearningPage(),
+          ),
+
+          // -------------------------------
+          // TAB: PROFILE
+          // -------------------------------
+          GoRoute(
+            path: '/profile',
+            builder: (_, _) {
+              final user = ref.read(userStreamProvider).value;
+              if (user == null) return const Scaffold(body: Text("No user profile"));
+              return ProfilePage(user: user);
             },
           ),
         ],

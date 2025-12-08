@@ -54,7 +54,6 @@ class FirebaseRealtimeService {
 
   /// Update only the financial section
   Future<void> updateFinancial(String uid, Map<String, dynamic> data) async {
-    print("uid: {$uid}");
     await _db.child('users/$uid/financial').update(data);
   }
 
@@ -72,6 +71,7 @@ class FirebaseRealtimeService {
   //                          HELPERS
   // ============================================================
 
+  // ignore: unintended_html_in_doc_comment
   /// Converts dynamic Firebase snapshot data to Map<String, dynamic>
   Map<String, dynamic>? _convertSnapshot(dynamic value) {
     if (value == null) return null;

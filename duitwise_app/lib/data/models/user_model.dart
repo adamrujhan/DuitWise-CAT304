@@ -88,12 +88,12 @@ class FinancialModel {
 
     return FinancialModel(
       income: parseInt(map["income"]),
-      food: map["food"] ?? 0,
-      groceries: map["groceries"] ?? 0,
-      transport: map["transport"] ?? 0,
-      bill: map["bill"] ?? 0,
-      saving: map["saving"] ?? 0,
-      transaction: map["transaction"] ?? "",
+      food: parseInt(map["food"]),
+      groceries: parseInt(["groceries"]),
+      transport: parseInt(["transport"]),
+      bill: parseInt(["bill"]),
+      saving: parseInt(["saving"]),
+      transaction: map["transaction"],
     );
   }
 
