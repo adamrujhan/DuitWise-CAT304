@@ -13,7 +13,7 @@ class FinancialModel {
     required this.commitments,
     required this.hasSetupBudget,
   });
-
+ 
   // Default empty financial model
   factory FinancialModel.empty() =>
       FinancialModel(income: 0, commitments: {}, hasSetupBudget: false);
