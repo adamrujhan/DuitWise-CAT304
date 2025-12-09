@@ -59,7 +59,7 @@ class FirebaseRealtimeService {
 
   /// Update only the learning section
   Future<void> updateLearning(String uid, Map<String, dynamic> data) async {
-    await _db.child("users/$uid/learning").update(data);
+    await _db.child("lessons/1").update(data);
   }
 
   /// Update only the settings section

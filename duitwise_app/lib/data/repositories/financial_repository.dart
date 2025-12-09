@@ -14,7 +14,7 @@ class FinancialRepository {
         return FinancialModel.empty();
       }
 
-      // Cast first → THEN convert
+      // Cast first → THEN convert 
       final map = Map<dynamic, dynamic>.from(raw as Map);
 
       return FinancialModel.fromMap(Map<String, dynamic>.from(map));

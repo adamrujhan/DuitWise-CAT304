@@ -1,5 +1,4 @@
 import 'package:duitwise_app/data/models/financial_model.dart';
-import 'package:duitwise_app/data/models/learning_model.dart';
 import 'package:duitwise_app/data/models/settings_model.dart';
 
 class UserModel {
@@ -9,7 +8,6 @@ class UserModel {
   final String photoUrl;
 
   final FinancialModel financial;
-  final LearningModel learning;
   final SettingsModel settings;
 
   UserModel({
@@ -18,7 +16,6 @@ class UserModel {
     required this.email,
     required this.photoUrl,
     required this.financial,
-    required this.learning,
     required this.settings,
   });
 
@@ -33,9 +30,6 @@ class UserModel {
       photoUrl: map["photoUrl"] ?? "",
       financial: FinancialModel.fromMap(
         Map<String, dynamic>.from(map["financial"] ?? {}),
-      ),
-      learning: LearningModel.fromMap(
-        Map<String, dynamic>.from(map["learning"] ?? {}),
       ),
       settings: SettingsModel.fromMap(
         Map<String, dynamic>.from(map["settings"] ?? {}),
@@ -53,7 +47,6 @@ class UserModel {
       "uid": uid,
       "photoUrl": photoUrl,
       "financial": financial.toMap(),
-      "learning": learning.toMap(),
       "settings": settings.toMap(),
     };
   }
