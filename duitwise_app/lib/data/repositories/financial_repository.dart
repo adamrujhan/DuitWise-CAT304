@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 class FinancialRepository {
   final FirebaseDatabase db = FirebaseDatabase.instance;
 
-  Stream<FinancialModel> watchFinancial(String uid) {
+  Stream<FinancialModel> watchFinancial(String? uid) {
     final ref = db.ref("users/$uid/financial");
 
     return ref.onValue.map((event) {
@@ -21,7 +21,7 @@ class FinancialRepository {
     });
   }
 
-  Future<void> updateFinancial(String uid, Map<String, dynamic> data) {
+  Future<void> updateFinancial(String? uid, Map<String, dynamic> data) {
     final ref = db.ref("users/$uid/financial");
     return ref.update(data);
   }

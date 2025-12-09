@@ -26,10 +26,11 @@ class FinancialModel {
       return 0;
     }
 
-    // Parse commitments map safely
+    // Parse commitments as a list of maps
     Map<String, int> parseCommitments(dynamic value) {
       if (value is Map) {
-        return value.map((key, val) => MapEntry(key.toString(), parseInt(val)));
+        return value.map((key, val) =>
+        MapEntry(key.toString(), parseInt(val)));
       }
       return {};
     }

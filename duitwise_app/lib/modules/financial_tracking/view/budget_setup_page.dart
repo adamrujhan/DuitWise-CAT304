@@ -1,5 +1,4 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
-import 'package:duitwise_app/data/models/user_model.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class BudgetSetupPage extends ConsumerStatefulWidget {
-  final UserModel user;
-
-  const BudgetSetupPage({super.key, required this.user});
+  const BudgetSetupPage({super.key});
 
   @override
   ConsumerState<BudgetSetupPage> createState() => _BudgetSetupPageState();
@@ -215,7 +212,6 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
           final financialData = {
             "income": int.tryParse(incomeCtrl.text.trim()) ?? 0,
             "commitments": commitmentMap,
-            "hasSetupBudget": true,
           };
 
           await ref
