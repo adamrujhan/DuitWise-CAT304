@@ -1,5 +1,7 @@
 import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
 import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
+import 'package:duitwise_app/modules/financial_tracking/view/mybudget_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 
 import 'package:duitwise_app/modules/onboarding/view/start_page.dart';
@@ -12,7 +14,6 @@ import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
 
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,7 +30,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
 
     // ==================================
-    // REDIRECT LOGIC (unchanged)
+    // REDIRECT LOGIC
     // ==================================
     redirect: (context, state) {
       if (authState.isLoading) return null;
@@ -64,62 +65,70 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, child) => MainShell(child: child),
         routes: [
           // -------------------------------
-          // TAB: HOME
+          // HOME
           // -------------------------------
-          GoRoute(
-            path: '/home',
-            builder: (_, _) => const HomePage(),
-          ),
+          GoRoute(path: '/home', builder: (_, _) => const HomePage()),
 
           // -------------------------------
-          // TAB: BUDGET (Root)
+          // BUDGET
           // -------------------------------
           GoRoute(
             path: '/budget',
-            builder: (_, _) {
-              final user = ref.read(userStreamProvider).value;
-              if (user == null) return const Scaffold(body: Text("Loading user..."));
-              return BudgetSetupPage(user: user);
-            },
+            builder: (context, state) => Consumer(
+              builder: (context, ref, _) {
+                final uid = ref.read(authControllerProvider).value?.uid;
+                if (uid == null) {
+                  return const Scaffold(body: Text("No user logged in"));
+                }
 
-            // Nested routes under Budget
+                final financialAsync = ref.watch(financialStreamProvider(uid));
+
+                return financialAsync.when(
+                  data: (financial) {
+                    // If budget is setup, go straight to MyBudgetPage
+                    return financial.hasSetupBudget
+                        ? MyBudgetPage()
+                        : BudgetSetupPage();
+                  },
+                  loading: () => const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (err, stack) =>
+                      Scaffold(body: Center(child: Text("Error: $err"))),
+                );
+              },
+            ),
             routes: [
               GoRoute(
                 path: 'allocation',
                 name: 'budget_allocation',
                 builder: (context, state) {
-                  final user = ref.read(userStreamProvider).value;
-                  if (user == null) return const Scaffold(body: Text("No user found"));
-                  return BudgetAllocationPage(user: user);
+                  return const BudgetAllocationPage();
                 },
               ),
             ],
           ),
 
           // -------------------------------
-          // TAB: ANALYTICS
+          // ANALYTICS
           // -------------------------------
-          GoRoute(
-            path: '/analytics',
-            builder: (_, _) => const AnalyticsPage(),
-          ),
+          GoRoute(path: '/analytics', builder: (_, _) => const AnalyticsPage()),
 
           // -------------------------------
-          // TAB: LEARNING / FINANCIAL LITERACY
+          // LEARNING / FINANCIAL LITERACY
           // -------------------------------
-          GoRoute(
-            path: '/learn',
-            builder: (_, _) =>  LearningPage(),
-          ),
+          GoRoute(path: '/learn', builder: (_, _) => LearningPage()),
 
           // -------------------------------
-          // TAB: PROFILE
+          // PROFILE
           // -------------------------------
           GoRoute(
             path: '/profile',
-            builder: (_, _) {
+            builder: (context, state) {
               final user = ref.read(userStreamProvider).value;
-              if (user == null) return const Scaffold(body: Text("No user profile"));
+              if (user == null) {
+                return const Scaffold(body: Text("No user profile"));
+              }
               return ProfilePage(user: user);
             },
           ),

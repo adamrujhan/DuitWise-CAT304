@@ -1,7 +1,7 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:flutter/material.dart';
 
-class MyBudgetPage extends StatefulWidget {
+class MyBudgetPage extends StatefulWidget {  
   const MyBudgetPage({super.key});
 
   @override
