@@ -1,7 +1,6 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
-import 'package:duitwise_app/data/models/analytics_model.dart';
-// FIX: Use 'package:' and remove '/lib/'
-import 'package:duitwise_app/modules/financial_tracking/providers/analytics_provider.dart'; 
+import 'package:duitwise_app/modules/financial_tracking/providers/analytics_provider.dart';
+import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart'; 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math';
@@ -11,9 +10,11 @@ class AnalyticsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.read(userStreamProvider).value;
+    final uid = user?.uid;
     // 1. WATCH THE DATA STREAM
     // This will now trigger a rebuild whenever the financial data changes in Firebase
-    final analyticsAsync = ref.watch(analyticsStreamProvider);
+    final analyticsAsync = ref.watch(analyticsStreamProvider(uid));
 
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),

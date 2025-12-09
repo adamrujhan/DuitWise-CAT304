@@ -10,11 +10,7 @@ final analyticsRepositoryProvider = Provider<AnalyticsRepository>((ref) {
 // 2. The Stream Provider (The bridge to the UI)
 // NOTE: You need a real UID here. If you have an AuthProvider, use:
 // final uid = ref.watch(authProvider).uid;
-final analyticsStreamProvider = StreamProvider.autoDispose<AnalyticsModel>((ref) {
-  final repository = ref.watch(analyticsRepositoryProvider);
-  
-  // TODO: Replace 'user_123' with the actual logged-in user's UID
-  const String uid = 'user_123'; 
-  
-  return repository.watchAnalytics(uid);
+final analyticsStreamProvider = StreamProvider.family<AnalyticsModel, String?>((ref, uid) {
+  final repo = ref.watch(analyticsRepositoryProvider);
+  return repo.watchAnalytics(uid);
 });

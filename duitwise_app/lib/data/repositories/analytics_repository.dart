@@ -4,8 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 class AnalyticsRepository {
   final FirebaseDatabase db = FirebaseDatabase.instance;
 
-  Stream<AnalyticsModel> watchAnalytics(String uid) {
-    // **MODIFIED to read financial data**
+  Stream<AnalyticsModel> watchAnalytics(String? uid) {
     final ref = db.ref("users/$uid/financial"); 
 
     return ref.onValue.map((event) {
