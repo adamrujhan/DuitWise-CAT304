@@ -1,6 +1,6 @@
-import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class DuitWiseAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
@@ -31,7 +31,7 @@ class DuitWiseAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
             InkWell(
               onTap: () {
-                ref.read(bottomNavProvider.notifier).state = 3;
+                context.go("/profile");
               },
               child: const CircleAvatar(
                 radius: 20,

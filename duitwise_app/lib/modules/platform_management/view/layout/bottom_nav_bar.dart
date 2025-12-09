@@ -1,66 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_provider.dart';
+import 'package:go_router/go_router.dart';
 
-class BottomNavBar extends ConsumerWidget {
+class BottomNavBar extends StatelessWidget {
   const BottomNavBar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tab = ref.watch(bottomNavProvider);
+  Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).uri.toString();
+
+    int currentIndex = 0;
+
+    if (location.startsWith('/home')) {
+      currentIndex = 0;
+    } else if (location.startsWith('/budget')) {
+      currentIndex = 1;
+    } else if (location.startsWith('/analytics')) {
+      currentIndex = 2;
+    } else if (location.startsWith('/learn')) {
+      currentIndex = 3;
+    } else if (location.startsWith('/profile')) {
+      currentIndex = 4;
+    }
 
     return NavigationBar(
-      selectedIndex: tab,
+      selectedIndex: currentIndex,
       height: 65,
       indicatorColor: Colors.greenAccent.withValues(alpha: 0.2),
-      onDestinationSelected: (index) {
-        ref.read(bottomNavProvider.notifier).state = index;
+      onDestinationSelected: (i) {
+        switch (i) {
+          case 0:
+            context.go('/home');
+            break;
+          case 1:
+            context.go('/budget');
+            break;
+          case 2:
+            context.go('/analytics');
+            break;
+          case 3:
+            context.go('/learn');
+            break;
+          case 4:
+            context.go('/profile');
+            break;
+        }
       },
       destinations: const [
         NavigationDestination(
-          icon: Icon(Icons.home_outlined, color: Colors.grey),
-          selectedIcon: Icon(
-            Icons.home_outlined,
-            color: Colors.green,
-            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
-          ),
-          label: "Home",
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home_outlined, color: Colors.green),
+          label: 'Home',
         ),
         NavigationDestination(
-          icon: Icon(Icons.account_balance_wallet_outlined, color: Colors.grey),
+          icon: Icon(Icons.account_balance_wallet_outlined),
           selectedIcon: Icon(
             Icons.account_balance_wallet_outlined,
             color: Colors.green,
-            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
           ),
-          label: "Tracking",
+          label: 'Tracking',
         ),
         NavigationDestination(
-          icon: Icon(Icons.pie_chart_outline_outlined, color: Colors.grey),
+          icon: Icon(Icons.pie_chart_outline_outlined),
           selectedIcon: Icon(
             Icons.pie_chart_outline_outlined,
             color: Colors.green,
-            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
           ),
-          label: "Analytics",
+          label: 'Analytics',
         ),
         NavigationDestination(
-          icon: Icon(Icons.menu_book_outlined, color: Colors.grey),
-          selectedIcon: Icon(
-            Icons.menu_book_outlined,
-            color: Colors.green,
-            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
-          ),
-          label: "Learn",
+          icon: Icon(Icons.menu_book_outlined),
+          selectedIcon: Icon(Icons.menu_book_outlined, color: Colors.green),
+          label: 'Learn',
         ),
         NavigationDestination(
-          icon: Icon(Icons.person_outline, color: Colors.grey),
-          selectedIcon: Icon(
-            Icons.person_outline,
-            color: Colors.green,
-            shadows: [Shadow(color: Colors.blue, blurRadius: 8)],
-          ),
-          label: "Profile",
+          icon: Icon(Icons.person_outline),
+          selectedIcon: Icon(Icons.person_outline, color: Colors.green),
+          label: 'Profile',
         ),
       ],
     );

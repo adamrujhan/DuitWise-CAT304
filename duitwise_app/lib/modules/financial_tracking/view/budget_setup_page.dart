@@ -165,7 +165,7 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      GestureDetector(
+                      InkWell(
                         onTap: () {
                           setState(() {
                             commitments.add(TextEditingController());
