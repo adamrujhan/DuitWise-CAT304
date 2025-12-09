@@ -1,6 +1,6 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/data/models/user_model.dart';
-import 'package:duitwise_app/modules/financial_tracking/provider/budget_service_provider.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +10,8 @@ class BudgetAllocationPage extends ConsumerStatefulWidget {
   const BudgetAllocationPage({super.key, required this.user});
 
   @override
-  ConsumerState<BudgetAllocationPage> createState() => _BudgetAllocationPageState();
+  ConsumerState<BudgetAllocationPage> createState() =>
+      _BudgetAllocationPageState();
 }
 
 class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
@@ -115,13 +116,16 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
                                         filled: true,
                                         fillColor: Colors.grey[300],
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                           borderSide: BorderSide.none,
                                         ),
-                                        contentPadding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 12,
-                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 12,
+                                            ),
                                       ),
                                     ),
                                   ],
@@ -139,14 +143,25 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
                                   final uid = widget.user.uid;
 
                                   final financialData = {
-                                    "income": int.tryParse(incomeCtrl.text.trim()) ?? 0,
+                                    "income":
+                                        int.tryParse(incomeCtrl.text.trim()) ??
+                                        0,
                                     "commitments": commitments
-                                        .map((c) => int.tryParse(c.controller.text.trim()) ?? 0)
+                                        .map(
+                                          (c) =>
+                                              int.tryParse(
+                                                c.controller.text.trim(),
+                                              ) ??
+                                              0,
+                                        )
                                         .toList(),
+                                      "hasSetupBudget": true, //TODO: check this back later
                                   };
 
                                   // Save to Firebase via Riverpod provider
-                                  await ref.read(budgetServiceProvider).updateFinancial(uid, financialData);
+                                  await ref
+                                      .read(financialRepositoryProvider)
+                                      .updateFinancial(uid, financialData);
 
                                   if (!mounted) return;
 
@@ -160,7 +175,9 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
                                   context.push('/', extra: widget.user);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
                                   backgroundColor: Colors.grey[500],
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -168,7 +185,10 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
                                 ),
                                 child: const Text(
                                   "Next >",
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),

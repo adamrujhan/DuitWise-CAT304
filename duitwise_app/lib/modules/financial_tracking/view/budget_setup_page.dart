@@ -1,6 +1,6 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/data/models/user_model.dart';
-import 'package:duitwise_app/modules/financial_tracking/provider/budget_service_provider.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,16 +30,15 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
     final userAsync = ref.watch(userStreamProvider);
 
     return userAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (e, _) => Scaffold(
-        body: Center(child: Text("Error loading user: $e")),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) =>
+          Scaffold(body: Center(child: Text("Error loading user: $e"))),
       data: (user) {
         if (user == null) {
           return const Scaffold(
-              body: Center(child: Text("User profile unavailable")));
+            body: Center(child: Text("User profile unavailable")),
+          );
         }
 
         return Scaffold(
@@ -113,10 +112,7 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
           children: [
             const Text(
               "Please enter your monthly income.",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -144,10 +140,7 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
           children: [
             const Text(
               "Please enter your commitments.",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 15),
 
@@ -186,7 +179,11 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
                             shape: BoxShape.circle,
                           ),
                           child: const Center(
-                            child: Icon(Icons.add, size: 20, color: Colors.white),
+                            child: Icon(
+                              Icons.add,
+                              size: 20,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -206,12 +203,24 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () async {
-          final financialData = {
-            "income": int.tryParse(incomeCtrl.text.trim()) ?? 0,
-            "commitments": commitments.map((c) => c.text.trim()).toList(),
+          // Convert commitments into key-value map: {"home": 0, "food": 0}
+          final commitmentMap = {
+            for (var c
+                in commitments
+                    .map((t) => t.text.trim())
+                    .where((t) => t.isNotEmpty))
+              c: 0,
           };
 
-          await ref.read(budgetServiceProvider).updateFinancial(uid, financialData);
+          final financialData = {
+            "income": int.tryParse(incomeCtrl.text.trim()) ?? 0,
+            "commitments": commitmentMap,
+            "hasSetupBudget": true,
+          };
+
+          await ref
+              .read(financialRepositoryProvider)
+              .updateFinancial(uid, financialData);
 
           if (!mounted) return;
 

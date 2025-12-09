@@ -15,9 +15,6 @@ import 'package:duitwise_app/services/firebase_auth/uid_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
-//import 'package:duitwise_app/modules/financial_tracking/budget_page.dart';
-//import 'package:duitwise_app/modules/financial_tracking/mybudget_page.dart';
-//import 'package:duitwise_app/modules/financial_tracking/budget_allocation_page.dart';
 
 class MainShell extends ConsumerWidget {
   final Widget child;
