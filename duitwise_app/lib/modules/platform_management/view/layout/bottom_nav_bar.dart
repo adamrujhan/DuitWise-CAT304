@@ -18,8 +18,6 @@ class BottomNavBar extends StatelessWidget {
       currentIndex = 2;
     } else if (location.startsWith('/learn')) {
       currentIndex = 3;
-    } else if (location.startsWith('/profile')) {
-      currentIndex = 4;
     }
 
     return NavigationBar(
@@ -40,9 +38,7 @@ class BottomNavBar extends StatelessWidget {
           case 3:
             context.go('/learn');
             break;
-          case 4:
-            context.go('/profile');
-            break;
+
         }
       },
       destinations: const [
@@ -71,11 +67,6 @@ class BottomNavBar extends StatelessWidget {
           icon: Icon(Icons.menu_book_outlined),
           selectedIcon: Icon(Icons.menu_book_outlined, color: Colors.green),
           label: 'Learn',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person_outline, color: Colors.green),
-          label: 'Profile',
         ),
       ],
     );
