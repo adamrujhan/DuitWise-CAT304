@@ -1,6 +1,7 @@
 import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
 import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
+import 'package:duitwise_app/modules/financial_tracking/view/budget_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/mybudget_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 
@@ -87,7 +88,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   data: (financial) {
                     // If budget is setup, go straight to MyBudgetPage
                     return financial.hasSetupBudget
-                        ? MyBudgetPage()
+                        ? BudgetPage()
                         : BudgetSetupPage();
                   },
                   loading: () => const Scaffold(
@@ -104,6 +105,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: 'budget_allocation',
                 builder: (context, state) {
                   return const BudgetAllocationPage();
+                },
+              ),
+              GoRoute(
+                path: 'mybudget',
+                name: 'budget_mybudget',
+                builder: (context, state) {
+                  return const MyBudgetPage();
                 },
               ),
             ],

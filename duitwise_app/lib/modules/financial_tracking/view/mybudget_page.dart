@@ -1,61 +1,65 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
+import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyBudgetPage extends StatefulWidget {  
+class MyBudgetPage extends ConsumerStatefulWidget {
   const MyBudgetPage({super.key});
 
   @override
-  State<MyBudgetPage> createState() => _BudgetPageState();
+  ConsumerState<MyBudgetPage> createState() => _MyBudgetPageState();
 }
 
-class _BudgetPageState extends State<MyBudgetPage> {
-  final double totalBalance = 800;
-  final double expense = 200;
+class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
 
-  final List<BudgetCategory> budgetCategories = [
-    BudgetCategory(name: "Food", percentage: 25),
-    BudgetCategory(name: "Groceries", percentage: 25),
-    BudgetCategory(name: "Transport", percentage: 25),
-    BudgetCategory(name: "Bill", percentage: 25),
-  ];
+  /// Dynamic commitment list loaded from Firebase
+  List<CommitmentItem> commitments = [];
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.read(userStreamProvider).value;
+    final uid = user?.uid;
+
+    /// Watch user's financial data (income + commitments)
+    final financialAsync = ref.watch(financialStreamProvider(uid));
+
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
+        child: financialAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text("Error: $e")),
+          data: (financial) {
+            final commitments = financial.commitments; // Map<String, int>
 
-              // Greeting Card
-              RoundedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    "My Budget",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+
+                  const RoundedCard(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        "My Budget",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
 
-              const SizedBox(height: 15),
+                  const SizedBox(height: 20),
 
-              // Budget Tracking Card
-              RoundedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  RoundedCard(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
                             "Monthly Budget Tracking",
@@ -64,75 +68,100 @@ class _BudgetPageState extends State<MyBudgetPage> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                      // Budget Categories
-                      ...budgetCategories.map((category) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                category.name,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
+                          /// ---- DYNAMIC LIST FROM FIREBASE ----
+                          ...commitments.entries.map((entry) {
+                            final name = entry.key; // example: food
+                            final allocated = entry.value; // example: 300
+
+                            /// 🔥 Placeholder usage value (until you have expense tracking)
+                            const used =
+                                80; // <-- UPDATE WHEN YOU HAVE REAL EXPENSE DATA
+
+                            final percent = allocated == 0
+                                ? 0
+                                : ((used / allocated) * 100)
+                                      .clamp(0, 100)
+                                      .toInt();
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Container(
-                                      height: 12,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
+                                  /// Category Name
                                   Text(
-                                    "${category.percentage}%",
+                                    name[0].toUpperCase() + name.substring(1),
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
+
+                                  const SizedBox(height: 4),
+
+                                  /// "RM80 of RM300"
+                                  Text(
+                                    "RM$used of RM$allocated",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 8),
+
+                                  /// Progress Bar + Percent
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                          child: LinearProgressIndicator(
+                                            value: allocated == 0
+                                                ? 0
+                                                : used / allocated,
+                                            minHeight: 10,
+                                            backgroundColor: Colors.grey[300],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+
+                                      Text(
+                                        "$percent%",
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-              const SizedBox(height: 15),
-            ],
-          ),
+                  const SizedBox(height: 30),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class BudgetCategory {
+class CommitmentItem {
   String name;
-  int percentage;
-
-  BudgetCategory({required this.name, required this.percentage});
-}
-
-class Activity {
-  String name;
-  String category;
-  double amount;
-
-  Activity({required this.name, required this.category, required this.amount});
+  TextEditingController amount;
+  CommitmentItem({required this.name, required this.amount});
 }
