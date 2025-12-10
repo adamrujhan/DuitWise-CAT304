@@ -12,9 +12,12 @@ class MyBudgetPage extends ConsumerStatefulWidget {
 }
 
 class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
-
-  /// Dynamic commitment list loaded from Firebase
-  List<CommitmentItem> commitments = [];
+  void _showAddTransactionPopup(List<String> categories) {
+    showDialog(
+      context: context,
+      builder: (context) => AddTransactionPopup(categories: categories),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +35,7 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
           error: (e, _) => Center(child: Text("Error: $e")),
           data: (financial) {
             final commitments = financial.commitments; // Map<String, int>
+            final categories = commitments.keys.toList();
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -126,6 +130,10 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
                                                 : used / allocated,
                                             minHeight: 10,
                                             backgroundColor: Colors.grey[300],
+                                            valueColor:
+                                                const AlwaysStoppedAnimation<
+                                                  Color
+                                                >(Color(0xFF7DD3AE)),
                                           ),
                                         ),
                                       ),
@@ -156,12 +164,206 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
           },
         ),
       ),
+      floatingActionButton: financialAsync.maybeWhen(
+        data: (financial) {
+          final categories = financial.commitments.keys.toList();
+          return FloatingActionButton(
+            onPressed: () => _showAddTransactionPopup(categories),
+            backgroundColor: Colors.white,
+            child: const Icon(Icons.add, color: Colors.black, size: 32),
+          );
+        },
+        orElse: () => const SizedBox.shrink(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
 
-class CommitmentItem {
-  String name;
-  TextEditingController amount;
-  CommitmentItem({required this.name, required this.amount});
+// Add Transaction Popup
+class AddTransactionPopup extends StatefulWidget {
+  final List<String> categories;
+
+  const AddTransactionPopup({super.key, required this.categories});
+
+  @override
+  State<AddTransactionPopup> createState() => _AddTransactionPopupState();
+}
+
+class _AddTransactionPopupState extends State<AddTransactionPopup> {
+  late String selectedCategory;
+  final TextEditingController notesController = TextEditingController();
+  final TextEditingController amountController = TextEditingController(
+    text: "0.00",
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCategory = widget.categories.isNotEmpty
+        ? widget.categories.first
+        : "";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            const Center(
+              child: Text(
+                "Add Transaction",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Amount Section
+            const Center(
+              child: Text(
+                "Amount",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: Text(
+                "RM${amountController.text}",
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Category Section
+            const Text(
+              "Category",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 40,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: widget.categories.length,
+                itemBuilder: (context, index) {
+                  final category = widget.categories[index];
+                  final isSelected = selectedCategory == category;
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      right: index < widget.categories.length - 1 ? 8 : 0,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCategory = category;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Colors.grey[400]
+                              : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            category[0].toUpperCase() + category.substring(1),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Notes Section
+            const Text(
+              "Notes",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: notesController,
+              decoration: InputDecoration(
+                hintText: "e.g. Lunch with Wan",
+                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Add Button
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle add transaction
+                  // TODO: Save transaction to Firebase
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 10,
+                  ),
+                  backgroundColor: Colors.grey[400],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  "Add",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    notesController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
 }
