@@ -1,6 +1,6 @@
 // lib/modules/financial_literacy/widgets/lesson_card.dart
 import 'package:flutter/material.dart';
-import '../models/lesson_model.dart';
+import '../../../data/models/lesson_model.dart';
 
 class LessonCard extends StatelessWidget {
   final Lesson lesson;
@@ -69,21 +69,6 @@ class LessonCard extends StatelessWidget {
                   color: Colors.amber[50],
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.amber[200]!),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.lightbulb_outline, size: 16, color: Colors.amber[700]),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        lesson.malaysianExample,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.amber[900],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
               
