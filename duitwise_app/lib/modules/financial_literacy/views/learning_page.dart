@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import '../../../data/models/lesson_model.dart';
 import '../providers/lesson_provider.dart';
+import '../services/lesson_navigation_service.dart';
+import '../services/quiz_navigation_service.dart';
 
 class LearningPage extends ConsumerWidget {
   const LearningPage({super.key});
@@ -155,13 +157,13 @@ class LearningPage extends ConsumerWidget {
                 // Category Filter Chips
                 // ... (keep your existing filter chips code)
                 
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
 
                 // Lessons Grid/List
                 ...lessonState.lessons.map((lesson) {
                   return Column(
                     children: [
-                      _buildLessonCard(lesson, context, ref),
+                      _buildLessonCard(context, lesson),
                       const SizedBox(height: 15),
                     ],
                   );
@@ -176,7 +178,7 @@ class LearningPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildLessonCard(Lesson lesson, BuildContext context, WidgetRef ref) {
+  Widget _buildLessonCard(BuildContext context, Lesson lesson) {
     return RoundedCard(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -305,13 +307,13 @@ class LearningPage extends ConsumerWidget {
             
             const SizedBox(height: 20),
             
-            // Action Buttons
+            // Action Buttons (Now using LessonService)
             Row(
               children: [
                 // Learn Button
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _showLessonDetail(context, lesson, ref),
+                    onPressed: () => LessonNavigationService.showLessonDetail(context, lesson),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade700,
                       foregroundColor: Colors.white,
@@ -344,15 +346,15 @@ class LearningPage extends ConsumerWidget {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
+                    color: Colors.blue.shade700,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.shade200, width: 1.5),
+                    border: Border.all(color: Colors.blue.shade700, width: 1.5),
                   ),
                   child: IconButton(
-                    onPressed: () => _startQuiz(context, lesson, ref),
+                    onPressed: () => QuizNavigationService.showQuizDialog(context, lesson),
                     icon: Icon(
                       Icons.quiz,
-                      color: Colors.orange.shade700,
+                      color: const Color.fromARGB(255, 255, 255, 255),
                       size: 22,
                     ),
                     tooltip: 'Take Quiz',
@@ -362,68 +364,6 @@ class LearningPage extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showLessonDetail(BuildContext context, Lesson lesson, WidgetRef ref) {
-    // ... (your existing modal code)
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              lesson.title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(lesson.description),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // Navigate to actual lesson page
-              },
-              child: const Text('Start Lesson'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _startQuiz(BuildContext context, Lesson lesson, WidgetRef ref) {
-    // ... (your existing quiz code)
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("${lesson.title} Quiz"),
-        content: const Text("Are you ready to take the quiz?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Navigate to quiz page
-            },
-            child: const Text('Start Quiz'),
-          ),
-        ],
       ),
     );
   }

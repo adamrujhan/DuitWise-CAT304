@@ -88,7 +88,7 @@ class Lesson {
   Color get difficultyColor {
     switch (difficulty) {
       case 1:
-        return Colors.green;
+        return const Color.fromARGB(255, 78, 183, 47);
       case 2:
         return Colors.orange;
       case 3:
