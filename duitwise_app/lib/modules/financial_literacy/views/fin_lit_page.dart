@@ -14,7 +14,7 @@ class LearningPage extends StatelessWidget {
       videoUrl: '',
       duration: Duration(minutes: 8),
       category: 'Budgeting',
-      difficulty: 1,
+      difficulty: 1, // 1 = Beginner
       learningOutcomes: [
         'Memahami konsep pendapatan dan perbelanjaan',
         'Mengenal pasti perbelanjaan perlu vs kehendak',
@@ -28,7 +28,7 @@ class LearningPage extends StatelessWidget {
       videoUrl: '',
       duration: Duration(minutes: 10),
       category: 'Saving',
-      difficulty: 1,
+      difficulty: 2, // 2 = Intermediate
       learningOutcomes: [
         'Teknik penjimatan harian',
         'Menggunakan diskaun pelajar',
@@ -42,11 +42,25 @@ class LearningPage extends StatelessWidget {
       videoUrl: '',
       duration: Duration(minutes: 12),
       category: 'Debt',
-      difficulty: 2,
+      difficulty: 3, // 3 = Advanced
       learningOutcomes: [
         'Memahami terma PTPTN',
         'Perancangan pembayaran balik',
         'Kesan kredit masa depan',
+      ],
+    ),
+    Lesson(
+      id: '4',
+      title: 'Pelaburan Awal untuk Pelajar',
+      description: 'Memulakan pelaburan dengan modal kecil sebagai pelajar',
+      videoUrl: '',
+      duration: Duration(minutes: 15),
+      category: 'Investing',
+      difficulty: 3, // 3 = Advanced
+      learningOutcomes: [
+        'Jenis pelaburan berisiko rendah',
+        'ASB dan pelaburan untuk belia',
+        'Strategi dollar-cost averaging',
       ],
     ),
   ];
@@ -70,13 +84,18 @@ class LearningPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Welcome to Financial Learning",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black87,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Financial Learning",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 10),
                       Text(
@@ -91,8 +110,48 @@ class LearningPage extends StatelessWidget {
                 ),
               ),
 
+              const SizedBox(height: 20),
+
+              // Category Filter Chips
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    FilterChip(
+                      label: Text("All Categories"),
+                      selected: true,
+                      onSelected: (bool value) {},
+                    ),
+                    SizedBox(width: 8),
+                    FilterChip(
+                      label: Text("Budgeting"),
+                      selected: false,
+                      onSelected: (bool value) {},
+                    ),
+                    SizedBox(width: 8),
+                    FilterChip(
+                      label: Text("Saving"),
+                      selected: false,
+                      onSelected: (bool value) {},
+                    ),
+                    SizedBox(width: 8),
+                    FilterChip(
+                      label: Text("Debt"),
+                      selected: false,
+                      onSelected: (bool value) {},
+                    ),
+                    SizedBox(width: 8),
+                    FilterChip(
+                      label: Text("Investing"),
+                      selected: false,
+                      onSelected: (bool value) {},
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 15),
-              
+
               // Lessons List
               if (lessons.isEmpty)
                 RoundedCard(
@@ -118,143 +177,209 @@ class LearningPage extends StatelessWidget {
                 ...lessons.map((lesson) {
                   return Column(
                     children: [
-                      RoundedCard(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Category badge
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: _getCategoryColor(lesson.category),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  lesson.category,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              
-                              SizedBox(height: 12),
-                              
-                              // Lesson title
-                              Text(
-                                lesson.title,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              
-                              SizedBox(height: 8),
-                              
-                              // Lesson description
-                              Text(
-                                lesson.description,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              
-                              SizedBox(height: 16),
-                              
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Duration
-                                  Row(
-                                    children: [
-                                      Icon(Icons.timer, size: 16, color: Colors.grey),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        '${lesson.duration.inMinutes} min',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  
-                                  // Action buttons
-                                  Row(
-                                    children: [
-                                      // Quiz Button
-                                      InkWell(
-                                        onTap: () => _startQuiz(context, lesson),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                          decoration: BoxDecoration(
-                                            color: Colors.orange.shade100,
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.quiz, size: 16, color: Colors.orange),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                'Kuiz',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.orange.shade800,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      
-                                      SizedBox(width: 8),
-                                      
-                                      // Learn Button
-                                      ElevatedButton(
-                                        onPressed: () => _showLessonDetail(context, lesson),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.blue,
-                                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.play_arrow, size: 16, color: Colors.white),
-                                            SizedBox(width: 4),
-                                            Text(
-                                              'Belajar',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12),
+                      _buildLessonCard(lesson, context),
+                      SizedBox(height: 15),
                     ],
                   );
                 }).toList(),
 
-              const SizedBox(height: 30), // Extra spacing at bottom
+              const SizedBox(height: 40), // Extra spacing at bottom
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // Build a lesson card with difficulty badge
+  Widget _buildLessonCard(Lesson lesson, BuildContext context) {
+    return RoundedCard(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row with Category and Difficulty
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Category Badge
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getCategoryColor(lesson.category),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    lesson.category,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                
+                // Difficulty Badge
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getDifficultyColor(lesson.difficulty),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _getDifficultyIcon(lesson.difficulty),
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        _getDifficultyText(lesson.difficulty),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            
+            SizedBox(height: 16),
+            
+            // Lesson Title
+            Text(
+              lesson.title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+                height: 1.3,
+              ),
+            ),
+            
+            SizedBox(height: 8),
+            
+            // Lesson Description
+            Text(
+              lesson.description,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+                height: 1.4,
+              ),
+            ),
+            
+            SizedBox(height: 20),
+            
+            // Info Row (Duration and Progress)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Duration and Icon
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.timer,
+                        size: 18,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Duration",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          "${lesson.duration.inMinutes} minutes",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                
+              ],
+            ),
+            
+            SizedBox(height: 20),
+            
+            // Action Buttons
+            Row(
+              children: [
+                // Learn Button (Primary)
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _showLessonDetail(context, lesson),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.play_arrow, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          'Start Learning',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                SizedBox(width: 12),
+                
+                // Quiz Button (Secondary)
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.orange.shade200, width: 1.5),
+                  ),
+                  child: IconButton(
+                    onPressed: () => _startQuiz(context, lesson),
+                    icon: Icon(
+                      Icons.quiz,
+                      color: Colors.orange.shade700,
+                      size: 22,
+                    ),
+                    tooltip: 'Take Quiz',
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -269,9 +394,78 @@ class LearningPage extends StatelessWidget {
         return Colors.green;
       case 'debt':
         return Colors.red;
-      default:
+      case 'investing':
         return Colors.purple;
+      default:
+        return Colors.teal;
     }
+  }
+
+  // Helper function to get difficulty color
+  Color _getDifficultyColor(int difficulty) {
+    switch (difficulty) {
+      case 1: // Beginner
+        return Colors.green;
+      case 2: // Intermediate
+        return Colors.orange;
+      case 3: // Advanced
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Helper function to get difficulty icon
+  IconData _getDifficultyIcon(int difficulty) {
+    switch (difficulty) {
+      case 1: // Beginner
+        return Icons.flag;
+      case 2: // Intermediate
+        return Icons.trending_up;
+      case 3: // Advanced
+        return Icons.star;
+      default:
+        return Icons.help;
+    }
+  }
+
+  // Helper function to get difficulty text
+  String _getDifficultyText(int difficulty) {
+    switch (difficulty) {
+      case 1:
+        return 'Beginner';
+      case 2:
+        return 'Intermediate';
+      case 3:
+        return 'Advanced';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  // Build difficulty badge for legend
+  Widget _buildDifficultyBadge(String text, int difficulty, BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: _getDifficultyColor(difficulty),
+            shape: BoxShape.circle,
+          ),
+        ),
+        SizedBox(width: 6),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Colors.black54,
+          ),
+        ),
+      ],
+    );
   }
 
   void _showLessonDetail(BuildContext context, Lesson lesson) {
@@ -284,7 +478,7 @@ class LearningPage extends StatelessWidget {
       ),
       builder: (context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.8,
+          height: MediaQuery.of(context).size.height * 0.85,
           padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,7 +518,7 @@ class LearningPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Keterangan:',
+                        'Description:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -347,7 +541,7 @@ class LearningPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hasil Pembelajaran:',
+                        'Learning Outcomes:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -384,7 +578,7 @@ class LearningPage extends StatelessWidget {
                     // TODO: Navigate to lesson player
                   },
                   icon: Icon(Icons.play_arrow),
-                  label: Text('Mula Belajar (${lesson.duration.inMinutes} min)'),
+                  label: Text('Start Learning (${lesson.duration.inMinutes} min)'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -409,7 +603,7 @@ class LearningPage extends StatelessWidget {
     // TODO: Implement quiz navigation
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Memuatkan kuiz untuk: ${lesson.title}'),
+        content: Text('Loading quiz for: ${lesson.title}'),
         backgroundColor: Colors.blue,
       ),
     );
