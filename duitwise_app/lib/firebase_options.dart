@@ -52,6 +52,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '304363613786',
     projectId: 'duitwise-dc914',
     authDomain: 'duitwise-dc914.firebaseapp.com',
+    databaseURL: 'https://duitwise-dc914-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'duitwise-dc914.firebasestorage.app',
     measurementId: 'G-FLF95BZ5M8',
   );
@@ -61,6 +62,7 @@ class DefaultFirebaseOptions {
     appId: '1:304363613786:android:dd5c19be56bea43350f263',
     messagingSenderId: '304363613786',
     projectId: 'duitwise-dc914',
+    databaseURL: 'https://duitwise-dc914-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'duitwise-dc914.firebasestorage.app',
   );
 
@@ -69,7 +71,9 @@ class DefaultFirebaseOptions {
     appId: '1:304363613786:ios:fe84e447cee26fa350f263',
     messagingSenderId: '304363613786',
     projectId: 'duitwise-dc914',
+    databaseURL: 'https://duitwise-dc914-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'duitwise-dc914.firebasestorage.app',
     iosBundleId: 'com.example.duitwiseApp',
   );
+
 }

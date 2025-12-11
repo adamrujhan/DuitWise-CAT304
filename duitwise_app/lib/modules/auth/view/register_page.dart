@@ -97,7 +97,11 @@ class RegisterPage extends ConsumerWidget {
                       : () {
                           ref
                               .read(authControllerProvider.notifier)
-                              .register(email.text, password.text);
+                              .register(
+                                username.text,
+                                email.text,
+                                password.text,
+                              );
                         },
                   child: loading
                       ? const SizedBox(

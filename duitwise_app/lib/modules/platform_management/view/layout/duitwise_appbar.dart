@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
+class DuitWiseAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
 
   const DuitWiseAppBar({super.key, this.title = "DuitWise"});
 
   @override
-  Size get preferredSize => const Size.fromHeight(80); 
+  Size get preferredSize => const Size.fromHeight(80);
   // Tune the height depending on your design.
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       bottom: false,
       child: Container(
@@ -27,9 +29,14 @@ class DuitWiseAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: Colors.black,
               ),
             ),
-            const CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage("https://picsum.photos/200"),
+            InkWell(
+              onTap: () {
+                context.go("/profile");
+              },
+              child: const CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage("https://picsum.photos/200"),
+              ),
             ),
           ],
         ),

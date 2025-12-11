@@ -1,19 +1,10 @@
-import 'package:duitwise_app/modules/financial_literacy/views/fin_lit_page.dart';
-import 'package:duitwise_app/modules/platform_management/view/layout/duitwise_appbar.dart';
-import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// Layout
 import 'package:duitwise_app/modules/platform_management/view/layout/app_scaffold.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/bottom_nav_bar.dart';
-
-// Navigation state
-import 'package:duitwise_app/modules/platform_management/providers/bottom_nav_provider.dart';
-
-// Feature pages
-import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
-import 'package:duitwise_app/modules/financial_tracking/budget_setup_page.dart';
+import 'package:duitwise_app/modules/platform_management/view/layout/duitwise_appbar.dart';
+import 'package:duitwise_app/services/firebase_auth/uid_provider.dart';
+import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MainShell extends ConsumerWidget {
   final Widget child;
@@ -22,20 +13,34 @@ class MainShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tab = ref.watch(bottomNavProvider);
+    // 1. Auth check
+    final uid = ref.watch(uidProvider);
+    if (uid == null) {
+      return const Scaffold(body: Center(child: Text("Not authenticated")));
+    }
 
-    // Pages for the 4 bottom nav destinations
-    final pages = [
-      const HomePage(),
-      const BudgetSetupPage(),
-      LearningPage(),
-      const ProfilePage(),
-    ];
+    // 2. Load user profile
+    final userAsync = ref.watch(userStreamProvider);
 
-    return AppScaffold(
-      appBar: DuitWiseAppBar(),
-      body: pages[tab],
-      navBar: const BottomNavBar(),
+    return userAsync.when(
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, _) =>
+          Scaffold(body: Center(child: Text("Error loading profile: $err"))),
+      data: (user) {
+        if (user == null) {
+          return const Scaffold(
+            body: Center(child: Text("No user profile found")),
+          );
+        }
+
+        // 3. Render Shell Layout
+        return AppScaffold(
+          appBar: const DuitWiseAppBar(),
+          body: child, // <-- THIS IS NOW THE ACTIVE PAGE FROM GOROUTER
+          navBar: const BottomNavBar(),
+        );
+      },
     );
   }
 }

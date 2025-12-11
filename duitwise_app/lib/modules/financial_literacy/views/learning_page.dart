@@ -483,54 +483,22 @@ class LearningPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              RoundedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          lesson.title,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    lesson.title,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ),
-              
-              SizedBox(height: 16),
-              
-              // Description
-              RoundedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Description:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(lesson.description),
-                    ],
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                ),
+                ],
               ),
-              
               SizedBox(height: 16),
               
               // Learning Outcomes

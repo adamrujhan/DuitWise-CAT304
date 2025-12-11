@@ -1,7 +1,10 @@
+import 'package:duitwise_app/data/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final UserModel user;
+
+  const ProfilePage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +33,7 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Username (placeholder field)
-                _profileField(title: "Username", value: "Amrul"),
-
-                const SizedBox(height: 20),
-
-                // Another placeholder field
-                _profileField(title: "Username", value: "Amrul"),
+                _profileField(title: "Username", value: user.name),
 
                 const SizedBox(height: 40),
               ],
