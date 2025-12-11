@@ -48,13 +48,13 @@ class LearningPage extends ConsumerWidget {
                           ),
                           if (lessonState.lessons.isNotEmpty)
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: Colors.blue.shade100,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                "${lessonState.lessons.length} lessons",
+                                "${lessonState.lessons.length} ${lessonState.lessons.length == 1 ? 'lesson' : 'lessons'}",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -64,7 +64,7 @@ class LearningPage extends ConsumerWidget {
                             ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         "Enhance your financial knowledge with interactive modules",
                         style: TextStyle(
@@ -82,7 +82,9 @@ class LearningPage extends ConsumerWidget {
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade700),
+                    ),
                   ),
                 ),
 
@@ -94,17 +96,17 @@ class LearningPage extends ConsumerWidget {
                     child: Center(
                       child: Column(
                         children: [
-                          Icon(Icons.error, color: Colors.red, size: 48),
-                          SizedBox(height: 10),
+                          const Icon(Icons.error, color: Colors.red, size: 48),
+                          const SizedBox(height: 10),
                           Text(
                             lessonState.error!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.red),
+                            style: const TextStyle(color: Colors.red),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           ElevatedButton(
                             onPressed: () => ref.read(lessonProvider.notifier).fetchLessons(),
-                            child: Text('Retry'),
+                            child: const Text('Retry'),
                           ),
                         ],
                       ),
@@ -121,11 +123,23 @@ class LearningPage extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.school, size: 64, color: Colors.grey),
-                          SizedBox(height: 16),
+                          Icon(Icons.school, size: 64, color: Colors.grey.shade600),
+                          const SizedBox(height: 16),
                           Text(
                             'No learning modules available',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey.shade600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Check back later for new content',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade500,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -148,7 +162,7 @@ class LearningPage extends ConsumerWidget {
                   return Column(
                     children: [
                       _buildLessonCard(lesson, context, ref),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                     ],
                   );
                 }),
@@ -175,14 +189,14 @@ class LearningPage extends ConsumerWidget {
               children: [
                 // Category Badge
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: lesson.difficultyColor,
+                    color: lesson.categoryColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     lesson.localizedCategory,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -192,7 +206,7 @@ class LearningPage extends ConsumerWidget {
                 
                 // Difficulty Badge
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: lesson.difficultyColor,
                     borderRadius: BorderRadius.circular(20),
@@ -204,10 +218,10 @@ class LearningPage extends ConsumerWidget {
                         size: 14,
                         color: Colors.white,
                       ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         lesson.difficultyText,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -219,79 +233,77 @@ class LearningPage extends ConsumerWidget {
               ],
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Lesson Title
             Text(
               lesson.title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: Colors.black87,
                 height: 1.3,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             
             // Lesson Description
             Text(
               lesson.description,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black54,
                 height: 1.4,
               ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
-
             
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             
-            // Duration and Completion Status
+            // Duration
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.timer,
+                    size: 18,
+                    color: Colors.blue.shade700,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.timer,
-                        size: 18,
-                        color: Colors.blue,
+                    Text(
+                      "Duration",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.black54,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Duration",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        Text(
-                          "${lesson.durationMinutes} minutes",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "${lesson.durationMinutes} minutes",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
             
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             
             // Action Buttons
             Row(
@@ -301,20 +313,20 @@ class LearningPage extends ConsumerWidget {
                   child: ElevatedButton(
                     onPressed: () => _showLessonDetail(context, lesson, ref),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.blue.shade700,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.play_arrow, size: 20),
                         SizedBox(width: 8),
                         Text(
-                          lesson.isCompleted ? 'Review' : 'Start Learning',
+                          'Start Learning',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -325,7 +337,7 @@ class LearningPage extends ConsumerWidget {
                   ),
                 ),
                 
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 
                 // Quiz Button
                 Container(
@@ -356,9 +368,63 @@ class LearningPage extends ConsumerWidget {
 
   void _showLessonDetail(BuildContext context, Lesson lesson, WidgetRef ref) {
     // ... (your existing modal code)
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              lesson.title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(lesson.description),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // Navigate to actual lesson page
+              },
+              child: const Text('Start Lesson'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _startQuiz(BuildContext context, Lesson lesson, WidgetRef ref) {
     // ... (your existing quiz code)
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("${lesson.title} Quiz"),
+        content: const Text("Are you ready to take the quiz?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Navigate to quiz page
+            },
+            child: const Text('Start Quiz'),
+          ),
+        ],
+      ),
+    );
   }
 }

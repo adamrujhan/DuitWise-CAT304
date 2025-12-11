@@ -79,21 +79,8 @@ class LessonNotifier extends Notifier<LessonState> {
         .where((lesson) => lesson.difficulty == difficulty)
         .toList();
   }
-
-  // Mark lesson as completed
-  Future<void> markLessonAsCompleted(String lessonId) async {
-    final index = state.lessons.indexWhere((lesson) => lesson.id == lessonId);
-    if (index != -1) {
-      final updatedLesson = state.lessons[index].copyWith(isCompleted: true);
-      final updatedLessons = List<Lesson>.from(state.lessons);
-      updatedLessons[index] = updatedLesson;
-      
-      state = state.copyWith(lessons: updatedLessons);
-    }
-  }
 }
 
-// Provider definitions
 final lessonRepositoryProvider = Provider<LessonRepository>((ref) {
   return LessonRepository();
 });

@@ -7,7 +7,6 @@ class LessonCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onQuizTap;
 
-  // ignore: use_key_in_widget_constructors
   const LessonCard({
     required this.lesson,
     required this.onTap,
@@ -17,7 +16,7 @@ class LessonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       child: InkWell(
         onTap: onTap,
@@ -31,14 +30,14 @@ class LessonCard extends StatelessWidget {
               Row(
                 children: [
                   _buildCategoryBadge(),
-                  SizedBox(width: 8),
-                  _buildDifficultyStars(),
-                  Spacer(),
+                  const SizedBox(width: 8),
+                  _buildDifficultyBadge(),
+                  const Spacer(),
                   _buildDurationChip(),
                 ],
               ),
               
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               
               // Title and description
               Text(
@@ -50,7 +49,7 @@ class LessonCard extends StatelessWidget {
                 ),
               ),
               
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               
               Text(
                 lesson.description,
@@ -58,39 +57,28 @@ class LessonCard extends StatelessWidget {
                   color: Colors.grey[700],
                   fontSize: 14,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               
-              SizedBox(height: 8),
+              const SizedBox(height: 12),
               
-              // Malaysian example
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.amber[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber[200]!),
-                ),
-              ),
-              
-              SizedBox(height: 12),
-              
-              // Footer with progress and quiz button
+              // Action Buttons
               Row(
                 children: [
                   Expanded(
-                    child: LinearProgressIndicator(
-                      value: lesson.isCompleted ? 1.0 : 0.0,
-                      backgroundColor: Colors.grey[200],
-                      color: Colors.green,
+                    child: ElevatedButton(
+                      onPressed: onTap,
+                      child: const Text('Learn'),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   ElevatedButton.icon(
                     onPressed: onQuizTap,
-                    icon: Icon(Icons.quiz, size: 16),
-                    label: Text('Kuiz'),
+                    icon: const Icon(Icons.quiz, size: 16),
+                    label: const Text('Quiz'),
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
                   ),
                 ],
@@ -104,14 +92,14 @@ class LessonCard extends StatelessWidget {
 
   Widget _buildCategoryBadge() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: _getCategoryColor(),
+        color: lesson.categoryColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         lesson.localizedCategory,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.bold,
@@ -120,33 +108,39 @@ class LessonCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDifficultyStars() {
-    return Row(
-      children: List.generate(3, (index) {
-        return Icon(
-          Icons.star,
-          size: 16,
-          color: index < lesson.difficulty ? Colors.amber : Colors.grey[300],
-        );
-      }),
+  Widget _buildDifficultyBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: lesson.difficultyColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            lesson.difficultyIcon,
+            size: 12,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            lesson.difficultyText,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildDurationChip() {
     return Chip(
-      label: Text('${lesson.duration.inMinutes} min'),
+      label: Text('${lesson.durationMinutes} min'),
       backgroundColor: Colors.blue[50],
-      labelStyle: TextStyle(fontSize: 12),
+      labelStyle: const TextStyle(fontSize: 12),
     );
-  }
-
-  Color _getCategoryColor() {
-    switch (lesson.category) {
-      case 'Budgeting': return Colors.blue;
-      case 'Saving': return Colors.green;
-      case 'Investing': return Colors.purple;
-      case 'Debt': return Colors.red;
-      default: return Colors.orange;
-    }
   }
 }
