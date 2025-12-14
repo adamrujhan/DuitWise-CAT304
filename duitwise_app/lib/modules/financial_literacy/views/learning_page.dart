@@ -6,17 +6,47 @@ import '../providers/lesson_provider.dart';
 import '../services/lesson_navigation_service.dart';
 import '../services/quiz_navigation_service.dart';
 
-class LearningPage extends ConsumerWidget {
+class LearningPage extends ConsumerStatefulWidget {
   const LearningPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LearningPage> createState() => _LearningPageState();
+}
+
+class _LearningPageState extends ConsumerState<LearningPage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.trim();
+    ref.read(lessonProvider.notifier).setSearchQuery(query);
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(lessonProvider.notifier).clearSearchQuery();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lessonState = ref.watch(lessonProvider);
+    final notifier = ref.read(lessonProvider.notifier);
     
     // Fetch lessons on first load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!lessonState.isLoading && lessonState.lessons.isEmpty) {
-        ref.read(lessonProvider.notifier).fetchLessons();
+        notifier.fetchLessons();
       }
     });
 
@@ -48,7 +78,7 @@ class LearningPage extends ConsumerWidget {
                               color: Colors.black87,
                             ),
                           ),
-                          if (lessonState.lessons.isNotEmpty)
+                          if (lessonState.filteredLessons.isNotEmpty)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
@@ -56,7 +86,7 @@ class LearningPage extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                "${lessonState.lessons.length} ${lessonState.lessons.length == 1 ? 'lesson' : 'lessons'}",
+                                "${lessonState.filteredLessons.length} ${lessonState.filteredLessons.length == 1 ? 'lesson' : 'lessons'}",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -78,6 +108,246 @@ class LearningPage extends ConsumerWidget {
                   ),
                 ),
               ),
+
+              // Search Bar
+              const SizedBox(height: 20),
+              RoundedCard(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.search,
+                        color: Colors.grey.shade600,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: "Search lessons...",
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 14,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                          onChanged: (value) => notifier.setSearchQuery(value),
+                        ),
+                      ),
+                      if (_searchController.text.isNotEmpty)
+                        IconButton(
+                          onPressed: _clearSearch,
+                          icon: Icon(
+                            Icons.clear,
+                            size: 20,
+                            color: Colors.grey.shade600,
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Active Filters Display
+              if (lessonState.selectedCategories.isNotEmpty || 
+                  lessonState.selectedDifficulties.isNotEmpty)
+                Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    RoundedCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Active Filters:",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            
+                            // Selected Categories
+                            if (lessonState.selectedCategories.isNotEmpty)
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: lessonState.selectedCategories.map((category) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: const Color.fromARGB(255, 71, 178, 160),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          category,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: const Color.fromARGB(255, 71, 178, 160),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        GestureDetector(
+                                          onTap: () => notifier.toggleCategory(category),
+                                          child: Icon(
+                                            Icons.close,
+                                            size: 14,
+                                            color: const Color.fromARGB(255, 71, 178, 160),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            
+                            // Selected Difficulties
+                            if (lessonState.selectedDifficulties.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: lessonState.selectedDifficulties.map((difficulty) {
+                                    final difficultyText = _getDifficultyText(difficulty);
+                                    final difficultyColor = _getDifficultyColor(difficulty);
+                                    
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: difficultyColor,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            _getDifficultyIcon(difficulty),
+                                            size: 14,
+                                            color: difficultyColor,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            difficultyText,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: difficultyColor,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          GestureDetector(
+                                            onTap: () => notifier.toggleDifficulty(difficulty),
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 14,
+                                              color: difficultyColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+              // Filter Section
+              const SizedBox(height: 20),
+              Text(
+                "Filter by:",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Category Filter Chips
+              _buildCategoryFilterChips(lessonState, notifier),
+              
+              const SizedBox(height: 12),
+
+              // Difficulty Filter Chips
+              _buildDifficultyFilterChips(lessonState, notifier),
+
+              // Clear Filters Button
+              if (lessonState.selectedCategories.isNotEmpty || 
+                  lessonState.selectedDifficulties.isNotEmpty ||
+                  lessonState.searchQuery.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          notifier.clearFilters();
+                          _clearSearch();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.blue.shade700,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.clear_all,
+                                size: 16,
+                                color: Colors.blue.shade700,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Clear All Filters",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
               // Loading State
               if (lessonState.isLoading)
@@ -107,7 +377,7 @@ class LearningPage extends ConsumerWidget {
                           ),
                           const SizedBox(height: 10),
                           ElevatedButton(
-                            onPressed: () => ref.read(lessonProvider.notifier).fetchLessons(),
+                            onPressed: () => notifier.fetchLessons(),
                             child: const Text('Retry'),
                           ),
                         ],
@@ -116,8 +386,10 @@ class LearningPage extends ConsumerWidget {
                   ),
                 ),
 
-              // Empty State
-              if (!lessonState.isLoading && lessonState.lessons.isEmpty && lessonState.error == null)
+              // Empty State (no lessons or no results)
+              if (!lessonState.isLoading && 
+                  lessonState.filteredLessons.isEmpty && 
+                  lessonState.error == null)
                 RoundedCard(
                   child: Padding(
                     padding: const EdgeInsets.all(30),
@@ -125,10 +397,18 @@ class LearningPage extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.school, size: 64, color: Colors.grey.shade600),
+                          Icon(
+                            lessonState.lessons.isEmpty 
+                                ? Icons.school 
+                                : Icons.search_off,
+                            size: 64,
+                            color: Colors.grey.shade600,
+                          ),
                           const SizedBox(height: 16),
                           Text(
-                            'No learning modules available',
+                            lessonState.lessons.isEmpty
+                                ? 'No learning modules available'
+                                : 'No matching lessons found',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey.shade600,
@@ -137,13 +417,33 @@ class LearningPage extends ConsumerWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Check back later for new content',
+                            lessonState.lessons.isEmpty
+                                ? 'Check back later for new content'
+                                : 'Try different filters or search terms',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade500,
                             ),
                             textAlign: TextAlign.center,
                           ),
+                          if (lessonState.lessons.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  notifier.clearFilters();
+                                  _clearSearch();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue.shade700,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Text('Clear All Filters'),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -151,23 +451,18 @@ class LearningPage extends ConsumerWidget {
                 ),
 
               // Lessons List
-              if (lessonState.lessons.isNotEmpty) ...[
+              if (lessonState.filteredLessons.isNotEmpty) ...[
                 const SizedBox(height: 20),
-                
-                // Category Filter Chips
-                // ... (keep your existing filter chips code)
-                
-                const SizedBox(height: 10),
 
                 // Lessons Grid/List
-                ...lessonState.lessons.map((lesson) {
+                ...lessonState.filteredLessons.map((lesson) {
                   return Column(
                     children: [
                       _buildLessonCard(context, lesson),
                       const SizedBox(height: 15),
                     ],
                   );
-                }),
+                }).toList(),
               ],
 
               const SizedBox(height: 40),
@@ -176,6 +471,135 @@ class LearningPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildCategoryFilterChips(LessonState state, LessonNotifier notifier) {
+    final categories = notifier.getAvailableCategories();
+    
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: categories.map((category) {
+        final isSelected = state.selectedCategories.contains(category);
+        
+        return GestureDetector(
+          onTap: () => notifier.toggleCategory(category),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? 
+                  const Color.fromARGB(255, 71, 178, 160) : 
+                  Colors.grey.shade300,
+                width: isSelected ? 2.0 : 1.5,
+              ),
+              boxShadow: isSelected ? [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 71, 178, 160).withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                )
+              ] : [],
+            ),
+            child: Text(
+              category,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? 
+                  const Color.fromARGB(255, 71, 178, 160) : 
+                  Colors.grey.shade700,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDifficultyFilterChips(LessonState state, LessonNotifier notifier) {
+    final difficulties = notifier.getAvailableDifficulties();
+    
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: difficulties.map((difficulty) {
+        final isSelected = state.selectedDifficulties.contains(difficulty);
+        final difficultyText = _getDifficultyText(difficulty);
+        final difficultyColor = _getDifficultyColor(difficulty);
+        
+        return GestureDetector(
+          onTap: () => notifier.toggleDifficulty(difficulty),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? difficultyColor : Colors.grey.shade300,
+                width: isSelected ? 2.0 : 1.5,
+              ),
+              boxShadow: isSelected ? [
+                BoxShadow(
+                  color: difficultyColor.withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                )
+              ] : [],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _getDifficultyIcon(difficulty),
+                  size: 14,
+                  color: isSelected ? difficultyColor : Colors.grey.shade600,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  difficultyText,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? difficultyColor : Colors.grey.shade700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // Helper methods for difficulty display
+  String _getDifficultyText(int difficulty) {
+    switch (difficulty) {
+      case 1: return 'Beginner';
+      case 2: return 'Intermediate';
+      case 3: return 'Advanced';
+      default: return 'Unknown';
+    }
+  }
+
+  Color _getDifficultyColor(int difficulty) {
+    switch (difficulty) {
+      case 1: return const Color.fromARGB(255, 78, 183, 47);
+      case 2: return Colors.orange;
+      case 3: return const Color.fromARGB(255, 163, 69, 180);
+      default: return Colors.grey;
+    }
+  }
+
+  IconData _getDifficultyIcon(int difficulty) {
+    switch (difficulty) {
+      case 1: return Icons.flag;
+      case 2: return Icons.trending_up;
+      case 3: return Icons.star;
+      default: return Icons.help;
+    }
   }
 
   Widget _buildLessonCard(BuildContext context, Lesson lesson) {
@@ -307,7 +731,7 @@ class LearningPage extends ConsumerWidget {
             
             const SizedBox(height: 20),
             
-            // Action Buttons (Now using LessonService)
+            // Action Buttons
             Row(
               children: [
                 // Learn Button
