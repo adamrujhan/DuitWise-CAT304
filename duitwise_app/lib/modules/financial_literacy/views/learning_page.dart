@@ -3,18 +3,50 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import '../../../data/models/lesson_model.dart';
 import '../providers/lesson_provider.dart';
+import '../services/lesson_navigation_service.dart';
+import '../services/quiz_navigation_service.dart';
 
-class LearningPage extends ConsumerWidget {
+class LearningPage extends ConsumerStatefulWidget {
   const LearningPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LearningPage> createState() => _LearningPageState();
+}
+
+class _LearningPageState extends ConsumerState<LearningPage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.trim();
+    ref.read(lessonProvider.notifier).setSearchQuery(query);
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(lessonProvider.notifier).clearSearchQuery();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lessonState = ref.watch(lessonProvider);
+    final notifier = ref.read(lessonProvider.notifier);
     
     // Fetch lessons on first load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!lessonState.isLoading && lessonState.lessons.isEmpty) {
-        ref.read(lessonProvider.notifier).fetchLessons();
+        notifier.fetchLessons();
       }
     });
 
@@ -46,15 +78,15 @@ class LearningPage extends ConsumerWidget {
                               color: Colors.black87,
                             ),
                           ),
-                          if (lessonState.lessons.isNotEmpty)
+                          if (lessonState.filteredLessons.isNotEmpty)
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: Colors.blue.shade100,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                "${lessonState.lessons.length} lessons",
+                                "${lessonState.filteredLessons.length} ${lessonState.filteredLessons.length == 1 ? 'lesson' : 'lessons'}",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -64,7 +96,7 @@ class LearningPage extends ConsumerWidget {
                             ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         "Enhance your financial knowledge with interactive modules",
                         style: TextStyle(
@@ -77,12 +109,254 @@ class LearningPage extends ConsumerWidget {
                 ),
               ),
 
+              // Search Bar
+              const SizedBox(height: 20),
+              RoundedCard(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.search,
+                        color: Colors.grey.shade600,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: "Search lessons...",
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 14,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                          onChanged: (value) => notifier.setSearchQuery(value),
+                        ),
+                      ),
+                      if (_searchController.text.isNotEmpty)
+                        IconButton(
+                          onPressed: _clearSearch,
+                          icon: Icon(
+                            Icons.clear,
+                            size: 20,
+                            color: Colors.grey.shade600,
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Active Filters Display
+              if (lessonState.selectedCategories.isNotEmpty || 
+                  lessonState.selectedDifficulties.isNotEmpty)
+                Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    RoundedCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Active Filters:",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            
+                            // Selected Categories
+                            if (lessonState.selectedCategories.isNotEmpty)
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: lessonState.selectedCategories.map((category) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: const Color.fromARGB(255, 71, 178, 160),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          category,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: const Color.fromARGB(255, 71, 178, 160),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        GestureDetector(
+                                          onTap: () => notifier.toggleCategory(category),
+                                          child: Icon(
+                                            Icons.close,
+                                            size: 14,
+                                            color: const Color.fromARGB(255, 71, 178, 160),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            
+                            // Selected Difficulties
+                            if (lessonState.selectedDifficulties.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: lessonState.selectedDifficulties.map((difficulty) {
+                                    final difficultyText = _getDifficultyText(difficulty);
+                                    final difficultyColor = _getDifficultyColor(difficulty);
+                                    
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: difficultyColor,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            _getDifficultyIcon(difficulty),
+                                            size: 14,
+                                            color: difficultyColor,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            difficultyText,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: difficultyColor,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          GestureDetector(
+                                            onTap: () => notifier.toggleDifficulty(difficulty),
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 14,
+                                              color: difficultyColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+              // Filter Section
+              const SizedBox(height: 20),
+              Text(
+                "Filter by:",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Category Filter Chips
+              _buildCategoryFilterChips(lessonState, notifier),
+              
+              const SizedBox(height: 12),
+
+              // Difficulty Filter Chips
+              _buildDifficultyFilterChips(lessonState, notifier),
+
+              // Clear Filters Button
+              if (lessonState.selectedCategories.isNotEmpty || 
+                  lessonState.selectedDifficulties.isNotEmpty ||
+                  lessonState.searchQuery.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          notifier.clearFilters();
+                          _clearSearch();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.blue.shade700,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.clear_all,
+                                size: 16,
+                                color: Colors.blue.shade700,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Clear All Filters",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
               // Loading State
               if (lessonState.isLoading)
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade700),
+                    ),
                   ),
                 ),
 
@@ -94,17 +368,17 @@ class LearningPage extends ConsumerWidget {
                     child: Center(
                       child: Column(
                         children: [
-                          Icon(Icons.error, color: Colors.red, size: 48),
-                          SizedBox(height: 10),
+                          const Icon(Icons.error, color: Colors.red, size: 48),
+                          const SizedBox(height: 10),
                           Text(
                             lessonState.error!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.red),
+                            style: const TextStyle(color: Colors.red),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           ElevatedButton(
-                            onPressed: () => ref.read(lessonProvider.notifier).fetchLessons(),
-                            child: Text('Retry'),
+                            onPressed: () => notifier.fetchLessons(),
+                            child: const Text('Retry'),
                           ),
                         ],
                       ),
@@ -112,8 +386,10 @@ class LearningPage extends ConsumerWidget {
                   ),
                 ),
 
-              // Empty State
-              if (!lessonState.isLoading && lessonState.lessons.isEmpty && lessonState.error == null)
+              // Empty State (no lessons or no results)
+              if (!lessonState.isLoading && 
+                  lessonState.filteredLessons.isEmpty && 
+                  lessonState.error == null)
                 RoundedCard(
                   child: Padding(
                     padding: const EdgeInsets.all(30),
@@ -121,13 +397,53 @@ class LearningPage extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.school, size: 64, color: Colors.grey),
-                          SizedBox(height: 16),
+                          Icon(
+                            lessonState.lessons.isEmpty 
+                                ? Icons.school 
+                                : Icons.search_off,
+                            size: 64,
+                            color: Colors.grey.shade600,
+                          ),
+                          const SizedBox(height: 16),
                           Text(
-                            'No learning modules available',
-                            style: TextStyle(color: Colors.grey),
+                            lessonState.lessons.isEmpty
+                                ? 'No learning modules available'
+                                : 'No matching lessons found',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey.shade600,
+                            ),
                             textAlign: TextAlign.center,
                           ),
+                          const SizedBox(height: 8),
+                          Text(
+                            lessonState.lessons.isEmpty
+                                ? 'Check back later for new content'
+                                : 'Try different filters or search terms',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          if (lessonState.lessons.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  notifier.clearFilters();
+                                  _clearSearch();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue.shade700,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Text('Clear All Filters'),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -135,23 +451,18 @@ class LearningPage extends ConsumerWidget {
                 ),
 
               // Lessons List
-              if (lessonState.lessons.isNotEmpty) ...[
+              if (lessonState.filteredLessons.isNotEmpty) ...[
                 const SizedBox(height: 20),
-                
-                // Category Filter Chips
-                // ... (keep your existing filter chips code)
-                
-                const SizedBox(height: 15),
 
                 // Lessons Grid/List
-                ...lessonState.lessons.map((lesson) {
+                ...lessonState.filteredLessons.map((lesson) {
                   return Column(
                     children: [
-                      _buildLessonCard(lesson, context, ref),
-                      SizedBox(height: 15),
+                      _buildLessonCard(context, lesson),
+                      const SizedBox(height: 15),
                     ],
                   );
-                }),
+                }).toList(),
               ],
 
               const SizedBox(height: 40),
@@ -162,7 +473,136 @@ class LearningPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildLessonCard(Lesson lesson, BuildContext context, WidgetRef ref) {
+  Widget _buildCategoryFilterChips(LessonState state, LessonNotifier notifier) {
+    final categories = notifier.getAvailableCategories();
+    
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: categories.map((category) {
+        final isSelected = state.selectedCategories.contains(category);
+        
+        return GestureDetector(
+          onTap: () => notifier.toggleCategory(category),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? 
+                  const Color.fromARGB(255, 71, 178, 160) : 
+                  Colors.grey.shade300,
+                width: isSelected ? 2.0 : 1.5,
+              ),
+              boxShadow: isSelected ? [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 71, 178, 160).withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                )
+              ] : [],
+            ),
+            child: Text(
+              category,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? 
+                  const Color.fromARGB(255, 71, 178, 160) : 
+                  Colors.grey.shade700,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDifficultyFilterChips(LessonState state, LessonNotifier notifier) {
+    final difficulties = notifier.getAvailableDifficulties();
+    
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: difficulties.map((difficulty) {
+        final isSelected = state.selectedDifficulties.contains(difficulty);
+        final difficultyText = _getDifficultyText(difficulty);
+        final difficultyColor = _getDifficultyColor(difficulty);
+        
+        return GestureDetector(
+          onTap: () => notifier.toggleDifficulty(difficulty),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? difficultyColor : Colors.grey.shade300,
+                width: isSelected ? 2.0 : 1.5,
+              ),
+              boxShadow: isSelected ? [
+                BoxShadow(
+                  color: difficultyColor.withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                )
+              ] : [],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _getDifficultyIcon(difficulty),
+                  size: 14,
+                  color: isSelected ? difficultyColor : Colors.grey.shade600,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  difficultyText,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? difficultyColor : Colors.grey.shade700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // Helper methods for difficulty display
+  String _getDifficultyText(int difficulty) {
+    switch (difficulty) {
+      case 1: return 'Beginner';
+      case 2: return 'Intermediate';
+      case 3: return 'Advanced';
+      default: return 'Unknown';
+    }
+  }
+
+  Color _getDifficultyColor(int difficulty) {
+    switch (difficulty) {
+      case 1: return const Color.fromARGB(255, 78, 183, 47);
+      case 2: return Colors.orange;
+      case 3: return const Color.fromARGB(255, 163, 69, 180);
+      default: return Colors.grey;
+    }
+  }
+
+  IconData _getDifficultyIcon(int difficulty) {
+    switch (difficulty) {
+      case 1: return Icons.flag;
+      case 2: return Icons.trending_up;
+      case 3: return Icons.star;
+      default: return Icons.help;
+    }
+  }
+
+  Widget _buildLessonCard(BuildContext context, Lesson lesson) {
     return RoundedCard(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -175,14 +615,14 @@ class LearningPage extends ConsumerWidget {
               children: [
                 // Category Badge
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: lesson.difficultyColor,
+                    color: lesson.categoryColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     lesson.localizedCategory,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -192,7 +632,7 @@ class LearningPage extends ConsumerWidget {
                 
                 // Difficulty Badge
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: lesson.difficultyColor,
                     borderRadius: BorderRadius.circular(20),
@@ -204,10 +644,10 @@ class LearningPage extends ConsumerWidget {
                         size: 14,
                         color: Colors.white,
                       ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         lesson.difficultyText,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -219,79 +659,77 @@ class LearningPage extends ConsumerWidget {
               ],
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Lesson Title
             Text(
               lesson.title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: Colors.black87,
                 height: 1.3,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             
             // Lesson Description
             Text(
               lesson.description,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black54,
                 height: 1.4,
               ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
-
             
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             
-            // Duration and Completion Status
+            // Duration
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.timer,
+                    size: 18,
+                    color: Colors.blue.shade700,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.timer,
-                        size: 18,
-                        color: Colors.blue,
+                    Text(
+                      "Duration",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.black54,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Duration",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        Text(
-                          "${lesson.durationMinutes} minutes",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "${lesson.durationMinutes} minutes",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
             
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             
             // Action Buttons
             Row(
@@ -299,22 +737,22 @@ class LearningPage extends ConsumerWidget {
                 // Learn Button
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _showLessonDetail(context, lesson, ref),
+                    onPressed: () => LessonNavigationService.showLessonDetail(context, lesson),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.blue.shade700,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.play_arrow, size: 20),
                         SizedBox(width: 8),
                         Text(
-                          lesson.isCompleted ? 'Review' : 'Start Learning',
+                          'Start Learning',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -325,22 +763,22 @@ class LearningPage extends ConsumerWidget {
                   ),
                 ),
                 
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 
                 // Quiz Button
                 Container(
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
+                    color: Colors.blue.shade700,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.shade200, width: 1.5),
+                    border: Border.all(color: Colors.blue.shade700, width: 1.5),
                   ),
                   child: IconButton(
-                    onPressed: () => _startQuiz(context, lesson, ref),
+                    onPressed: () => QuizNavigationService.showQuizDialog(context, lesson),
                     icon: Icon(
                       Icons.quiz,
-                      color: Colors.orange.shade700,
+                      color: const Color.fromARGB(255, 255, 255, 255),
                       size: 22,
                     ),
                     tooltip: 'Take Quiz',
@@ -352,13 +790,5 @@ class LearningPage extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  void _showLessonDetail(BuildContext context, Lesson lesson, WidgetRef ref) {
-    // ... (your existing modal code)
-  }
-
-  void _startQuiz(BuildContext context, Lesson lesson, WidgetRef ref) {
-    // ... (your existing quiz code)
   }
 }
