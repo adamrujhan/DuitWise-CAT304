@@ -157,140 +157,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                 ),
               ),
 
-              // Active Filters Display
-              if (lessonState.selectedCategories.isNotEmpty || 
-                  lessonState.selectedDifficulties.isNotEmpty)
-                Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    RoundedCard(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Active Filters:",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            
-                            // Selected Categories
-                            if (lessonState.selectedCategories.isNotEmpty)
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: lessonState.selectedCategories.map((category) {
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: const Color.fromARGB(255, 71, 178, 160),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          category,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: const Color.fromARGB(255, 71, 178, 160),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        GestureDetector(
-                                          onTap: () => notifier.toggleCategory(category),
-                                          child: Icon(
-                                            Icons.close,
-                                            size: 14,
-                                            color: const Color.fromARGB(255, 71, 178, 160),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            
-                            // Selected Difficulties
-                            if (lessonState.selectedDifficulties.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: lessonState.selectedDifficulties.map((difficulty) {
-                                    final difficultyText = _getDifficultyText(difficulty);
-                                    final difficultyColor = _getDifficultyColor(difficulty);
-                                    
-                                    return Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: difficultyColor,
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            _getDifficultyIcon(difficulty),
-                                            size: 14,
-                                            color: difficultyColor,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            difficultyText,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: difficultyColor,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          GestureDetector(
-                                            onTap: () => notifier.toggleDifficulty(difficulty),
-                                            child: Icon(
-                                              Icons.close,
-                                              size: 14,
-                                              color: difficultyColor,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-              // Filter Section
-              const SizedBox(height: 20),
-              Text(
-                "Filter by:",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
+              // Filter Section - MOVED TO TOP
               const SizedBox(height: 12),
 
               // Category Filter Chips
@@ -301,53 +168,186 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               // Difficulty Filter Chips
               _buildDifficultyFilterChips(lessonState, notifier),
 
-              // Clear Filters Button
-              if (lessonState.selectedCategories.isNotEmpty || 
-                  lessonState.selectedDifficulties.isNotEmpty ||
-                  lessonState.searchQuery.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+              // Active Filters Display - ALWAYS VISIBLE NOW
+              const SizedBox(height: 20),
+              RoundedCard(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          notifier.clearFilters();
-                          _clearSearch();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.blue.shade700,
-                              width: 1.5,
+                      Text(
+                        "Active Filters:",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      
+                      // Empty state - show when no filters
+                      if (lessonState.selectedCategories.isEmpty && 
+                          lessonState.selectedDifficulties.isEmpty &&
+                          lessonState.searchQuery.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            "No filters applied",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.clear_all,
-                                size: 16,
-                                color: Colors.blue.shade700,
+                        ),
+                      
+                      // Selected Categories
+                      if (lessonState.selectedCategories.isNotEmpty)
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: lessonState.selectedCategories.map((category) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: const Color.fromARGB(255, 71, 178, 160),
+                                  width: 1.5,
+                                ),
                               ),
-                              const SizedBox(width: 6),
-                              Text(
-                                "Clear All Filters",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.blue.shade700,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    category,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color.fromARGB(255, 71, 178, 160),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  GestureDetector(
+                                    onTap: () => notifier.toggleCategory(category),
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 14,
+                                      color: const Color.fromARGB(255, 71, 178, 160),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      
+                      // Selected Difficulties
+                      if (lessonState.selectedDifficulties.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: lessonState.selectedDifficulties.map((difficulty) {
+                              final difficultyText = _getDifficultyText(difficulty);
+                              final difficultyColor = _getDifficultyColor(difficulty);
+                              
+                              return Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: difficultyColor,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      _getDifficultyIcon(difficulty),
+                                      size: 14,
+                                      color: difficultyColor,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      difficultyText,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: difficultyColor,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    GestureDetector(
+                                      onTap: () => notifier.toggleDifficulty(difficulty),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 14,
+                                        color: difficultyColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      
+                      // Clear All Filters Button - INSIDE Active Filters box
+                      if (lessonState.selectedCategories.isNotEmpty || 
+                          lessonState.selectedDifficulties.isNotEmpty ||
+                          lessonState.searchQuery.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  notifier.clearFilters();
+                                  _clearSearch();
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.blue.shade700,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.clear_all,
+                                        size: 16,
+                                        color: Colors.blue.shade700,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        "Clear All Filters",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.blue.shade700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
+              ),
 
               // Loading State
               if (lessonState.isLoading)
@@ -385,6 +385,8 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                     ),
                   ),
                 ),
+
+                const SizedBox(height: 20),
 
               // Empty State (no lessons or no results)
               if (!lessonState.isLoading && 
@@ -452,7 +454,6 @@ class _LearningPageState extends ConsumerState<LearningPage> {
 
               // Lessons List
               if (lessonState.filteredLessons.isNotEmpty) ...[
-                const SizedBox(height: 20),
 
                 // Lessons Grid/List
                 ...lessonState.filteredLessons.map((lesson) {
@@ -462,7 +463,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                       const SizedBox(height: 15),
                     ],
                   );
-                }).toList(),
+                }),
               ],
 
               const SizedBox(height: 40),
@@ -497,6 +498,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               ),
               boxShadow: isSelected ? [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: const Color.fromARGB(255, 71, 178, 160).withOpacity(0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -543,6 +545,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               ),
               boxShadow: isSelected ? [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: difficultyColor.withOpacity(0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
