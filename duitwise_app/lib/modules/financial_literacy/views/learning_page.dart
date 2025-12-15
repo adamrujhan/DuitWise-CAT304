@@ -386,6 +386,8 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                   ),
                 ),
 
+                const SizedBox(height: 20),
+
               // Empty State (no lessons or no results)
               if (!lessonState.isLoading && 
                   lessonState.filteredLessons.isEmpty && 
@@ -452,7 +454,6 @@ class _LearningPageState extends ConsumerState<LearningPage> {
 
               // Lessons List
               if (lessonState.filteredLessons.isNotEmpty) ...[
-                const SizedBox(height: 20),
 
                 // Lessons Grid/List
                 ...lessonState.filteredLessons.map((lesson) {
@@ -462,7 +463,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                       const SizedBox(height: 15),
                     ],
                   );
-                }).toList(),
+                }),
               ],
 
               const SizedBox(height: 40),
@@ -497,6 +498,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               ),
               boxShadow: isSelected ? [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: const Color.fromARGB(255, 71, 178, 160).withOpacity(0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -543,6 +545,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               ),
               boxShadow: isSelected ? [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: difficultyColor.withOpacity(0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
