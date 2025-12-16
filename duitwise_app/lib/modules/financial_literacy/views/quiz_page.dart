@@ -1,9 +1,8 @@
-// lib/modules/financial_literacy/views/quiz_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/data/models/lesson_model.dart';
-import 'package:duitwise_app/data/models/quiz_model.dart'; // ADD THIS IMPORT
+import 'package:duitwise_app/data/models/quiz_model.dart';
 import '../providers/quiz_provider.dart';
 
 class QuizPage extends ConsumerStatefulWidget {
@@ -16,20 +15,31 @@ class QuizPage extends ConsumerStatefulWidget {
 }
 
 class _QuizPageState extends ConsumerState<QuizPage> {
+  bool _initialized = false;
+
   @override
   void initState() {
     super.initState();
-    // Initialize quiz when page loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeQuiz();
+    // Initialize quiz after a short delay
+    Future.delayed(Duration.zero, () {
+      if (!_initialized) {
+        _initialized = true;
+        _initializeQuiz();
+      }
     });
   }
 
-  void _initializeQuiz() async {
+  void _initializeQuiz() {
     final notifier = ref.read(quizSessionProvider.notifier);
-    // TODO: Get actual user ID from auth
-    final userId = 'temp_user_id';
-    notifier.initialize(widget.lesson.id, userId: userId);
+    final currentState = ref.read(quizSessionProvider);
+    
+    // Only initialize if this is a different lesson or quiz not loaded
+    if (currentState.lessonId != widget.lesson.id || 
+        currentState.questions.isEmpty || 
+        currentState.isCompleted) {
+      final userId = 'temp_user_id'; // TODO: Get from auth
+      notifier.initialize(widget.lesson.id, userId: userId);
+    }
   }
 
   @override
@@ -53,7 +63,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           onPressed: () => _showExitConfirmation(context),
         ),
         actions: [
-          if (quizState.questions.isNotEmpty)
+          if (quizState.questions.isNotEmpty && !quizState.isCompleted)
             Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Center(
@@ -75,7 +85,17 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   Widget _buildBody(QuizSessionState state) {
     if (state.isLoading) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text(
+              'Loading quiz questions...',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
       );
     }
 
@@ -86,10 +106,13 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           children: [
             const Icon(Icons.error, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text(
-              state.error!,
-              style: const TextStyle(color: Colors.red, fontSize: 16),
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                state.error!,
+                style: const TextStyle(color: Colors.red, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -107,7 +130,17 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
     if (state.questions.isEmpty) {
       return const Center(
-        child: Text('No questions available'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.quiz, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'No questions available for this lesson',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
       );
     }
 
@@ -125,7 +158,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Progress bar - FIXED: Use AlwaysStoppedAnimation (non-const)
+          // Progress bar
           LinearProgressIndicator(
             value: state.progress,
             backgroundColor: Colors.grey.shade300,
@@ -144,19 +177,19 @@ class _QuizPageState extends ConsumerState<QuizPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: _getTimerColor(state.remainingTimeForCurrentQuestion),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(color: _getTimerBorderColor(state.remainingTimeForCurrentQuestion)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.timer, size: 16, color: Colors.blue),
+                    Icon(Icons.timer, size: 16, color: _getTimerIconColor(state.remainingTimeForCurrentQuestion)),
                     const SizedBox(width: 6),
                     Text(
                       "${state.remainingTimeForCurrentQuestion}s",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.blue,
+                        color: _getTimerTextColor(state.remainingTimeForCurrentQuestion),
                       ),
                     ),
                   ],
@@ -245,7 +278,10 @@ class _QuizPageState extends ConsumerState<QuizPage> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: state.currentQuestionIndex > 0
-                      ? () => ref.read(quizSessionProvider.notifier).previousQuestion()
+                      ? () {
+                          final notifier = ref.read(quizSessionProvider.notifier);
+                          notifier.previousQuestion();
+                        }
                       : null,
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -275,11 +311,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     final notifier = ref.read(quizSessionProvider.notifier);
-                    if (state.isLastQuestion) {
-                      notifier.nextQuestion(); // This will complete quiz
-                    } else {
-                      notifier.nextQuestion();
-                    }
+                    notifier.nextQuestion();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue.shade700,
@@ -307,6 +339,31 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         ],
       ),
     );
+  }
+
+  // Helper methods for timer colors
+  Color _getTimerColor(int remainingTime) {
+    if (remainingTime > 30) return Colors.green.shade50;
+    if (remainingTime > 10) return Colors.orange.shade50;
+    return Colors.red.shade50;
+  }
+
+  Color _getTimerBorderColor(int remainingTime) {
+    if (remainingTime > 30) return Colors.green.shade200;
+    if (remainingTime > 10) return Colors.orange.shade200;
+    return Colors.red.shade200;
+  }
+
+  Color _getTimerIconColor(int remainingTime) {
+    if (remainingTime > 30) return Colors.green;
+    if (remainingTime > 10) return Colors.orange;
+    return Colors.red;
+  }
+
+  Color _getTimerTextColor(int remainingTime) {
+    if (remainingTime > 30) return Colors.green;
+    if (remainingTime > 10) return Colors.orange;
+    return Colors.red;
   }
 
   List<Widget> _buildOptions(QuizSessionState state, QuizQuestion question) {

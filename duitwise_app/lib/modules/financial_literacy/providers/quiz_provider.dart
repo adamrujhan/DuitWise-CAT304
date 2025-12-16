@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async'; // ADD THIS FOR TIMER
 import 'package:duitwise_app/data/models/lesson_model.dart';
 import 'package:duitwise_app/data/models/quiz_model.dart';
 import 'package:duitwise_app/data/repositories/quiz_repository.dart';
@@ -113,14 +114,14 @@ class QuizSessionState {
   }
 }
 
-// Quiz Notifier - Riverpod 3.x syntax with family parameter
+// Quiz Notifier - Riverpod 3.x syntax
 class QuizNotifier extends Notifier<QuizSessionState> {
   String? _userId; // Store userId
+  Timer? _timer; // Timer for countdown
+  int _currentQuestionTimeElapsed = 0;
   
   @override
   QuizSessionState build() {
-    // For .family provider, we can't get parameter here directly
-    // We'll initialize in a separate method
     return QuizSessionState(
       lessonId: '',
       startedAt: DateTime.now(),
@@ -130,16 +131,52 @@ class QuizNotifier extends Notifier<QuizSessionState> {
   // Initialize with lesson ID (called from outside)
   void initialize(String lessonId, {String? userId}) {
     _userId = userId;
-    state = state.copyWith(lessonId: lessonId);
+    
+    // RESET to initial state
+    state = QuizSessionState(
+      lessonId: lessonId,
+      startedAt: DateTime.now(),
+      isLoading: true, // Show loading
+    );
+    
     _loadQuiz();
   }
 
-  // Initialize quiz - fetch questions and lesson info
+  // Start timer for current question
+  void _startTimer() {
+    _timer?.cancel();
+    _currentQuestionTimeElapsed = 0;
+    
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _currentQuestionTimeElapsed++;
+      
+      // Update time spent for current question
+      if (state.currentQuestionIndex < state.timeSpentPerQuestion.length) {
+        final newTimeSpent = List<int>.from(state.timeSpentPerQuestion);
+        newTimeSpent[state.currentQuestionIndex] = _currentQuestionTimeElapsed;
+        state = state.copyWith(timeSpentPerQuestion: newTimeSpent);
+      }
+      
+      // Check if time's up
+      final currentQuestion = state.currentQuestion;
+      if (currentQuestion != null && 
+          _currentQuestionTimeElapsed >= currentQuestion.timePerQuestion) {
+        _stopTimer();
+        timeOutCurrentQuestion();
+      }
+    });
+  }
+
+  // Stop timer
+  void _stopTimer() {
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  // Load quiz questions
   Future<void> _loadQuiz() async {
     if (state.lessonId.isEmpty) return;
     
-    state = state.copyWith(isLoading: true, error: null);
-
     try {
       final repository = ref.read(quizRepositoryProvider);
       
@@ -168,6 +205,10 @@ class QuizNotifier extends Notifier<QuizSessionState> {
         timeSpentPerQuestion: timeSpentPerQuestion,
         isLoading: false,
       );
+      
+      // Start timer for first question
+      _startTimer();
+      
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -188,6 +229,8 @@ class QuizNotifier extends Notifier<QuizSessionState> {
 
   // Move to next question
   void nextQuestion() {
+    _stopTimer();
+    
     if (state.isLastQuestion) {
       // Quiz completed
       _completeQuiz();
@@ -195,15 +238,25 @@ class QuizNotifier extends Notifier<QuizSessionState> {
       state = state.copyWith(
         currentQuestionIndex: state.currentQuestionIndex + 1,
       );
+      _startTimer(); // Start timer for new question
     }
   }
 
   // Move to previous question (if allowed)
   void previousQuestion() {
+    _stopTimer();
+    
     if (state.currentQuestionIndex > 0) {
       state = state.copyWith(
         currentQuestionIndex: state.currentQuestionIndex - 1,
       );
+      
+      // Get time already spent on this question
+      if (state.currentQuestionIndex < state.timeSpentPerQuestion.length) {
+        _currentQuestionTimeElapsed = state.timeSpentPerQuestion[state.currentQuestionIndex];
+      }
+      
+      _startTimer(); // Restart timer for this question
     }
   }
 
@@ -229,8 +282,9 @@ class QuizNotifier extends Notifier<QuizSessionState> {
 
   // Complete quiz and calculate results
   void _completeQuiz() {
-    final repository = ref.read(quizRepositoryProvider);
-    final userId = _userId ?? 'temp_user_id'; // Use stored userId or temp
+    _stopTimer();
+    
+    final userId = _userId ?? 'temp_user_id';
 
     final result = QuizResult(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -245,8 +299,9 @@ class QuizNotifier extends Notifier<QuizSessionState> {
       totalTimeAllotted: state.totalTimeAllotted,
     );
 
-    // Save result (optional)
-    repository.saveQuizResult(result);
+    // NOTE: Firebase save commented out for now
+    // final repository = ref.read(quizRepositoryProvider);
+    // repository.saveQuizResult(result);
 
     state = state.copyWith(isCompleted: true);
   }
@@ -276,6 +331,7 @@ class QuizNotifier extends Notifier<QuizSessionState> {
 
   // Reset quiz
   void resetQuiz() {
+    _stopTimer();
     state = QuizSessionState(
       lessonId: state.lessonId,
       startedAt: DateTime.now(),
@@ -284,7 +340,7 @@ class QuizNotifier extends Notifier<QuizSessionState> {
   }
 }
 
-// Provider for quiz session - SIMPLIFIED: Use regular NotifierProvider
+// Provider for quiz session
 final quizSessionProvider = NotifierProvider<QuizNotifier, QuizSessionState>(
   () => QuizNotifier(),
 );
