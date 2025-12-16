@@ -6,10 +6,11 @@ class QuizQuestion {
   final String id;
   final String lessonId;
   final String question;
-  final List<String> options;
-  final int correctAnswerIndex;
+  final Map<String, String> options; // {"A": "option text", "B": "option text"}
+  final String correctAnswer; // "A", "B", "C", "D"
   final String explanation;
-  final int points; // Points for correct answer
+  final int points;
+  final int timePerQuestion; // seconds
 
   QuizQuestion({
     required this.id,
@@ -18,29 +19,43 @@ class QuizQuestion {
     required this.options,
     required this.correctAnswer,
     required this.explanation,
-    this.points = 10,
+    this.points = 1,
+    this.timePerQuestion = 60,
   });
 
-  factory QuizQuestion.fromJson(Map<String, dynamic> json) {
-    // Convert options from Map<dynamic, dynamic> to Map<String, String>
-    Map<String, String> optionsMap = {};
-    if (json['options'] != null) {
-      final optionsJson = json['options'] as Map<dynamic, dynamic>;
-      optionsJson.forEach((key, value) {
-        optionsMap[key.toString()] = value.toString();
-      });
-    }
+  // Convert letter answer to index (A->0, B->1, etc.)
+  int get correctAnswerIndex {
+    if (correctAnswer.isEmpty) return -1;
+    return correctAnswer.codeUnitAt(0) - 'A'.codeUnitAt(0);
+  }
 
+  // Get options as List for UI display
+  List<String> get optionsList {
+    return options.entries
+        .map((entry) => '${entry.key}. ${entry.value}')
+        .toList();
+  }
+
+  // Check if user's answer is correct
+  bool isAnswerCorrect(String userAnswer) {
+    return userAnswer == correctAnswer;
+  }
+
+  // Get option text by letter
+  String getOptionText(String letter) {
+    return options[letter] ?? '';
+  }
+
+  factory QuizQuestion.fromJson(Map<String, dynamic> json) {
     return QuizQuestion(
-      id: json['id'] ?? '',
-      lessonId: json['lessonId'] ?? '',
-      question: json['question'] ?? '',
-      options: json['options'] != null
-          ? List<String>.from(json['options'])
-          : [],
-      correctAnswerIndex: json['correctAnswerIndex'] ?? 0,
-      explanation: json['explanation'] ?? '',
-      points: json['points'] ?? 10,
+      id: json['id']?.toString() ?? '',
+      lessonId: json['lessonId']?.toString() ?? '',
+      question: json['question']?.toString() ?? '',
+      options: _parseOptions(json['options']),
+      correctAnswer: json['correctAnswer']?.toString() ?? '',
+      explanation: json['explanation']?.toString() ?? '',
+      points: (json['points'] as num?)?.toInt() ?? 1,
+      timePerQuestion: (json['timePerQuestion'] as num?)?.toInt() ?? 60,
     );
   }
 
@@ -66,7 +81,6 @@ class QuizQuestion {
       'options': options,
       'correctAnswer': correctAnswer,
       'explanation': explanation,
-      'timePerQuestion': timePerQuestion,
       'points': points,
       'timePerQuestion': timePerQuestion,
     };
@@ -77,23 +91,20 @@ class QuizResult {
   final String id;
   final String userId;
   final String lessonId;
-  final String quizId; // Optional: if you have separate quiz metadata
   final int score;
   final int totalQuestions;
-  final Map<String, String?> userAnswers; // questionId -> selectedAnswer
   final List<bool> answersCorrect;
   final Map<String, String?> userAnswers;
   final DateTime completedAt;
   final int timeTakenSeconds; // Time taken to complete quiz
+  final int totalTimeAllotted;
 
   QuizResult({
     required this.id,
     required this.userId,
     required this.lessonId,
-    this.quizId = '',
     required this.score,
     required this.totalQuestions,
-    required this.userAnswers,
     required this.answersCorrect,
     required this.userAnswers,
     required this.completedAt,
@@ -110,30 +121,13 @@ class QuizResult {
     return 'Try Again';
   }
 
-  bool get passed => percentage >= 60; // 60% passing score
-
-  // Calculate time efficiency (percentage of time used vs allotted)
-  double get timeEfficiency {
-    if (totalTimeAllotted == 0) return 0;
-    return ((totalTimeAllotted - timeTakenSeconds) / totalTimeAllotted) * 100;
-  }
-
   factory QuizResult.fromJson(Map<String, dynamic> json) {
-    // Convert userAnswers from Map<dynamic, dynamic> to Map<String, String?>
-    Map<String, String?> userAnswersMap = {};
-    if (json['userAnswers'] != null) {
-      final answersJson = json['userAnswers'] as Map<dynamic, dynamic>;
-      answersJson.forEach((key, value) {
-        userAnswersMap[key.toString()] = value?.toString();
-      });
-    }
-
     return QuizResult(
-      id: json['id'] ?? '',
-      userId: json['userId'] ?? '',
-      lessonId: json['lessonId'] ?? '',
-      score: json['score'] ?? 0,
-      totalQuestions: json['totalQuestions'] ?? 0,
+      id: json['id']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? '',
+      lessonId: json['lessonId']?.toString() ?? '',
+      score: (json['score'] as num?)?.toInt() ?? 0,
+      totalQuestions: (json['totalQuestions'] as num?)?.toInt() ?? 0,
       answersCorrect: json['answersCorrect'] != null
           ? List<bool>.from(json['answersCorrect'])
           : [],
@@ -143,7 +137,8 @@ class QuizResult {
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'])
           : DateTime.now(),
-      timeTakenSeconds: json['timeTakenSeconds'] ?? 0,
+      timeTakenSeconds: (json['timeTakenSeconds'] as num?)?.toInt() ?? 0,
+      totalTimeAllotted: (json['totalTimeAllotted'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -152,14 +147,13 @@ class QuizResult {
       'id': id,
       'userId': userId,
       'lessonId': lessonId,
-      'quizId': quizId,
       'score': score,
       'totalQuestions': totalQuestions,
-      'userAnswers': userAnswers,
       'answersCorrect': answersCorrect,
       'userAnswers': userAnswers,
       'completedAt': completedAt.toIso8601String(),
       'timeTakenSeconds': timeTakenSeconds,
+      'totalTimeAllotted': totalTimeAllotted,
     };
   }
 }

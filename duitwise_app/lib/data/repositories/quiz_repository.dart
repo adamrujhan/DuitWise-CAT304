@@ -26,11 +26,7 @@ class QuizRepository {
       data.forEach((key, value) {
         if (value is Map<dynamic, dynamic>) {
           final questionData = Map<String, dynamic>.from(value);
-<<<<<<< HEAD
-          questionData['id'] = key.toString(); // Use Firebase key as ID
-=======
           questionData['id'] = key.toString();
->>>>>>> 9716198c80e764d642a874ee260e86bb78a295f4
           
           // Only include questions for the specified lesson
           if (questionData['lessonId']?.toString() == lessonId) {
@@ -58,11 +54,7 @@ class QuizRepository {
     final questions = await getQuestionsByLessonId(lessonId);
     int totalTime = 0;
     for (var question in questions) {
-<<<<<<< HEAD
-      totalTime += question.timePerQuestion;
-=======
       totalTime += question.timePerQuestion; // This should work now
->>>>>>> 9716198c80e764d642a874ee260e86bb78a295f4
     }
     return totalTime;
   }
