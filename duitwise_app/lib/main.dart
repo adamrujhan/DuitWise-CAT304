@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/routing/app_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/routing/routes.dart';
@@ -22,6 +23,7 @@ class App extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router,
+      scaffoldMessengerKey: messengerKey,
     );
   }
 }

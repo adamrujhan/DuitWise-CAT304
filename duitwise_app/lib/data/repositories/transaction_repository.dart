@@ -70,6 +70,7 @@ class TransactionRepository {
     return ref.remove();
   }
 
+  // ignore: unintended_html_in_doc_comment
   /// ✅ increment financial/used/<category>
   Future<void> addToUsed({
     required String uid,

@@ -74,10 +74,10 @@ class QuizNavigationService {
             Container(
               padding: const EdgeInsets.all(16), // More padding
               decoration: BoxDecoration(
-                color: difficultyColor.withOpacity(0.1),
+                color: difficultyColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: difficultyColor.withOpacity(0.3),
+                  color: difficultyColor.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
