@@ -126,7 +126,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: "Search lessons...",
+                            hintText: "Search title lessons...",
                             hintStyle: TextStyle(
                               color: Colors.grey.shade500,
                               fontSize: 14,

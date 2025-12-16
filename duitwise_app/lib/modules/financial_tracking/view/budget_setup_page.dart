@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
@@ -112,15 +113,11 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
-            TextField(
+            CustomTextField(
               controller: incomeCtrl,
+              hint: "RM",
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: "RM",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              inputAction: TextInputAction.done,
             ),
           ],
         ),
@@ -151,14 +148,10 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: TextField(
+                        child: CustomTextField(
                           controller: ctrl,
-                          decoration: InputDecoration(
-                            hintText: "Enter commitment (e.g. Food, Bills)",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                          hint: "Enter commitment (e.g. Food, Bills)",
+                          inputAction: TextInputAction.next,
                         ),
                       ),
                       const SizedBox(width: 10),

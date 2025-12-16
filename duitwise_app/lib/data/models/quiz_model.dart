@@ -2,16 +2,13 @@
 //                 QUIZ MODEL                           //
 //////////////////////////////////////////////////////////
 
-library;
-
 class QuizQuestion {
   final String id;
   final String lessonId;
   final String question;
-  final Map<String, String> options; // Changed from List<String> to Map<String, String>
-  final String correctAnswer; // Changed from int to String (A, B, C, D)
+  final List<String> options;
+  final int correctAnswerIndex;
   final String explanation;
-  final int timePerQuestion; // Time limit in seconds for this question
   final int points; // Points for correct answer
 
   QuizQuestion({
@@ -21,27 +18,8 @@ class QuizQuestion {
     required this.options,
     required this.correctAnswer,
     required this.explanation,
-    required this.timePerQuestion,
-    this.points = 1, // Default 1 point per question
+    this.points = 10,
   });
-
-  // Get options as a list for easy display (A, B, C, D order)
-  List<MapEntry<String, String>> get optionsList {
-    // Sort options by key (A, B, C, D) to maintain consistent order
-    final sortedEntries = options.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
-    return sortedEntries;
-  }
-
-  // Check if an answer is correct
-  bool isAnswerCorrect(String selectedAnswer) {
-    return selectedAnswer == correctAnswer;
-  }
-
-  // Get correct answer text
-  String get correctAnswerText {
-    return options[correctAnswer] ?? '';
-  }
 
   factory QuizQuestion.fromJson(Map<String, dynamic> json) {
     // Convert options from Map<dynamic, dynamic> to Map<String, String>
@@ -54,15 +32,30 @@ class QuizQuestion {
     }
 
     return QuizQuestion(
-      id: json['id']?.toString() ?? '',
-      lessonId: json['lessonId']?.toString() ?? '',
-      question: json['question']?.toString() ?? '',
-      options: optionsMap,
-      correctAnswer: json['correctAnswer']?.toString() ?? '',
-      explanation: json['explanation']?.toString() ?? '',
-      timePerQuestion: (json['timePerQuestion'] ?? 60) as int,
-      points: (json['points'] ?? 1) as int,
+      id: json['id'] ?? '',
+      lessonId: json['lessonId'] ?? '',
+      question: json['question'] ?? '',
+      options: json['options'] != null
+          ? List<String>.from(json['options'])
+          : [],
+      correctAnswerIndex: json['correctAnswerIndex'] ?? 0,
+      explanation: json['explanation'] ?? '',
+      points: json['points'] ?? 10,
     );
+  }
+
+  static Map<String, String> _parseOptions(dynamic optionsData) {
+    final Map<String, String> options = {};
+    
+    if (optionsData is Map) {
+      optionsData.forEach((key, value) {
+        if (key != null && value != null) {
+          options[key.toString()] = value.toString();
+        }
+      });
+    }
+    
+    return options;
   }
 
   Map<String, dynamic> toJson() {
@@ -75,6 +68,7 @@ class QuizQuestion {
       'explanation': explanation,
       'timePerQuestion': timePerQuestion,
       'points': points,
+      'timePerQuestion': timePerQuestion,
     };
   }
 }
@@ -88,9 +82,9 @@ class QuizResult {
   final int totalQuestions;
   final Map<String, String?> userAnswers; // questionId -> selectedAnswer
   final List<bool> answersCorrect;
+  final Map<String, String?> userAnswers;
   final DateTime completedAt;
-  final int timeTakenSeconds; // Total time taken to complete quiz
-  final int totalTimeAllotted; // Sum of timePerQuestion for all questions
+  final int timeTakenSeconds; // Time taken to complete quiz
 
   QuizResult({
     required this.id,
@@ -101,6 +95,7 @@ class QuizResult {
     required this.totalQuestions,
     required this.userAnswers,
     required this.answersCorrect,
+    required this.userAnswers,
     required this.completedAt,
     this.timeTakenSeconds = 0,
     this.totalTimeAllotted = 0,
@@ -134,21 +129,21 @@ class QuizResult {
     }
 
     return QuizResult(
-      id: json['id']?.toString() ?? '',
-      userId: json['userId']?.toString() ?? '',
-      lessonId: json['lessonId']?.toString() ?? '',
-      quizId: json['quizId']?.toString() ?? '',
-      score: (json['score'] ?? 0) as int,
-      totalQuestions: (json['totalQuestions'] ?? 0) as int,
-      userAnswers: userAnswersMap,
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      lessonId: json['lessonId'] ?? '',
+      score: json['score'] ?? 0,
+      totalQuestions: json['totalQuestions'] ?? 0,
       answersCorrect: json['answersCorrect'] != null
           ? List<bool>.from(json['answersCorrect'])
           : [],
+      userAnswers: json['userAnswers'] != null
+          ? Map<String, String?>.from(json['userAnswers'])
+          : {},
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'])
           : DateTime.now(),
-      timeTakenSeconds: (json['timeTakenSeconds'] ?? 0) as int,
-      totalTimeAllotted: (json['totalTimeAllotted'] ?? 0) as int,
+      timeTakenSeconds: json['timeTakenSeconds'] ?? 0,
     );
   }
 
@@ -162,65 +157,9 @@ class QuizResult {
       'totalQuestions': totalQuestions,
       'userAnswers': userAnswers,
       'answersCorrect': answersCorrect,
+      'userAnswers': userAnswers,
       'completedAt': completedAt.toIso8601String(),
       'timeTakenSeconds': timeTakenSeconds,
-      'totalTimeAllotted': totalTimeAllotted,
     };
-  }
-}
-
-// Additional model for tracking quiz session progress
-class QuizSession {
-  final String id;
-  final String userId;
-  final String lessonId;
-  final List<QuizQuestion> questions;
-  final List<String?> userAnswers; // Parallel array to questions
-  final List<int> timeSpentPerQuestion; // Seconds spent on each question
-  final int currentQuestionIndex;
-  final DateTime startedAt;
-  final bool isCompleted;
-
-  QuizSession({
-    required this.id,
-    required this.userId,
-    required this.lessonId,
-    required this.questions,
-    required this.userAnswers,
-    required this.timeSpentPerQuestion,
-    this.currentQuestionIndex = 0,
-    required this.startedAt,
-    this.isCompleted = false,
-  });
-
-  // Calculate total time allotted for the quiz
-  int get totalTimeAllotted {
-    return questions.fold(0, (sum, question) => sum + question.timePerQuestion);
-  }
-
-  // Calculate remaining time for current question
-  int get remainingTimeForCurrentQuestion {
-    if (currentQuestionIndex >= questions.length) return 0;
-    final timeSpent = timeSpentPerQuestion[currentQuestionIndex];
-    final question = questions[currentQuestionIndex];
-    return question.timePerQuestion - timeSpent;
-  }
-
-  // Calculate total time spent so far
-  int get totalTimeSpent {
-    return timeSpentPerQuestion.fold(0, (sum, time) => sum + (time));
-  }
-
-  // Calculate score based on current answers
-  int calculateCurrentScore() {
-    int score = 0;
-    for (int i = 0; i < questions.length; i++) {
-      if (i < userAnswers.length && userAnswers[i] != null) {
-        if (questions[i].isAnswerCorrect(userAnswers[i]!)) {
-          score += questions[i].points;
-        }
-      }
-    }
-    return score;
   }
 }

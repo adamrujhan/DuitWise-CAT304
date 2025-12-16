@@ -1,6 +1,7 @@
 // lib/modules/financial_literacy/services/quiz_navigation_service.dart
 import 'package:flutter/material.dart';
-import '../../../data/models/lesson_model.dart';
+import 'package:duitwise_app/data/models/lesson_model.dart';
+import '../views/quiz_page.dart'; // We'll create this next
 
 class QuizNavigationService {
   // Start quiz dialog
@@ -35,30 +36,29 @@ class QuizNavigationService {
               ),
               const SizedBox(height: 8),
               
-              // FIXED: Proper bullet point alignment
               Column(
                 children: lesson.learningOutcomes.take(3).map((outcome) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 8), // Increased spacing
+                    padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.only(top: 5), // Align bullet with text
+                          padding: EdgeInsets.only(top: 5),
                           child: Icon(
                             Icons.circle,
-                            size: 8, // Slightly larger
+                            size: 8,
                             color: Color.fromARGB(255, 36, 35, 35),
                           ),
                         ),
-                        const SizedBox(width: 12), // Increased spacing
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             outcome,
                             style: const TextStyle(
-                              fontSize: 14, // Larger font
-                              color: Colors.black87, // Darker for better readability
-                              height: 1.4, // Better line height
+                              fontSize: 14,
+                              color: Colors.black87,
+                              height: 1.4,
                             ),
                           ),
                         ),
@@ -70,14 +70,14 @@ class QuizNavigationService {
               const SizedBox(height: 10),
             ],
             
-            // ONLY THIS BOX uses difficulty color
+            // Difficulty info box
             Container(
-              padding: const EdgeInsets.all(16), // More padding
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: difficultyColor.withOpacity(0.1),
+                color: difficultyColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: difficultyColor.withOpacity(0.3),
+                  color: difficultyColor.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
@@ -92,14 +92,14 @@ class QuizNavigationService {
                           children: [
                             Icon(
                               lesson.difficultyIcon,
-                              size: 20, // Larger icon
+                              size: 20,
                               color: difficultyColor,
                             ),
-                            const SizedBox(width: 10), // More spacing
+                            const SizedBox(width: 10),
                             Text(
                               "${lesson.difficultyText} Level",
                               style: TextStyle(
-                                fontSize: 16, // Larger font
+                                fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: difficultyColor,
                               ),
@@ -110,7 +110,7 @@ class QuizNavigationService {
                         Text(
                           "${_getDefaultQuestions(lesson.difficulty)} questions • ${_getDefaultTime(lesson.difficulty)} min",
                           style: const TextStyle(
-                            fontSize: 14, // Larger font
+                            fontSize: 14,
                             color: Colors.grey,
                           ),
                         ),
@@ -133,7 +133,7 @@ class QuizNavigationService {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // Close dialog
               _navigateToQuiz(context, lesson);
             },
             style: ElevatedButton.styleFrom(
@@ -169,12 +169,10 @@ class QuizNavigationService {
 
   // Navigate to actual quiz page
   static void _navigateToQuiz(BuildContext context, Lesson lesson) {
-    // TODO: Implement navigation to quiz page
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Starting ${lesson.difficultyText.toLowerCase()} quiz: ${lesson.title}'),
-        backgroundColor: Colors.green,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizPage(lesson: lesson),
       ),
     );
   }

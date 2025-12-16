@@ -1,5 +1,6 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/transaction_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,21 +14,13 @@ class BudgetPage extends ConsumerStatefulWidget {
 }
 
 class _BudgetPageState extends ConsumerState<BudgetPage> {
-  final List<Activity> recentActivities = [
-    Activity(name: "WARISAN BONDA", category: "Food", amount: -3.50),
-    Activity(name: "WARISAN BONDA", category: "Food", amount: -3.50),
-    Activity(name: "WARISAN BONDA", category: "Food", amount: -3.50),
-    Activity(name: "WARISAN BONDA", category: "Food", amount: -3.50),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(userStreamProvider);
 
     return userAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, st) => Scaffold(body: Center(child: Text("Error: $e"))),
       data: (user) {
         if (user == null) {
@@ -36,15 +29,20 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
 
         final uid = user.uid;
         final financialAsync = ref.watch(financialStreamProvider(uid));
+        final latestTxAsync = ref.watch(latestTransactionsStreamProvider(uid));
 
         return financialAsync.when(
-          loading: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
+          loading: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
           error: (e, st) => Scaffold(body: Center(child: Text("Error: $e"))),
           data: (financial) {
             final income = financial.income;
             final commitments = financial.commitments;
+            final usedMap = financial.used;
+
+            // ✅ Expense = total used across all categories
+            final totalExpense =
+                usedMap.values.fold<double>(0, (sum, v) => sum + v);
 
             return Scaffold(
               backgroundColor: const Color(0xFFA0E5C7),
@@ -110,9 +108,9 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                               ),
                               const SizedBox(height: 4),
 
-                              const Text(
-                                "RM0",
-                                style: TextStyle(
+                              Text(
+                                "RM${totalExpense.toStringAsFixed(2)}",
+                                style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -124,9 +122,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
 
                       const SizedBox(height: 15),
 
-                      /// ------------------------------------------
-                      /// Monthly Budget Tracking (SHOW ONLY 3 ITEMS)
-                      /// ------------------------------------------
+                      /// Monthly Budget Tracking (show only 3)
                       RoundedCard(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
@@ -163,11 +159,10 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
 
                               const SizedBox(height: 16),
 
-                              /// ---- SHOW ONLY 3 COMMITMENTS ----
                               ...commitments.entries.take(3).map((entry) {
-                                final name = entry.key;
-                                final allocated = entry.value;
-                                const used = 80;
+                                final name = entry.key; // e.g. "Food"
+                                final allocated = entry.value.toDouble();
+                                final used = usedMap[name] ?? 0.0;
 
                                 final percent = allocated == 0
                                     ? 0
@@ -176,15 +171,13 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                                         .toInt();
 
                                 return Padding(
-                                  padding:
-                                      const EdgeInsets.only(bottom: 16.0),
+                                  padding: const EdgeInsets.only(bottom: 16.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        name[0].toUpperCase() +
-                                            name.substring(1),
+                                        name,
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -192,7 +185,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        "RM$used of RM$allocated",
+                                        "RM${used.toStringAsFixed(2)} of RM${allocated.toStringAsFixed(0)}",
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,
@@ -208,7 +201,8 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                                               child: LinearProgressIndicator(
                                                 value: allocated == 0
                                                     ? 0
-                                                    : used / allocated,
+                                                    : (used / allocated)
+                                                        .clamp(0, 1),
                                                 minHeight: 10,
                                                 backgroundColor:
                                                     Colors.grey[300],
@@ -236,7 +230,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
 
                       const SizedBox(height: 15),
 
-                      /// Recent Activity
+                      /// Recent Activity (from transactions)
                       RoundedCard(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
@@ -252,46 +246,69 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                               ),
                               const SizedBox(height: 16),
 
-                              ...recentActivities.map((activity) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.only(bottom: 12),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            activity.name,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            activity.category,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        "RM ${activity.amount.toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
+                              latestTxAsync.when(
+                                loading: () => const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
                                   ),
-                                );
-                              }),
+                                ),
+                                error: (e, _) => Text("Error: $e"),
+                                data: (txs) {
+                                  if (txs.isEmpty) {
+                                    return Text(
+                                      "No transactions yet.",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    );
+                                  }
+
+                                  return Column(
+                                    children: txs.map((t) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 12),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  t.category,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  t.notes,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              "-RM ${t.amount.toStringAsFixed(2)}",
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -304,19 +321,8 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
               ),
             );
           },
-        ); 
+        );
       },
     );
   }
-}
-
-class Activity {
-  String name;
-  String category;
-  double amount;
-  Activity({
-    required this.name,
-    required this.category,
-    required this.amount,
-  });
 }

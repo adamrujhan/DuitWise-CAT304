@@ -1,3 +1,5 @@
+import 'package:duitwise_app/core/routing/app_keys.dart';
+import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
@@ -20,12 +22,33 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
   List<CommitmentItem> commitments = [];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final user = ref.read(userStreamProvider).value;
     final uid = user?.uid;
 
     /// Live financial data from Firebase
     final financialAsync = ref.watch(financialStreamProvider(uid));
+
+    ref.listen<AsyncValue<void>>(financialControllerProvider, (_, state) {
+      state.whenOrNull(
+        data: (_) {
+          messengerKey.currentState?.showSnackBar(
+            const SnackBar(content: Text("Financial data updated!")),
+          );
+          context.go('/budget');
+        },
+        error: (e, _) {
+          messengerKey.currentState?.showSnackBar(
+            SnackBar(content: Text("Update failed: $e")),
+          );
+        },
+      );
+    });
 
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),
@@ -117,24 +140,11 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        TextField(
+                                        CustomTextField(
+                                          hint: "RM",
                                           controller: c.controller,
                                           keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                            hintText: "RM",
-                                            filled: true,
-                                            fillColor: Colors.grey[300],
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 12,
-                                                ),
-                                          ),
+                                          inputAction: TextInputAction.done,
                                         ),
                                       ],
                                     ),
@@ -163,22 +173,11 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
                                       };
 
                                       await ref
-                                          .read(financialRepositoryProvider)
+                                          .read(
+                                            financialControllerProvider
+                                                .notifier,
+                                          )
                                           .updateFinancial(uid, newData);
-
-                                      if (!mounted) return;
-
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            "Financial data updated!",
-                                          ),
-                                        ),
-                                      );
-
-                                      context.go("/budget");
                                     },
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
