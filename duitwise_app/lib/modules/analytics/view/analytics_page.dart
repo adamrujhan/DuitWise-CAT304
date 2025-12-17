@@ -150,6 +150,7 @@ class AnalyticsPage extends ConsumerWidget {
                               Icon(
                                 Icons.account_balance_wallet_outlined,
                                 size: 48,
+                                // ignore: deprecated_member_use
                                 color: Colors.teal.withOpacity(0.5),
                               ),
                               const SizedBox(height: 16),
@@ -234,7 +235,7 @@ class AnalyticsPage extends ConsumerWidget {
                           ...data.commitments.entries.toList().asMap().entries.map((
                             entry,
                           ) {
-                            final index = entry.key;
+                            // final index = entry.key;
                             final category = entry.value.key;
                             final limit = entry
                                 .value
