@@ -286,6 +286,7 @@ class QuizNotifier extends Notifier<QuizSessionState> {
     
     final userId = _userId ?? 'temp_user_id';
 
+    // ignore: unused_local_variable
     final result = QuizResult(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       userId: userId,

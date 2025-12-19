@@ -69,7 +69,7 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
                 return CommitmentItem(
                   name: entry.key,
                   controller: TextEditingController(
-                    text: entry.value.toString(),
+                    text: entry.value == 0 ? "" : entry.value.toString(),
                   ),
                 );
               }).toList();
