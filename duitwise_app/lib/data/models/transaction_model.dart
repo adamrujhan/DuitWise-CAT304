@@ -5,7 +5,7 @@ class TransactionModel {
   final String notes;
   final String category;  // must match commitments key e.g. "food"
   final double amount;    // store as positive expense
-  final int createdAt;    // millisSinceEpoch
+  final double createdAt;    // millisSinceEpoch
 
   TransactionModel({
     required this.id,
@@ -21,7 +21,7 @@ class TransactionModel {
       notes: (data['notes'] ?? '') as String,
       category: (data['category'] ?? '') as String,
       amount: (data['amount'] ?? 0).toDouble(),
-      createdAt: (data['createdAt'] ?? 0) as int,
+      createdAt: (data['createdAt'] ?? 0.0) as double,
     );
   }
 

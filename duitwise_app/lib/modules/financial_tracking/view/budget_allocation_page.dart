@@ -16,6 +16,7 @@ class BudgetAllocationPage extends ConsumerStatefulWidget {
 }
 
 class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
+  late final ProviderSubscription _financialListener;
   final TextEditingController incomeCtrl = TextEditingController();
   bool _initialized = false;
 
@@ -25,6 +26,25 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
   @override
   void initState() {
     super.initState();
+
+    _financialListener = ref.listenManual<AsyncValue<void>>(
+      financialControllerProvider,
+      (_, state) {
+        state.whenOrNull(
+          data: (_) {
+            messengerKey.currentState?.showSnackBar(
+              const SnackBar(content: Text("Financial data updated!")),
+            );
+            context.go('/budget');
+          },
+          error: (e, _) {
+            messengerKey.currentState?.showSnackBar(
+              SnackBar(content: Text("Update failed: $e")),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -34,22 +54,6 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
 
     /// Live financial data from Firebase
     final financialAsync = ref.watch(financialStreamProvider(uid));
-
-    ref.listen<AsyncValue<void>>(financialControllerProvider, (_, state) {
-      state.whenOrNull(
-        data: (_) {
-          messengerKey.currentState?.showSnackBar(
-            const SnackBar(content: Text("Financial data updated!")),
-          );
-          context.go('/budget');
-        },
-        error: (e, _) {
-          messengerKey.currentState?.showSnackBar(
-            SnackBar(content: Text("Update failed: $e")),
-          );
-        },
-      );
-    });
 
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),
@@ -224,6 +228,7 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
 
   @override
   void dispose() {
+    _financialListener.close();
     incomeCtrl.dispose();
     for (var c in commitments) {
       c.controller.dispose();

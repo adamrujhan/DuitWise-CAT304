@@ -253,6 +253,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                                     child: CircularProgressIndicator(),
                                   ),
                                 ),
+                                //TODO: fix error in this line
                                 error: (e, _) => Text("Error: $e"),
                                 data: (txs) {
                                   if (txs.isEmpty) {
