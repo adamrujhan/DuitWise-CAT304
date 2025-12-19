@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/transaction_provider.dart';
@@ -20,7 +21,8 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
   }) {
     showDialog(
       context: context,
-      builder: (context) => AddTransactionPopup(uid: uid, categories: categories),
+      builder: (context) =>
+          AddTransactionPopup(uid: uid, categories: categories),
     );
   }
 
@@ -98,8 +100,8 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
                                 final percent = allocated == 0
                                     ? 0
                                     : ((used / allocated) * 100)
-                                        .clamp(0, 100)
-                                        .toInt();
+                                          .clamp(0, 100)
+                                          .toInt();
 
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
@@ -132,16 +134,17 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
                                               child: LinearProgressIndicator(
                                                 value: allocated == 0
                                                     ? 0
-                                                    : (used / allocated)
-                                                        .clamp(0, 1),
+                                                    : (used / allocated).clamp(
+                                                        0,
+                                                        1,
+                                                      ),
                                                 minHeight: 10,
                                                 backgroundColor:
                                                     Colors.grey[300],
                                                 valueColor:
                                                     const AlwaysStoppedAnimation<
-                                                        Color>(
-                                                  Color(0xFF7DD3AE),
-                                                ),
+                                                      Color
+                                                    >(Color(0xFF7DD3AE)),
                                               ),
                                             ),
                                           ),
@@ -215,8 +218,9 @@ class _AddTransactionPopupState extends ConsumerState<AddTransactionPopup> {
   @override
   void initState() {
     super.initState();
-    selectedCategory =
-        widget.categories.isNotEmpty ? widget.categories.first : "";
+    selectedCategory = widget.categories.isNotEmpty
+        ? widget.categories.first
+        : "";
   }
 
   Future<void> _handleAdd() async {
@@ -257,9 +261,9 @@ class _AddTransactionPopupState extends ConsumerState<AddTransactionPopup> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to add transaction: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to add transaction: $e")));
     } finally {
       if (mounted) setState(() => isSaving = false);
     }
@@ -295,16 +299,14 @@ class _AddTransactionPopupState extends ConsumerState<AddTransactionPopup> {
             ),
             const SizedBox(height: 8),
             Center(
-              child: TextField(
+              child: CustomTextField(
                 controller: amountController,
+                hint: "0",
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
-                decoration: const InputDecoration(
-                  hintText: "RM 0.00",
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
+                textStyle: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -336,7 +338,9 @@ class _AddTransactionPopupState extends ConsumerState<AddTransactionPopup> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.grey[400] : Colors.grey[200],
+                          color: isSelected
+                              ? Colors.grey[400]
+                              : Colors.grey[200],
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
@@ -362,20 +366,10 @@ class _AddTransactionPopupState extends ConsumerState<AddTransactionPopup> {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 10),
-            TextField(
+            CustomTextField(
               controller: notesController,
-              decoration: InputDecoration(
-                hintText: "e.g. Lunch with Wan",
-                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              ),
+              hint: "e.g. Lunch with Wan",
+              inputAction: TextInputAction.done,
             ),
             const SizedBox(height: 20),
 

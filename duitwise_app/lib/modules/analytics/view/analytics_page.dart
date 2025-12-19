@@ -150,7 +150,7 @@ class AnalyticsPage extends ConsumerWidget {
                               Icon(
                                 Icons.account_balance_wallet_outlined,
                                 size: 48,
-                                color: Colors.teal.withOpacity(0.5),
+                                color: Colors.teal.withValues(alpha: 0.5),
                               ),
                               const SizedBox(height: 16),
                               const Text(
@@ -234,7 +234,6 @@ class AnalyticsPage extends ConsumerWidget {
                           ...data.commitments.entries.toList().asMap().entries.map((
                             entry,
                           ) {
-                            final index = entry.key;
                             final category = entry.value.key;
                             final limit = entry
                                 .value

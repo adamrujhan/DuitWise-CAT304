@@ -17,6 +17,7 @@ class BudgetAllocationPage extends ConsumerStatefulWidget {
 
 class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
   final TextEditingController incomeCtrl = TextEditingController();
+  bool _initialized = false;
 
   /// Dynamic commitment list loaded from Firebase
   List<CommitmentItem> commitments = [];
@@ -57,14 +58,20 @@ class _BudgetAllocationPageState extends ConsumerState<BudgetAllocationPage> {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text("Error: $e")),
           data: (financial) {
-            /// ---- Income ----
-            incomeCtrl.text = financial.income.toString();
+            if (!_initialized) {
+              incomeCtrl.text = financial.income.toString();
 
-            /// ---- Commitments loaded dynamically ----
-            commitments = financial.commitments.entries.map((entry) {
-              final ctrl = TextEditingController(text: entry.value.toString());
-              return CommitmentItem(name: entry.key, controller: ctrl);
-            }).toList();
+              commitments = financial.commitments.entries.map((entry) {
+                return CommitmentItem(
+                  name: entry.key,
+                  controller: TextEditingController(
+                    text: entry.value.toString(),
+                  ),
+                );
+              }).toList();
+
+              _initialized = true;
+            }
 
             return Column(
               children: [
