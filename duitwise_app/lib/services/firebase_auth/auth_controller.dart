@@ -59,6 +59,7 @@ class AuthController extends AsyncNotifier<User?> {
       "uid": uid,
       "photoUrl": "",
       "financial": {
+        "hasSetupBudget": false,
         "income": 0,
         "food": 0,
         "groceries": 0,
@@ -82,7 +83,7 @@ class AuthController extends AsyncNotifier<User?> {
 
       final uid = credential.user!.uid;
 
-      // NOW call your repository/service to create user profile in RTDB
+      //create user profile in RTDB
       await _createUserInDatabase(uid, username, email);
     } on FirebaseAuthException catch (e) {
       state = AsyncValue.error(
