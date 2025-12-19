@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/routing/app_keys.dart';
 import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
@@ -14,13 +15,34 @@ class BudgetSetupPage extends ConsumerStatefulWidget {
 }
 
 class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
+  late final ProviderSubscription _financialListener;
   final TextEditingController incomeCtrl = TextEditingController();
   final List<TextEditingController> commitments = [];
 
   @override
   void initState() {
     super.initState();
+
     commitments.add(TextEditingController());
+
+    _financialListener = ref.listenManual<AsyncValue<void>>(
+      financialControllerProvider,
+      (_, state) {
+        state.whenOrNull(
+          data: (_) {
+            messengerKey.currentState?.showSnackBar(
+              const SnackBar(content: Text("Financial data updated!")),
+            );
+            context.go('/budget/allocation');
+          },
+          error: (e, _) {
+            messengerKey.currentState?.showSnackBar(
+              SnackBar(content: Text("Update failed: $e")),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -208,16 +230,8 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
           };
 
           await ref
-              .read(financialRepositoryProvider)
+              .read(financialControllerProvider.notifier)
               .updateFinancial(uid, financialData);
-
-          if (!mounted) return;
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Financial data updated!")),
-          );
-
-          context.push('/budget/allocation'); // NEW nested route navigation
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -239,6 +253,7 @@ class _BudgetSetupPageState extends ConsumerState<BudgetSetupPage> {
   // ---------------------------------------------
   @override
   void dispose() {
+    _financialListener.close();
     incomeCtrl.dispose();
     for (var ctrl in commitments) {
       ctrl.dispose();
