@@ -282,26 +282,6 @@ class QuizNotifier extends Notifier<QuizSessionState> {
   // Complete quiz and calculate results
   void _completeQuiz() {
     _stopTimer();
-    
-    final userId = _userId ?? 'temp_user_id';
-
-    final result = QuizResult(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userId: userId,
-      lessonId: state.lessonId,
-      score: state.currentScore,
-      totalQuestions: state.questions.length,
-      answersCorrect: _calculateCorrectAnswers(),
-      userAnswers: _createUserAnswersMap(),
-      completedAt: DateTime.now(),
-      timeTakenSeconds: state.totalTimeSpent,
-      totalTimeAllotted: state.totalTimeAllotted,
-    );
-
-    // NOTE: Firebase save commented out for now
-    // final repository = ref.read(quizRepositoryProvider);
-    // repository.saveQuizResult(result);
-
     state = state.copyWith(isCompleted: true);
   }
 
