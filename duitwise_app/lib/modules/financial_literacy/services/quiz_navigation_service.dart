@@ -16,13 +16,15 @@ class QuizNavigationService {
       
       // Then show dialog with the data
       _showQuizInfoDialog(
+        // ignore: use_build_context_synchronously
         context, 
         lesson, 
         questionCount, 
-        (totalTimeSeconds / 60).ceil()
+        totalTimeSeconds
       );
       
     } catch (e) {
+      // ignore: use_build_context_synchronously
       _showErrorDialog(context, e.toString());
     }
   }
@@ -101,9 +103,11 @@ class QuizNavigationService {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: difficultyColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
+                  // ignore: deprecated_member_use
                   color: difficultyColor.withOpacity(0.3),
                   width: 1.5,
                 ),
@@ -135,10 +139,10 @@ class QuizNavigationService {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          "$questionCount questions • $totalTimeMinutes min",
+                          "$questionCount questions • $totalTimeMinutes sec",
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.grey,
+                            color: Color.fromARGB(255, 113, 113, 113),
                           ),
                         ),
                       ],
@@ -184,28 +188,6 @@ class QuizNavigationService {
         ),
         content: Text(
           'Failed to load quiz information from server.\n\nError: $error',
-          style: const TextStyle(fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static void _showNoQuestionsDialog(BuildContext context, Lesson lesson) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          'No Quiz Available',
-          style: TextStyle(color: Colors.orange),
-        ),
-        content: Text(
-          'Sorry, there are no quiz questions available for "${lesson.title}" yet.',
           style: const TextStyle(fontSize: 14),
         ),
         actions: [
