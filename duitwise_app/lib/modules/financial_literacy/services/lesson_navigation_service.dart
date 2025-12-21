@@ -1,6 +1,8 @@
 // lib/modules/financial_literacy/services/lesson_navigation_service.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // IMPORT GoRouter
 import '../../../data/models/lesson_model.dart';
+import '../views/lesson_page.dart'; // IMPORT VideoPlayerPage
 
 class LessonNavigationService {
   // Show lesson detail modal with learning outcomes
@@ -162,13 +164,13 @@ class LessonNavigationService {
                   // Close Button
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.of(context).pop(), // FIXED: Use Navigator for modal
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        side: BorderSide(color: const Color.fromARGB(255, 159, 151, 151)),
+                        side: BorderSide(color: Colors.grey.shade400),
                       ),
                       child: const Text(
                         'Close',
@@ -187,7 +189,7 @@ class LessonNavigationService {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.of(context).pop(); // Close modal with Navigator
                         _navigateToLessonPlayer(context, lesson);
                       },
                       style: ElevatedButton.styleFrom(
@@ -218,13 +220,13 @@ class LessonNavigationService {
     );
   }
 
-  // Navigate to actual lesson player
+  // Navigate to actual lesson player - FIXED for GoRouter
   static void _navigateToLessonPlayer(BuildContext context, Lesson lesson) {
-    // TODO: Implement navigation to lesson player
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening lesson: ${lesson.title}'),
-        backgroundColor: Colors.green,
+    // Use standard Navigator (exactly like quiz does)
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VideoPlayerPage(lesson: lesson),
       ),
     );
   }

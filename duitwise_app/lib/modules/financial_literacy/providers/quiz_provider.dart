@@ -129,8 +129,7 @@ class QuizNotifier extends Notifier<QuizSessionState> {
   }
 
   // Initialize with lesson ID (called from outside)
-  void initialize(String lessonId, {String? userId}) {
-    
+  void initialize(String lessonId) { 
     // RESET to initial state
     state = QuizSessionState(
       lessonId: lessonId,
