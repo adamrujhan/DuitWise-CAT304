@@ -19,9 +19,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   void initState() {
     super.initState();
-    print('=== INIT VIDEO PLAYER ===');
-    print('Lesson: ${widget.lesson.title}');
-    print('Video URL: ${widget.lesson.videoUrl}');
     
     // Auto-open YouTube when page loads
     _openYouTubeVideo();
@@ -53,7 +50,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       
       // Try YouTube app
       if (await canLaunchUrl(youtubeAppUri)) {
-        print('Opening in YouTube app: $youtubeAppUri');
         launched = await launchUrl(
           youtubeAppUri,
           mode: LaunchMode.externalApplication,
@@ -62,7 +58,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       
       // If YouTube app fails, try browser
       if (!launched) {
-        print('Opening in browser: $youtubeWebUri');
         launched = await launchUrl(
           youtubeWebUri,
           mode: LaunchMode.externalApplication,
@@ -83,14 +78,12 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   String _extractVideoId(String url) {
-    print('Extracting from: $url');
     
     try {
       // Method 1: v= parameter
       final vMatch = RegExp(r'[?&]v=([^&#]+)').firstMatch(url);
       if (vMatch != null && vMatch.group(1) != null) {
         final id = vMatch.group(1)!;
-        print('Extracted with v=: $id');
         return id;
       }
       
@@ -98,7 +91,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       final shortMatch = RegExp(r'youtu\.be/([^&#?]+)').firstMatch(url);
       if (shortMatch != null && shortMatch.group(1) != null) {
         final id = shortMatch.group(1)!;
-        print('Extracted from youtu.be/: $id');
         return id;
       }
       
@@ -106,14 +98,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       final embedMatch = RegExp(r'youtube\.com/embed/([^&#?]+)').firstMatch(url);
       if (embedMatch != null && embedMatch.group(1) != null) {
         final id = embedMatch.group(1)!;
-        print('Extracted from embed/: $id');
         return id;
       }
       
-      print('ERROR: No video ID found');
       return '';
     } catch (e) {
-      print('ERROR extracting video ID: $e');
       return '';
     }
   }
@@ -161,7 +150,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
   
   void _showCompletionOptions() {
-    print('Showing completion options');
     
     setState(() {
       _showCompletionScreen = true;
@@ -169,19 +157,16 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
   
   void _returnToLearning() {
-    print('Returning to learning page');
     Navigator.of(context).pop();
   }
 
   void _takeQuiz() {
-    print('Taking quiz for: ${widget.lesson.title}');
     Navigator.of(context).pop();
     QuizNavigationService.showQuizDialog(context, widget.lesson);
   }
   
   @override
   Widget build(BuildContext context) {
-    print('Building VideoPlayerPage UI');
     
     return Scaffold(
       appBar: AppBar(
@@ -321,6 +306,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.black.withOpacity(0.1),
                       blurRadius: 10,
                       spreadRadius: 2,
@@ -430,26 +416,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '${widget.lesson.durationMinutes ~/ 2} min quiz',
+                            '${widget.lesson.durationMinutes} sec',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade600,
                             ),
                           ),
                           const Spacer(),
-                          Icon(
-                            Icons.star,
-                            size: 20,
-                            color: Colors.amber,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Earn XP',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
                         ],
                       ),
                     ],
