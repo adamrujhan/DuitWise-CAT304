@@ -1,6 +1,5 @@
 // lib/modules/financial_literacy/services/lesson_navigation_service.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // IMPORT GoRouter
 import '../../../data/models/lesson_model.dart';
 import '../views/lesson_page.dart'; // IMPORT VideoPlayerPage
 
