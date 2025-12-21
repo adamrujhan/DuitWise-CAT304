@@ -29,6 +29,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     });
   }
 
+  // After:
   void _initializeQuiz() {
     final notifier = ref.read(quizSessionProvider.notifier);
     final currentState = ref.read(quizSessionProvider);
@@ -37,8 +38,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     if (currentState.lessonId != widget.lesson.id || 
         currentState.questions.isEmpty || 
         currentState.isCompleted) {
-      final userId = 'temp_user_id'; // TODO: Get from auth
-      notifier.initialize(widget.lesson.id, userId: userId);
+      notifier.initialize(widget.lesson.id);  // Remove userId parameter
     }
   }
 
