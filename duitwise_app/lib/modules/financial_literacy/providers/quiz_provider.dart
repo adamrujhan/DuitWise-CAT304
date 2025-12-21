@@ -116,7 +116,7 @@ class QuizSessionState {
 
 // Quiz Notifier - Riverpod 3.x syntax
 class QuizNotifier extends Notifier<QuizSessionState> {
-  String? _userId; // Store userId
+// Store userId
   Timer? _timer; // Timer for countdown
   int _currentQuestionTimeElapsed = 0;
   
@@ -130,7 +130,6 @@ class QuizNotifier extends Notifier<QuizSessionState> {
 
   // Initialize with lesson ID (called from outside)
   void initialize(String lessonId, {String? userId}) {
-    _userId = userId;
     
     // RESET to initial state
     state = QuizSessionState(
@@ -284,49 +283,11 @@ class QuizNotifier extends Notifier<QuizSessionState> {
   void _completeQuiz() {
     _stopTimer();
     
-    final userId = _userId ?? 'temp_user_id';
-
-    final result = QuizResult(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userId: userId,
-      lessonId: state.lessonId,
-      score: state.currentScore,
-      totalQuestions: state.questions.length,
-      answersCorrect: _calculateCorrectAnswers(),
-      userAnswers: _createUserAnswersMap(),
-      completedAt: DateTime.now(),
-      timeTakenSeconds: state.totalTimeSpent,
-      totalTimeAllotted: state.totalTimeAllotted,
-    );
-
     // NOTE: Firebase save commented out for now
     // final repository = ref.read(quizRepositoryProvider);
     // repository.saveQuizResult(result);
 
     state = state.copyWith(isCompleted: true);
-  }
-
-  // Helper to create user answers map
-  Map<String, String?> _createUserAnswersMap() {
-    final Map<String, String?> answers = {};
-    for (int i = 0; i < state.questions.length; i++) {
-      answers[state.questions[i].id] = state.userAnswers[i];
-    }
-    return answers;
-  }
-
-  // Helper to calculate which answers were correct
-  List<bool> _calculateCorrectAnswers() {
-    final List<bool> correct = [];
-    for (int i = 0; i < state.questions.length; i++) {
-      final userAnswer = state.userAnswers[i];
-      if (userAnswer == null) {
-        correct.add(false);
-      } else {
-        correct.add(state.questions[i].isAnswerCorrect(userAnswer));
-      }
-    }
-    return correct;
   }
 
   // Reset quiz

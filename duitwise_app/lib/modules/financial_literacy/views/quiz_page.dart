@@ -195,29 +195,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   ],
                 ),
               ),
-              
-              // Current score
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.green.shade200),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.star, size: 16, color: Colors.green),
-                    const SizedBox(width: 6),
-                    Text(
-                      "Score: ${state.currentScore}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
           
@@ -273,37 +250,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           
           // Navigation buttons
           Row(
-            children: [
-              // Previous button
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: state.currentQuestionIndex > 0
-                      ? () {
-                          final notifier = ref.read(quizSessionProvider.notifier);
-                          notifier.previousQuestion();
-                        }
-                      : null,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: BorderSide(color: Colors.grey.shade400),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.arrow_back, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'Previous',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              
+            children: [              
               const SizedBox(width: 12),
               
               // Next/Submit button
