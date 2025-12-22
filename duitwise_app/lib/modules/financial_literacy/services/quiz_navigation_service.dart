@@ -1,11 +1,40 @@
 // lib/modules/financial_literacy/services/quiz_navigation_service.dart
 import 'package:flutter/material.dart';
 import 'package:duitwise_app/data/models/lesson_model.dart';
-import '../views/quiz_page.dart'; // We'll create this next
+import 'package:duitwise_app/data/repositories/quiz_repository.dart';
+import '../views/quiz_page.dart';
 
 class QuizNavigationService {
   // Start quiz dialog
-  static void showQuizDialog(BuildContext context, Lesson lesson) {
+  static Future<void> showQuizDialog(BuildContext context, Lesson lesson) async {
+    final quizRepo = QuizRepository();
+    
+    try {
+      // Fetch data FIRST
+      final questionCount = await quizRepo.getQuestionCountForLesson(lesson.id);
+      final totalTimeSeconds = await quizRepo.getTotalQuizTimeForLesson(lesson.id);
+      
+      // Then show dialog with the data
+      _showQuizInfoDialog(
+        // ignore: use_build_context_synchronously
+        context, 
+        lesson, 
+        questionCount, 
+        totalTimeSeconds
+      );
+      
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      _showErrorDialog(context, e.toString());
+    }
+  }
+
+  static void _showQuizInfoDialog(
+    BuildContext context,
+    Lesson lesson,
+    int questionCount,
+    int totalTimeMinutes,
+  ) {
     final difficultyColor = lesson.difficultyColor;
     
     showDialog(
@@ -70,13 +99,15 @@ class QuizNavigationService {
               const SizedBox(height: 10),
             ],
             
-            // Difficulty info box
+            // Difficulty info box with REAL DATA only
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: difficultyColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
+                  // ignore: deprecated_member_use
                   color: difficultyColor.withOpacity(0.3),
                   width: 1.5,
                 ),
@@ -108,10 +139,10 @@ class QuizNavigationService {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          "${_getDefaultQuestions(lesson.difficulty)} questions • ${_getDefaultTime(lesson.difficulty)} min",
+                          "$questionCount questions • $totalTimeMinutes sec",
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.grey,
+                            color: Color.fromARGB(255, 113, 113, 113),
                           ),
                         ),
                       ],
@@ -147,24 +178,26 @@ class QuizNavigationService {
     );
   }
 
-  // TODO: Replace with Firebase data when available
-  static String _getDefaultQuestions(int difficulty) {
-    switch (difficulty) {
-      case 1: return '5-8';
-      case 2: return '8-12';
-      case 3: return '12-15';
-      default: return '5-10';
-    }
-  }
-
-  // TODO: Replace with Firebase data when available
-  static String _getDefaultTime(int difficulty) {
-    switch (difficulty) {
-      case 1: return '5-10';
-      case 2: return '10-15';
-      case 3: return '15-20';
-      default: return '5-10';
-    }
+  static void _showErrorDialog(BuildContext context, String error) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Error Loading Quiz',
+          style: TextStyle(color: Colors.red),
+        ),
+        content: Text(
+          'Failed to load quiz information from server.\n\nError: $error',
+          style: const TextStyle(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   // Navigate to actual quiz page
