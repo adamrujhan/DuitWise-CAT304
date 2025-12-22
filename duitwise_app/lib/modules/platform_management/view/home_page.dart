@@ -1,4 +1,5 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
+import 'package:duitwise_app/modules/platform_management/providers/cumulative_daily_spending_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -10,6 +11,15 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(userStreamProvider);
+
+    final spots = userAsync.when(
+      data: (user) {
+        if (user == null) return const <FlSpot>[];
+        return ref.watch(cumulativeDailySpendingProvider(user.uid));
+      },
+      loading: () => const <FlSpot>[],
+      error: (_, _) => const <FlSpot>[],
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7), // Mint green
@@ -59,10 +69,7 @@ class HomePage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      SizedBox(
-                        height: 220,
-                        child: LineChart(_chartData()),
-                      ),
+                      SizedBox(height: 220, child: LineChart(_chartData(spots))),
                     ],
                   ),
                 ),
@@ -91,7 +98,7 @@ class HomePage extends ConsumerWidget {
 }
 
 // linechart
-LineChartData _chartData() {
+LineChartData _chartData(List<FlSpot> spots) {
   return LineChartData(
     gridData: FlGridData(show: false),
     titlesData: FlTitlesData(show: false),
@@ -113,15 +120,7 @@ LineChartData _chartData() {
             end: Alignment.bottomCenter,
           ),
         ),
-        spots: const [
-          FlSpot(0, 35),
-          FlSpot(1, 36),
-          FlSpot(2, 38),
-          FlSpot(3, 41),
-          FlSpot(4, 39),
-          FlSpot(5, 42),
-          FlSpot(6, 48),
-        ],
+        spots: spots,
       ),
     ],
   );
