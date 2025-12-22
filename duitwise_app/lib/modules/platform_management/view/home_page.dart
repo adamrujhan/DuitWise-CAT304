@@ -1,5 +1,6 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/platform_management/providers/cumulative_daily_spending_provider.dart';
+import 'package:duitwise_app/modules/platform_management/providers/weekly_total_spending_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -19,6 +20,15 @@ class HomePage extends ConsumerWidget {
       },
       loading: () => const <FlSpot>[],
       error: (_, _) => const <FlSpot>[],
+    );
+
+    final weeklySpending = userAsync.when(
+      data: (user) {
+        if (user == null) return 0;
+        return ref.watch(weeklyTotalSpendingProvider(user.uid));
+      },
+      loading: () => 0,
+      error: (_, _) => 0,
     );
 
     return Scaffold(
@@ -62,14 +72,17 @@ class HomePage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Dashboard",
+                        "Spending",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 18),
-                      SizedBox(height: 220, child: LineChart(_chartData(spots))),
+                      SizedBox(
+                        height: 220,
+                        child: LineChart(_chartData(spots)),
+                      ),
                     ],
                   ),
                 ),
@@ -81,9 +94,11 @@ class HomePage extends ConsumerWidget {
               RoundedCard(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: const Text(
-                    "This week spending",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+                  child: Center(
+                    child: Text(
+                      "This week spending: RM${weeklySpending.toStringAsFixed(2)}",
+                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ),
