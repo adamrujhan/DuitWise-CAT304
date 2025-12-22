@@ -61,7 +61,7 @@ class HomePage extends ConsumerWidget {
                       const SizedBox(height: 18),
                       SizedBox(
                         height: 220,
-                        child: LineChart(_sampleChartData()),
+                        child: LineChart(_chartData()),
                       ),
                     ],
                   ),
@@ -91,7 +91,7 @@ class HomePage extends ConsumerWidget {
 }
 
 // linechart
-LineChartData _sampleChartData() {
+LineChartData _chartData() {
   return LineChartData(
     gridData: FlGridData(show: false),
     titlesData: FlTitlesData(show: false),
