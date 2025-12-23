@@ -98,18 +98,21 @@ class HomePage extends ConsumerWidget {
                   child: Center(
                     child: Text(
                       "This week spending: RM${weeklySpending.toStringAsFixed(2)}",
-                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
               ),
 
               const SizedBox(height: 15),
-              
-              //recent activity
-              RecentActivityCard(activityNum: 3,),
 
-              const SizedBox(height: 120), // Scroll spacing above navbar
+              //recent activity
+              RecentActivityCard(activityNum: 3),
+
+              const SizedBox(height: 15),
             ],
           ),
         ),

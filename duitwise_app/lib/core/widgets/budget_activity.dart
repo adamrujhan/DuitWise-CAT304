@@ -3,11 +3,9 @@ import 'package:duitwise_app/modules/financial_tracking/providers/transaction_pr
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-class RecentActivityCard extends ConsumerWidget {
-  final int activityNum;
-  const RecentActivityCard({super.key, required this.activityNum});
+class ActivityCard extends ConsumerWidget {
+  const ActivityCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,8 +20,8 @@ class RecentActivityCard extends ConsumerWidget {
         }
 
         final uid = user.uid;
-        final latestTxAsync = ref.watch(
-          latestTransactionsStreamProvider((uid: uid, limit: activityNum)),
+        final txAsync = ref.watch(
+          transactionsStreamProvider(uid),
         );
 
         return RoundedCard(
@@ -32,35 +30,7 @@ class RecentActivityCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Recent Activity",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        context.push("/budget/activity");
-                      },
-                      child: Text(
-                        "See all",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[600],
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                latestTxAsync.when(
+                txAsync.when(
                   loading: () => const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Center(child: CircularProgressIndicator()),

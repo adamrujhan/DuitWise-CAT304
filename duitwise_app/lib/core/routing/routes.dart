@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/widgets/budget_activity.dart';
 import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
 import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
@@ -112,6 +113,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: 'budget_mybudget',
                 builder: (context, state) {
                   return const MyBudgetPage();
+                },
+              ),
+              GoRoute(
+                path: 'activity',
+                name: 'budget_activity',
+                builder: (context, state) {
+                  return const ActivityCard();
                 },
               ),
             ],

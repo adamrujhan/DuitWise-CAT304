@@ -247,7 +247,7 @@ class _AddTransactionPopupState extends ConsumerState<AddTransactionPopup> {
           notes: notes,
           category: selectedCategory,
           amount: amount,
-          createdAt: DateTime.now().millisecondsSinceEpoch.toDouble(), // use seconds instead of millisecond
+          createdAt: DateTime.now().millisecondsSinceEpoch.toInt(), // use seconds instead of millisecond
         ),
       );
 

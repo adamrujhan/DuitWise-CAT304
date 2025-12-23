@@ -16,24 +16,20 @@ class TransactionRepository {
       final list = map.entries.map((e) {
         final id = e.key.toString();
         final data = Map<dynamic, dynamic>.from(e.value as Map);
-        return TransactionModel.fromMap(id, data); 
+        return TransactionModel.fromMap(id, data);
       }).toList();
 
-      list.sort((a, b) => b.createdAt.compareTo(a.createdAt)); 
+      list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return list;
     });
   }
 
-  /// Latest N (still live)
+  /// Latest N (calculated client-side, still live)
   Stream<List<TransactionModel>> watchLatestTransactions({
     required String uid,
     required int limit,
-
   }) {
-    final ref = db
-        .ref("users/$uid/transactions")
-        .orderByChild('createdAt')
-        .limitToLast(limit);
+    final ref = db.ref("users/$uid/transactions");
 
     return ref.onValue.map((event) {
       final raw = event.snapshot.value;
@@ -47,7 +43,14 @@ class TransactionRepository {
         return TransactionModel.fromMap(id, data);
       }).toList();
 
+      // Sort newest → oldest
       list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      // Take latest N safely
+      if (list.length > limit) {
+        return list.take(limit).toList();
+      }
+
       return list;
     });
   }
@@ -71,7 +74,7 @@ class TransactionRepository {
     return ref.remove();
   }
 
-  // ✅ increment financial/used/category
+  // increment financial/used/category
   Future<void> addToUsed({
     required String uid,
     required String category,
