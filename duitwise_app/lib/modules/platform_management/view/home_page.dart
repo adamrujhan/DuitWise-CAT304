@@ -1,3 +1,4 @@
+import 'package:duitwise_app/core/widgets/recent_activity.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/platform_management/providers/cumulative_daily_spending_provider.dart';
 import 'package:duitwise_app/modules/platform_management/providers/weekly_total_spending_provider.dart';
@@ -102,6 +103,11 @@ class HomePage extends ConsumerWidget {
                   ),
                 ),
               ),
+
+              const SizedBox(height: 15),
+              
+              //recent activity
+              RecentActivityCard(activityNum: 3,),
 
               const SizedBox(height: 120), // Scroll spacing above navbar
             ],

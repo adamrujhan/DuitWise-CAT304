@@ -1,6 +1,6 @@
+import 'package:duitwise_app/core/widgets/recent_activity.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
-import 'package:duitwise_app/modules/financial_tracking/providers/transaction_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +29,6 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
 
         final uid = user.uid;
         final financialAsync = ref.watch(financialStreamProvider(uid));
-        final latestTxAsync = ref.watch(latestTransactionsStreamProvider(uid));
 
         return financialAsync.when(
           loading: () =>
@@ -41,8 +40,10 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
             final usedMap = financial.used;
 
             // ✅ Expense = total used across all categories
-            final totalExpense =
-                usedMap.values.fold<double>(0, (sum, v) => sum + v);
+            final totalExpense = usedMap.values.fold<double>(
+              0,
+              (sum, v) => sum + v,
+            );
 
             return Scaffold(
               backgroundColor: const Color(0xFFA0E5C7),
@@ -167,8 +168,8 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                                 final percent = allocated == 0
                                     ? 0
                                     : ((used / allocated) * 100)
-                                        .clamp(0, 100)
-                                        .toInt();
+                                          .clamp(0, 100)
+                                          .toInt();
 
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 16.0),
@@ -201,8 +202,10 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                                               child: LinearProgressIndicator(
                                                 value: allocated == 0
                                                     ? 0
-                                                    : (used / allocated)
-                                                        .clamp(0, 1),
+                                                    : (used / allocated).clamp(
+                                                        0,
+                                                        1,
+                                                      ),
                                                 minHeight: 10,
                                                 backgroundColor:
                                                     Colors.grey[300],
@@ -231,89 +234,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                       const SizedBox(height: 15),
 
                       /// Recent Activity (from transactions)
-                      RoundedCard(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Recent Activity",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-
-                              latestTxAsync.when(
-                                loading: () => const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                //TODO: fix error in this line
-                                error: (e, _) => Text("Error: $e"),
-                                data: (txs) {
-                                  if (txs.isEmpty) {
-                                    return Text(
-                                      "No transactions yet.",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    );
-                                  }
-
-                                  return Column(
-                                    children: txs.map((t) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 12),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  t.category,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                Text(
-                                                  t.notes,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Text(
-                                              "-RM ${t.amount.toStringAsFixed(2)}",
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      RecentActivityCard(activityNum: 6,),
 
                       const SizedBox(height: 20),
                     ],

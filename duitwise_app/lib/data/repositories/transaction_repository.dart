@@ -27,8 +27,8 @@ class TransactionRepository {
   /// Latest N (still live)
   Stream<List<TransactionModel>> watchLatestTransactions({
     required String uid,
-    // only take latest 6 transactions
-    int limit = 6,
+    required int limit,
+
   }) {
     final ref = db
         .ref("users/$uid/transactions")

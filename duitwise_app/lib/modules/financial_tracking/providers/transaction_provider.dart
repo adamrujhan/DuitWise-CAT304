@@ -13,7 +13,12 @@ final transactionsStreamProvider =
 });
 
 final latestTransactionsStreamProvider =
-    StreamProvider.family<List<TransactionModel>, String>((ref, uid) {
-  final repo = ref.watch(transactionRepositoryProvider);
-  return repo.watchLatestTransactions(uid: uid, limit: 6);
-});
+    StreamProvider.family<List<TransactionModel>, ({String uid, int limit})>(
+  (ref, params) {
+    final repo = ref.watch(transactionRepositoryProvider);
+    return repo.watchLatestTransactions(
+      uid: params.uid,
+      limit: params.limit,
+    );
+  },
+);
