@@ -24,68 +24,70 @@ class ActivityCard extends ConsumerWidget {
         return RoundedCard(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                txAsync.when(
-                  loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                  error: (e, _) => Text(
-                    "Error: $e",
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  data: (txs) {
-                    if (txs.isEmpty) {
-                      return Text(
-                        "No transactions yet.",
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      );
-                    }
-
-                    return Column(
-                      children: txs.map((t) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    t.category,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    t.notes,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                "-RM ${t.amount.toStringAsFixed(2)}",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  txAsync.when(
+                    loading: () => const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (e, _) => Text(
+                      "Error: $e",
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    data: (txs) {
+                      if (txs.isEmpty) {
+                        return Text(
+                          "No transactions yet.",
+                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         );
-                      }).toList(),
-                    );
-                  },
-                ),
-              ],
+                      }
+              
+                      return Column(
+                        children: txs.map((t) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      t.category,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      t.notes,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "-RM ${t.amount.toStringAsFixed(2)}",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         );

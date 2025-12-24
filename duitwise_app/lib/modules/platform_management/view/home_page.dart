@@ -1,5 +1,7 @@
+import 'package:duitwise_app/core/widgets/add_transaction_popup.dart';
 import 'package:duitwise_app/core/widgets/recent_activity.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/platform_management/providers/cumulative_daily_spending_provider.dart';
 import 'package:duitwise_app/modules/platform_management/providers/weekly_total_spending_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
@@ -18,6 +20,8 @@ class HomePage extends ConsumerWidget {
     final spots = ref.watch(cumulativeDailySpendingProvider(uid));
 
     final weeklySpending = ref.watch(weeklyTotalSpendingProvider(uid));
+
+    final financialAsync = ref.watch(financialStreamProvider(uid));
 
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),
@@ -102,6 +106,26 @@ class HomePage extends ConsumerWidget {
           ),
         ),
       ),
+      floatingActionButton: uid == null
+          ? null
+          : FloatingActionButton(
+              backgroundColor: Colors.white,
+              child: const Icon(Icons.add, color: Colors.black),
+              onPressed: () {
+                final categories = financialAsync.maybeWhen(
+                  data: (f) => f.commitments.keys.toList(),
+                  orElse: () => <String>[],
+                );
+
+                if (categories.isEmpty) return;
+
+                showDialog(
+                  context: context,
+                  builder: (_) =>
+                      AddTransactionPopup(uid: uid, categories: categories),
+                );
+              },
+            ),
     );
   }
 }
