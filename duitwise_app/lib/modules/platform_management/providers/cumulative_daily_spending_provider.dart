@@ -2,7 +2,7 @@ import 'package:duitwise_app/modules/financial_tracking/providers/transaction_pr
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final cumulativeDailySpendingProvider = Provider.family<List<FlSpot>, String>((
+final cumulativeDailySpendingProvider = Provider.family<List<FlSpot>, String?>((
   ref,
   uid,
 ) {

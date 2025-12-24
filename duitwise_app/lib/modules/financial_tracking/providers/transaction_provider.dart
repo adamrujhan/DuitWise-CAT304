@@ -7,7 +7,7 @@ final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
 });
 
 final transactionsStreamProvider =
-    StreamProvider.family<List<TransactionModel>, String>((ref, uid) {
+    StreamProvider.family<List<TransactionModel>, String?>((ref, uid) {
   final repo = ref.watch(transactionRepositoryProvider);
   return repo.watchTransactions(uid);
 });

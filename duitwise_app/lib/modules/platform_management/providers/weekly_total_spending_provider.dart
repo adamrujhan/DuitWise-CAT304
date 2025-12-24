@@ -2,7 +2,7 @@ import 'package:duitwise_app/modules/financial_tracking/providers/transaction_pr
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final weeklyTotalSpendingProvider =
-    Provider.family<double, String>((ref, uid) {
+    Provider.family<double, String?>((ref, uid) {
   final txAsync = ref.watch(transactionsStreamProvider(uid));
 
   return txAsync.when(

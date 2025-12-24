@@ -1,4 +1,4 @@
-import 'package:duitwise_app/core/widgets/budget_activity.dart';
+import 'package:duitwise_app/core/widgets/activity_card.dart';
 import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
 import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';

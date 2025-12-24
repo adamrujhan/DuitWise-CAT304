@@ -19,10 +19,7 @@ class ActivityCard extends ConsumerWidget {
           return const Text("No user found");
         }
 
-        final uid = user.uid;
-        final txAsync = ref.watch(
-          transactionsStreamProvider(uid),
-        );
+        final txAsync = ref.watch(transactionsStreamProvider(user.uid));
 
         return RoundedCard(
           child: Padding(
