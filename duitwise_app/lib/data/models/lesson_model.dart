@@ -10,7 +10,6 @@ class Lesson {
   final String title;
   final String description;
   final String? videoUrl;
-  final int durationMinutes; // in minutes
   final String category; // Budgeting, Saving, Investing, Debt
   final int difficulty; // 1=Beginner, 2=Intermediate, 3=Advanced
   final List<String> learningOutcomes;
@@ -22,7 +21,6 @@ class Lesson {
     required this.title,
     required this.description,
     this.videoUrl,
-    required this.durationMinutes,
     required this.category,
     required this.difficulty,
     required this.learningOutcomes,
@@ -37,7 +35,6 @@ class Lesson {
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       videoUrl: json['videoUrl'],
-      durationMinutes: json['durationMinutes'] ?? 0,
       category: json['category'] ?? '',
       difficulty: json['difficulty'] ?? 1,
       learningOutcomes: json['learningOutcomes'] != null
@@ -59,7 +56,6 @@ class Lesson {
       'title': title,
       'description': description,
       'videoUrl': videoUrl,
-      'durationMinutes': durationMinutes,
       'category': category,
       'difficulty': difficulty,
       'learningOutcomes': learningOutcomes,
@@ -67,9 +63,6 @@ class Lesson {
       'updatedAt': updatedAt?.toIso8601String(),
     };
   }
-
-  // Helper methods for UI
-  Duration get duration => Duration(minutes: durationMinutes);
 
   String get localizedCategory => category;
 
@@ -122,7 +115,6 @@ class Lesson {
     String? title,
     String? description,
     String? videoUrl,
-    int? durationMinutes,
     String? category,
     int? difficulty,
     List<String>? learningOutcomes,
@@ -134,7 +126,6 @@ class Lesson {
       title: title ?? this.title,
       description: description ?? this.description,
       videoUrl: videoUrl ?? this.videoUrl,
-      durationMinutes: durationMinutes ?? this.durationMinutes,
       category: category ?? this.category,
       difficulty: difficulty ?? this.difficulty,
       learningOutcomes: learningOutcomes ?? this.learningOutcomes,
