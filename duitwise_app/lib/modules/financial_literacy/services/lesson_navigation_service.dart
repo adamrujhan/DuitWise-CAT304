@@ -91,71 +91,6 @@ class LessonNavigationService {
                 const SizedBox(height: 20),
               ],
               
-              // Duration and Info
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Duration',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        Text(
-                          '${lesson.durationMinutes} minutes',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (lesson.videoUrl != null && lesson.videoUrl!.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Format',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.video_library,
-                                color: Colors.blue.shade700,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              const Text(
-                                'Video Lesson',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-              
               const SizedBox(height: 24),
               
               // Action Buttons
@@ -479,7 +414,7 @@ class _YouTubeLoadingDialogState extends State<_YouTubeLoadingDialog> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${widget.lesson.durationMinutes} min • ${widget.lesson.category}',
+                          widget.lesson.category, // REMOVED duration
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,

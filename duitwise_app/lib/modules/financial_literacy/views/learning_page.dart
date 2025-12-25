@@ -606,192 +606,151 @@ class _LearningPageState extends ConsumerState<LearningPage> {
   }
 
   Widget _buildLessonCard(BuildContext context, Lesson lesson) {
-    return RoundedCard(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with Category and Difficulty
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Category Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: lesson.categoryColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    lesson.localizedCategory,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
+  return RoundedCard(
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with Category and Difficulty
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Category Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: lesson.categoryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  lesson.localizedCategory,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                
-                // Difficulty Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: lesson.difficultyColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        lesson.difficultyIcon,
-                        size: 14,
+              ),
+              
+              // Difficulty Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: lesson.difficultyColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      lesson.difficultyIcon,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      lesson.difficultyText,
+                      style: const TextStyle(
                         color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(width: 4),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Lesson Title
+          Text(
+            lesson.title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+              height: 1.3,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          
+          const SizedBox(height: 8),
+          
+          // Lesson Description
+          Text(
+            lesson.description,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black54,
+              height: 1.4,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Action Buttons
+          Row(
+            children: [
+              // Learn Button
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => LessonNavigationService.showLessonDetail(context, lesson),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.play_arrow, size: 20),
+                      SizedBox(width: 8),
                       Text(
-                        lesson.difficultyText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
+                        'Start Learning',
+                        style: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Lesson Title
-            Text(
-              lesson.title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
-                height: 1.3,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Lesson Description
-            Text(
-              lesson.description,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-                height: 1.4,
+              
+              const SizedBox(width: 12),
+              
+              // Quiz Button
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade700,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue.shade700, width: 1.5),
+                ),
+                child: IconButton(
+                  onPressed: () => QuizNavigationService.showQuizDialog(context, lesson),
+                  icon: Icon(
+                    Icons.quiz,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    size: 22,
+                  ),
+                  tooltip: 'Take Quiz',
+                ),
               ),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Duration
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.timer,
-                    size: 18,
-                    color: Colors.blue.shade700,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Duration",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    Text(
-                      "${lesson.durationMinutes} minutes",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Action Buttons
-            Row(
-              children: [
-                // Learn Button
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => LessonNavigationService.showLessonDetail(context, lesson),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.play_arrow, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'Start Learning',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(width: 12),
-                
-                // Quiz Button
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade700,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blue.shade700, width: 1.5),
-                  ),
-                  child: IconButton(
-                    onPressed: () => QuizNavigationService.showQuizDialog(context, lesson),
-                    icon: Icon(
-                      Icons.quiz,
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      size: 22,
-                    ),
-                    tooltip: 'Take Quiz',
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
