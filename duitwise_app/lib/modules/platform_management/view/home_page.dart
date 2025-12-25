@@ -17,9 +17,11 @@ class HomePage extends ConsumerWidget {
     final userAsync = ref.watch(userStreamProvider);
     final uid = userAsync.maybeWhen(data: (u) => u?.uid, orElse: () => null);
 
-    final spots = ref.watch(cumulativeDailySpendingProvider(uid));
+    final cumulativeDailySpendingAsync = ref.watch(
+      cumulativeDailySpendingProvider(uid),
+    );
 
-    final weeklySpending = ref.watch(weeklyTotalSpendingProvider(uid));
+    final weeklySpendingAsync = ref.watch(weeklyTotalSpendingProvider(uid));
 
     final financialAsync = ref.watch(financialStreamProvider(uid));
 
@@ -74,7 +76,16 @@ class HomePage extends ConsumerWidget {
                               const SizedBox(height: 18),
                               SizedBox(
                                 height: 220,
-                                child: LineChart(_chartData(spots)),
+                                child: cumulativeDailySpendingAsync.when(
+                                  loading: () => const SizedBox(
+                                    height: 220,
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                                  error: (e, _) => Text('Chart error: $e'),
+                                  data: (spots) => LineChart(_chartData(spots)),
+                                ),
                               ),
                             ],
                           ),
@@ -86,11 +97,18 @@ class HomePage extends ConsumerWidget {
                       RoundedCard(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
-                          child: Text(
-                            "This week spending: RM${weeklySpending.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w700,
+                          child: weeklySpendingAsync.when(
+                            data: (weeklySpending) => Text(
+                              "This week spending: RM${weeklySpending.toStringAsFixed(2)}",
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            error: (e, _) => Text('Weekly spending error: $e'),
+                            loading: () => const SizedBox(
+                              height: 220,
+                              child: Center(child: CircularProgressIndicator()),
                             ),
                           ),
                         ),

@@ -40,6 +40,8 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
 
+  flutter_launcher_icons: ^0.13.1
+
   # Riverpod lint rules
   riverpod_lint: ^3.0.3
   custom_lint: ^0.8.1
@@ -55,3 +57,10 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/data/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icons/app_icon.png
+  adaptive_icon_background: "#A0E5C7"
+  adaptive_icon_foreground: "assets/icons/app_icon.png"

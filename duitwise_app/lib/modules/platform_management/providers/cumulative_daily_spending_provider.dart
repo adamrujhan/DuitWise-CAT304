@@ -1,33 +1,35 @@
+import 'package:duitwise_app/data/models/transaction_model.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/transaction_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final cumulativeDailySpendingProvider = Provider.family<List<FlSpot>, String?>((
-  ref,
-  uid,
-) {
-  final txAsync = ref.watch(transactionsStreamProvider(uid));
+final cumulativeDailySpendingProvider =
+    StreamProvider.family<List<FlSpot>, String?>((ref, uid) {
+      if (uid == null) return const Stream.empty();
 
-  return txAsync.when(
-    data: (txs) {
-      final Map<DateTime, double> dailyTotals = {};
+      return ref
+          .watch(transactionsStreamProvider(uid))
+          .when(
+            data: (txs) => Stream.value(_toCumulativeSpots(txs)),
+            loading: () => const Stream.empty(),
+            error: (_, _) => const Stream.empty(),
+          );
+    });
 
-      for (final tx in txs) {
-        final dt = DateTime.fromMillisecondsSinceEpoch(tx.createdAt.toInt());
-        final dayKey = DateTime(dt.year, dt.month, dt.day);
+List<FlSpot> _toCumulativeSpots(List<TransactionModel> txs) {
+  final Map<DateTime, double> dailyTotals = {};
 
-        dailyTotals[dayKey] = (dailyTotals[dayKey] ?? 0) + tx.amount;
-      }
+  for (final tx in txs) {
+    final dt = DateTime.fromMillisecondsSinceEpoch(tx.createdAt.toInt());
+    final dayKey = DateTime(dt.year, dt.month, dt.day);
+    dailyTotals[dayKey] = (dailyTotals[dayKey] ?? 0) + tx.amount;
+  }
 
-      final days = dailyTotals.keys.toList()..sort();
+  final days = dailyTotals.keys.toList()..sort();
 
-      double cumulative = 0;
-      return List.generate(days.length, (i) {
-        cumulative += dailyTotals[days[i]]!;
-        return FlSpot(i.toDouble(), cumulative);
-      });
-    },
-    loading: () => const [],
-    error: (_, _) => const [],
-  );
-});
+  double cumulative = 0;
+  return List.generate(days.length, (i) {
+    cumulative += dailyTotals[days[i]]!;
+    return FlSpot(i.toDouble(), cumulative);
+  });
+}
