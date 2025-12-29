@@ -1,4 +1,5 @@
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
+import 'package:duitwise_app/services/firebase_auth/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
@@ -219,6 +220,38 @@ class ProfilePage extends ConsumerWidget {
                           ),
                         );
                       },
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    RoundedCard(
+                      borderRadius: 16,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await ref.read(authControllerProvider.notifier).signOut();
+                            },
+                            child: const Text(
+                              "Logout",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
 
                     const SizedBox(height: 40),
