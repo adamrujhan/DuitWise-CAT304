@@ -22,7 +22,10 @@ class FinancialController extends AsyncNotifier<void> {
     required String uid,
     required String label,
     required int amount,
-  }) {
-    return _repo.addCommitment(uid: uid, label: label, amount: amount);
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repo.addCommitment(uid: uid, label: label, amount: amount),
+    );
   }
 }
