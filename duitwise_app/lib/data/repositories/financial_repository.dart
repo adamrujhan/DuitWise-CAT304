@@ -34,4 +34,9 @@ class FinancialRepository {
     final ref = db.ref("users/$uid/financial/commitments");
     return ref.update({label: amount});
   }
+
+  Future<void> deleteCommitment({required String uid, required String label}) {
+    final ref = db.ref("users/$uid/financial/commitments/$label");
+    return ref.remove();
+  }
 }

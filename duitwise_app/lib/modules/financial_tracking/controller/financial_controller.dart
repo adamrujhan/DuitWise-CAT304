@@ -28,4 +28,14 @@ class FinancialController extends AsyncNotifier<void> {
       () => _repo.addCommitment(uid: uid, label: label, amount: amount),
     );
   }
+
+  Future<void> deleteCommitment({
+    required String uid,
+    required String label,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _repo.deleteCommitment(uid: uid, label: label),
+    );
+  }
 }

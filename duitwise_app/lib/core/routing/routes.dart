@@ -12,7 +12,6 @@ import 'package:duitwise_app/modules/auth/view/register_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/main_shell.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_setup_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_allocation_page.dart';
-import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
 
 import 'package:flutter/material.dart';
@@ -141,11 +140,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/profile',
             builder: (context, state) {
-              final user = ref.read(userStreamProvider).value;
-              if (user == null) {
-                return const Scaffold(body: Text("No user profile"));
-              }
-              return ProfilePage(user: user);
+              return ProfilePage();
             },
           ),
         ],
