@@ -15,8 +15,14 @@ class FinancialController extends AsyncNotifier<void> {
     Map<String, dynamic> newData,
   ) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => _repo.updateFinancial(uid, newData),
-    );
+    state = await AsyncValue.guard(() => _repo.updateFinancial(uid, newData));
+  }
+
+  Future<void> addCommitment({
+    required String uid,
+    required String label,
+    required int amount,
+  }) {
+    return _repo.addCommitment(uid: uid, label: label, amount: amount);
   }
 }
