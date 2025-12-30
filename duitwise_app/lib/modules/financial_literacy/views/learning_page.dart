@@ -58,7 +58,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
               
               // Welcome Card
               RoundedCard(
@@ -110,7 +110,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               ),
 
               // Search Bar
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               RoundedCard(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -169,7 +169,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               _buildDifficultyFilterChips(lessonState, notifier),
 
               // Active Filters Display - ALWAYS VISIBLE NOW
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               RoundedCard(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
