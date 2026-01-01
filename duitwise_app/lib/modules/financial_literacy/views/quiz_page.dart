@@ -503,7 +503,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                       side: BorderSide(color: Colors.grey.shade400),
                     ),
                     child: const Text(
-                      'Retry Quiz',
+                      'Retry',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),

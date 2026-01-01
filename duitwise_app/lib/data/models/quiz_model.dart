@@ -9,7 +9,6 @@ class QuizQuestion {
   final String question;
   final Map<String, String> options;
   final String correctAnswer; 
-  final String explanation;
   final int points;
   final int timePerQuestion; 
 
@@ -19,7 +18,6 @@ class QuizQuestion {
     required this.question,
     required this.options,
     required this.correctAnswer,
-    required this.explanation,
     this.points = 1,
     this.timePerQuestion = 60,
   });
@@ -54,7 +52,6 @@ class QuizQuestion {
       question: json['question']?.toString() ?? '',
       options: _parseOptions(json['options']),
       correctAnswer: json['correctAnswer']?.toString() ?? '',
-      explanation: json['explanation']?.toString() ?? '',
       points: (json['points'] as num?)?.toInt() ?? 1,
       timePerQuestion: (json['timePerQuestion'] as num?)?.toInt() ?? 60,
     );
@@ -81,7 +78,6 @@ class QuizQuestion {
       'question': question,
       'options': options,
       'correctAnswer': correctAnswer,
-      'explanation': explanation,
       'points': points,
       'timePerQuestion': timePerQuestion,
     };
