@@ -96,7 +96,7 @@ class LessonNavigationService {
               // Action Buttons
               Row(
                 children: [
-                  // Close Button
+                  // Cancel Button
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
@@ -108,7 +108,7 @@ class LessonNavigationService {
                         side: BorderSide(color: Colors.grey.shade400),
                       ),
                       child: const Text(
-                        'Close',
+                        'Cancel',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

@@ -684,7 +684,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                       Icon(Icons.play_arrow, size: 20),
                       SizedBox(width: 8),
                       Text(
-                        'Start Learning',
+                        'Start Lesson',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -698,22 +698,31 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               const SizedBox(width: 12),
               
               // Quiz Button
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade700,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.shade700, width: 1.5),
-                ),
-                child: IconButton(
+              Expanded(
+                child: ElevatedButton(
                   onPressed: () => QuizNavigationService.showQuizDialog(context, lesson),
-                  icon: Icon(
-                    Icons.quiz,
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                    size: 22,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  tooltip: 'Take Quiz',
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.quiz, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Start Quiz',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -722,5 +731,4 @@ class _LearningPageState extends ConsumerState<LearningPage> {
       ),
     ),
   );
-}
-}
+}}
