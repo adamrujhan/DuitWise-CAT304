@@ -158,26 +158,6 @@ class RegisterPage extends ConsumerWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
-                    Row(
-                      children: [
-                        SocialIconButton(
-                          icon: "assets/icons/google.png",
-                          onTap: () {
-                            // TODO: Google Sign-In
-                          },
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        SocialIconButton(
-                          icon: "assets/icons/apple.png",
-                          onTap: () {
-                            // TODO: Apple Sign-In
-                          },
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
