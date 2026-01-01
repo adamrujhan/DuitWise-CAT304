@@ -39,7 +39,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
             final commitments = financial.commitments;
             final usedMap = financial.used;
 
-            // ✅ Expense = total used across all categories
+            // Total used across all categories
             final totalExpense = usedMap.values.fold<double>(
               0,
               (sum, v) => sum + v,

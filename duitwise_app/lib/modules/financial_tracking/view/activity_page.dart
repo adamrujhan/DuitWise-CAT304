@@ -67,7 +67,7 @@ class ActivityPage extends ConsumerWidget {
 
                             return ListView.separated(
                               itemCount: txs.length,
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (_, _) =>
                                   const SizedBox(height: 12),
                               itemBuilder: (context, index) {
                                 final t = txs[index];
