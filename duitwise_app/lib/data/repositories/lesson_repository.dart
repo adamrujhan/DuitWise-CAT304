@@ -141,9 +141,18 @@ class LessonRepository {
       final newLessonRef = _databaseRef.child(_lessonsPath).push();
       final String lessonId = newLessonRef.key!;
 
-      final lessonData = lesson.copyWith(id: lessonId).toJson();
-      await newLessonRef.set(lessonData);
+      // ✅ build a map manually (no copyWith / toJson needed)
+      final lessonData = <String, dynamic>{
+        'id': lessonId,
+        'title': lesson.title,
+        'description': lesson.description,
+        'videoUrl': lesson.videoUrl,
+        'category': lesson.category,
+        'difficulty': lesson.difficulty,
+        'learningOutcomes': lesson.learningOutcomes,
+      };
 
+      await newLessonRef.set(lessonData);
       return lessonId;
     } catch (_) {
       return null;
@@ -153,7 +162,18 @@ class LessonRepository {
   // Update lesson
   Future<bool> updateLesson(String lessonId, Lesson lesson) async {
     try {
-      final lessonData = lesson.toJson();
+      final lessonData = <String, dynamic>{
+        'id': lessonId,
+        'title': lesson.title,
+        'description': lesson.description,
+        'videoUrl': lesson.videoUrl,
+        'category': lesson.category,
+        'difficulty': lesson.difficulty,
+        'learningOutcomes': lesson.learningOutcomes,
+        // update timestamp if you want
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
+
       await _databaseRef.child('$_lessonsPath/$lessonId').update(lessonData);
       return true;
     } catch (_) {
@@ -195,20 +215,5 @@ class LessonRepository {
     } catch (_) {
       return [];
     }
-  }
-}
-
-Future<bool> testConnection() async {
-  try {
-    final DatabaseReference ref = FirebaseDatabase.instance.ref();
-    await ref.child('connection_test').set({
-      'timestamp': DateTime.now().toIso8601String(),
-      'message': 'Connection test from DuitWise',
-    });
-
-    await ref.child('connection_test').remove();
-    return true;
-  } catch (_) {
-    return false;
   }
 }

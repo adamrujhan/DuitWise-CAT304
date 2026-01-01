@@ -10,8 +10,8 @@ class Lesson {
   final String title;
   final String description;
   final String? videoUrl;
-  final String category; // Budgeting, Saving, Investing, Debt
-  final int difficulty; // 1=Beginner, 2=Intermediate, 3=Advanced
+  final String category;
+  final int difficulty; 
   final List<String> learningOutcomes;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -49,21 +49,6 @@ class Lesson {
     );
   }
 
-  // Convert to JSON for Firebase
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'videoUrl': videoUrl,
-      'category': category,
-      'difficulty': difficulty,
-      'learningOutcomes': learningOutcomes,
-      'createdAt': createdAt?.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
-    };
-  }
-
   String get localizedCategory => category;
 
   Color get categoryColor {
@@ -94,43 +79,5 @@ class Lesson {
       default:
         return Colors.grey;
     }
-  }
-
-  IconData get difficultyIcon {
-    switch (difficulty) {
-      case 1:
-        return Icons.flag;
-      case 2:
-        return Icons.trending_up;
-      case 3:
-        return Icons.star;
-      default:
-        return Icons.help;
-    }
-  }
-
-  // Copy with method for updates
-  Lesson copyWith({
-    String? id,
-    String? title,
-    String? description,
-    String? videoUrl,
-    String? category,
-    int? difficulty,
-    List<String>? learningOutcomes,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return Lesson(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      videoUrl: videoUrl ?? this.videoUrl,
-      category: category ?? this.category,
-      difficulty: difficulty ?? this.difficulty,
-      learningOutcomes: learningOutcomes ?? this.learningOutcomes,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
   }
 }

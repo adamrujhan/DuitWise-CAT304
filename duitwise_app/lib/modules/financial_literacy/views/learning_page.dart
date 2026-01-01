@@ -260,16 +260,18 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                           child: Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: lessonState.selectedDifficulties.map((
-                              difficulty,
-                            ) {
-                              final difficultyText = _getDifficultyText(
-                                difficulty,
+                            children: lessonState.selectedDifficulties.map((difficulty) {
+                              // Create temp lesson to use model properties
+                              final tempLesson = Lesson(
+                                id: '',
+                                title: '',
+                                description: '',
+                                videoUrl: null,
+                                category: '',
+                                difficulty: difficulty,
+                                learningOutcomes: [],
                               );
-                              final difficultyColor = _getDifficultyColor(
-                                difficulty,
-                              );
-
+                              
                               return Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -279,25 +281,20 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: difficultyColor,
+                                    color: tempLesson.difficultyColor, // USE MODEL'S difficultyColor
                                     width: 1.5,
                                   ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
-                                      _getDifficultyIcon(difficulty),
-                                      size: 14,
-                                      color: difficultyColor,
-                                    ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      difficultyText,
+                                      tempLesson.difficultyText, // USE MODEL'S difficultyText
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: difficultyColor,
+                                        color: tempLesson.difficultyColor, // USE MODEL'S difficultyColor
                                       ),
                                     ),
                                     const SizedBox(width: 4),
@@ -307,7 +304,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                                       child: Icon(
                                         Icons.close,
                                         size: 14,
-                                        color: difficultyColor,
+                                        color: tempLesson.difficultyColor, // USE MODEL'S difficultyColor
                                       ),
                                     ),
                                   ],
@@ -345,11 +342,6 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
-                                        Icons.clear_all,
-                                        size: 16,
-                                        color: Colors.blue.shade700,
-                                      ),
                                       const SizedBox(width: 6),
                                       Text(
                                         "Clear All Filters",
@@ -544,253 +536,216 @@ class _LearningPageState extends ConsumerState<LearningPage> {
     );
   }
 
-  Widget _buildDifficultyFilterChips(
-    LessonState state,
-    LessonNotifier notifier,
-  ) {
-    final difficulties = notifier.getAvailableDifficulties();
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: difficulties.map((difficulty) {
-        final isSelected = state.selectedDifficulties.contains(difficulty);
-        final difficultyText = _getDifficultyText(difficulty);
-        final difficultyColor = _getDifficultyColor(difficulty);
-
-        return GestureDetector(
-          onTap: () => notifier.toggleDifficulty(difficulty),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isSelected ? difficultyColor : Colors.grey.shade300,
-                width: isSelected ? 2.0 : 1.5,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: difficultyColor.withValues(alpha: 0.2),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : [],
+  Widget _buildDifficultyFilterChips(LessonState state, LessonNotifier notifier) {
+  final difficulties = notifier.getAvailableDifficulties();
+  
+  return Wrap(
+    spacing: 8,
+    runSpacing: 8,
+    children: difficulties.map((difficulty) {
+      final isSelected = state.selectedDifficulties.contains(difficulty);
+      
+      // Create a temporary lesson to use model properties
+      final tempLesson = Lesson(
+        id: '',
+        title: '',
+        description: '',
+        videoUrl: null,
+        category: '',
+        difficulty: difficulty,
+        learningOutcomes: [],
+      );
+      
+      return GestureDetector(
+        onTap: () => notifier.toggleDifficulty(difficulty),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected ? tempLesson.difficultyColor : Colors.grey.shade300,
+              width: isSelected ? 2.0 : 1.5,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  _getDifficultyIcon(difficulty),
-                  size: 14,
-                  color: isSelected ? difficultyColor : Colors.grey.shade600,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  difficultyText,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isSelected ? difficultyColor : Colors.grey.shade700,
-                  ),
-                ),
-              ],
-            ),
+            boxShadow: isSelected ? [
+              BoxShadow(
+                // ignore: deprecated_member_use
+                color: tempLesson.difficultyColor.withOpacity(0.2),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              )
+            ] : [],
           ),
-        );
-      }).toList(),
-    );
-  }
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 6),
+              Text(
+                tempLesson.difficultyText,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? tempLesson.difficultyColor : Colors.grey.shade700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }).toList(),
+  );
+}
 
-  String _getDifficultyText(int difficulty) {
-    switch (difficulty) {
-      case 1:
-        return 'Beginner';
-      case 2:
-        return 'Intermediate';
-      case 3:
-        return 'Advanced';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  Color _getDifficultyColor(int difficulty) {
-    switch (difficulty) {
-      case 1:
-        return const Color.fromARGB(255, 78, 183, 47);
-      case 2:
-        return Colors.orange;
-      case 3:
-        return const Color.fromARGB(255, 163, 69, 180);
-      default:
-        return Colors.grey;
-    }
-  }
-
-  IconData _getDifficultyIcon(int difficulty) {
-    switch (difficulty) {
-      case 1:
-        return Icons.flag;
-      case 2:
-        return Icons.trending_up;
-      case 3:
-        return Icons.star;
-      default:
-        return Icons.help;
-    }
-  }
 
   Widget _buildLessonCard(BuildContext context, Lesson lesson) {
-    return RoundedCard(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with Category and Difficulty
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Category Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: lesson.categoryColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    lesson.localizedCategory,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
+  return RoundedCard(
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with Category and Difficulty
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Category Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: lesson.categoryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  lesson.localizedCategory,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-
-                // Difficulty Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: lesson.difficultyColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        lesson.difficultyIcon,
-                        size: 14,
+              ),
+              
+              // Difficulty Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: lesson.difficultyColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 4),
+                    Text(
+                      lesson.difficultyText,
+                      style: const TextStyle(
                         color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(width: 4),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Lesson Title
+          Text(
+            lesson.title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+              height: 1.3,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          
+          const SizedBox(height: 8),
+          
+          // Lesson Description
+          Text(
+            lesson.description,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black54,
+              height: 1.4,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Action Buttons
+          Row(
+            children: [
+              // Learn Button
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => LessonNavigationService.showLessonDetail(context, lesson),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.play_arrow, size: 20),
+                      SizedBox(width: 8),
                       Text(
-                        lesson.difficultyText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
+                        'Start Lesson',
+                        style: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Lesson Title
-            Text(
-              lesson.title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
-                height: 1.3,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const SizedBox(height: 8),
-
-            // Lesson Description
-            Text(
-              lesson.description,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-                height: 1.4,
-              ),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const SizedBox(height: 20),
-
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => LessonNavigationService.showLessonDetail(
-                      context,
-                      lesson,
+              
+              const SizedBox(width: 12),
+              
+              // Quiz Button
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => QuizNavigationService.showQuizDialog(context, lesson),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.play_arrow, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'Start Learning',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.quiz, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Start Quiz',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade700,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blue.shade700, width: 1.5),
-                  ),
-                  child: IconButton(
-                    onPressed: () =>
-                        QuizNavigationService.showQuizDialog(context, lesson),
-                    icon: const Icon(Icons.quiz, color: Colors.white, size: 22),
-                    tooltip: 'Take Quiz',
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
-    );
-  }
-}
+    ),
+  );
+}}
