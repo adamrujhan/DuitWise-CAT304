@@ -231,7 +231,7 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
 
       setState(() {
         _correctIndex = 0;
-        _quizPoints = 10;
+        _quizPoints = 1;
         _timePerQuestion = 30;
       });
 
