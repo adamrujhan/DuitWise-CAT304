@@ -169,27 +169,27 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           
           const SizedBox(height: 20),
           
-          // Timer and question header
+          // Timer and question header - SINGLE COLOR ONLY
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Timer
+              // Timer - ALWAYS BLUE (no color changing)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _getTimerColor(state.remainingTimeForCurrentQuestion),
+                  color: Colors.blue.shade100, // SINGLE COLOR
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: _getTimerBorderColor(state.remainingTimeForCurrentQuestion)),
+                  border: Border.all(color: Colors.blue.shade300), // SINGLE COLOR
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.timer, size: 16, color: _getTimerIconColor(state.remainingTimeForCurrentQuestion)),
+                    Icon(Icons.timer, size: 16, color: Colors.blue.shade700), // SINGLE COLOR
                     const SizedBox(width: 6),
                     Text(
-                      "${state.remainingTimeForCurrentQuestion}s",
+                      "${state.remainingTimeForCurrentQuestion}s", // STILL COUNTS DOWN
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: _getTimerTextColor(state.remainingTimeForCurrentQuestion),
+                        color: Colors.blue.shade700, // SINGLE COLOR
                       ),
                     ),
                   ],
@@ -248,11 +248,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           
           const SizedBox(height: 30),
           
-          // Navigation buttons
           Row(
-            children: [              
-              const SizedBox(width: 12),
-              
+            children: [
               // Next/Submit button
               Expanded(
                 child: ElevatedButton(
@@ -272,11 +269,10 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        state.isLastQuestion ? 'Submit Quiz' : 'Next',
+                        state.isLastQuestion ? 'Submit' : 'Next',
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(width: 8),
-                      Icon(state.isLastQuestion ? Icons.check : Icons.arrow_forward),
                     ],
                   ),
                 ),
@@ -288,30 +284,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     );
   }
 
-  // Helper methods for timer colors
-  Color _getTimerColor(int remainingTime) {
-    if (remainingTime > 30) return Colors.green.shade50;
-    if (remainingTime > 10) return Colors.orange.shade50;
-    return Colors.red.shade50;
-  }
-
-  Color _getTimerBorderColor(int remainingTime) {
-    if (remainingTime > 30) return Colors.green.shade200;
-    if (remainingTime > 10) return Colors.orange.shade200;
-    return Colors.red.shade200;
-  }
-
-  Color _getTimerIconColor(int remainingTime) {
-    if (remainingTime > 30) return Colors.green;
-    if (remainingTime > 10) return Colors.orange;
-    return Colors.red;
-  }
-
-  Color _getTimerTextColor(int remainingTime) {
-    if (remainingTime > 30) return Colors.green;
-    if (remainingTime > 10) return Colors.orange;
-    return Colors.red;
-  }
+  // REMOVE all color-changing helper methods:
+  // DELETE: _getTimerColor(), _getTimerBorderColor(), _getTimerIconColor(), _getTimerTextColor()
 
   List<Widget> _buildOptions(QuizSessionState state, QuizQuestion question) {
     final currentAnswer = state.userAnswers.isNotEmpty && 
@@ -605,8 +579,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Exit quiz page
+              Navigator.pop(context); 
+              Navigator.pop(context); 
             },
             child: const Text('Exit'),
           ),

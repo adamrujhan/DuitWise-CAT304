@@ -71,42 +71,6 @@ class LessonRepository {
     }
   }
 
-  // Add new lesson (Admin only)
-  Future<String?> addLesson(Lesson lesson) async {
-    try {
-      final newLessonRef = _databaseRef.child(_lessonsPath).push();
-      final String lessonId = newLessonRef.key!;
-      
-      final lessonData = lesson.copyWith(id: lessonId).toJson();
-      await newLessonRef.set(lessonData);
-      
-      return lessonId;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // Update lesson
-  Future<bool> updateLesson(String lessonId, Lesson lesson) async {
-    try {
-      final lessonData = lesson.toJson();
-      await _databaseRef.child('$_lessonsPath/$lessonId').update(lessonData);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Delete lesson (Admin only)
-  Future<bool> deleteLesson(String lessonId) async {
-    try {
-      await _databaseRef.child('$_lessonsPath/$lessonId').remove();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   // Get lessons by category
   Future<List<Lesson>> getLessonsByCategory(String category) async {
     try {
@@ -129,22 +93,5 @@ class LessonRepository {
     } catch (e) {
       return [];
     }
-  }
-}
-
-Future<bool> testConnection() async {
-  try {
-    final DatabaseReference ref = FirebaseDatabase.instance.ref();
-    await ref.child('connection_test').set({
-      'timestamp': DateTime.now().toIso8601String(),
-      'message': 'Connection test from DuitWise'
-    });
-    
-    // Clean up test data
-    await ref.child('connection_test').remove();
-    
-    return true;
-  } catch (e) {
-    return false;
   }
 }

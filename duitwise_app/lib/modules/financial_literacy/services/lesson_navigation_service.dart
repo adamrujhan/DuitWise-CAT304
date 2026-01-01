@@ -155,7 +155,7 @@ class LessonNavigationService {
     );
   }
 
-  // Open YouTube with 5-second loading screen
+  // Open YouTube with 3 second loading screen
   static void _openYouTubeWithLoading(BuildContext context, Lesson lesson) {
     // Show loading dialog
     showDialog(
@@ -177,7 +177,7 @@ class _YouTubeLoadingDialog extends StatefulWidget {
 }
 
 class _YouTubeLoadingDialogState extends State<_YouTubeLoadingDialog> {
-  int _countdown = 5;
+  int _countdown = 3;
   bool _isOpening = false;
   String _status = 'Preparing to open YouTube...';
   Timer? _timer;
