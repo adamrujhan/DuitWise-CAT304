@@ -57,7 +57,11 @@ class LessonNotifier extends Notifier<LessonState> {
   LessonRepository get _repository => ref.read(lessonRepositoryProvider);
 
   void setLessons(List<Lesson> lessons) {
-    // set state.lessons = lessons and then recompute filteredLessons
+    // Step 1: update the source of truth
+    state = state.copyWith(lessons: lessons);
+
+    // Step 2: recompute derived state using current filters
+    _applyFiltersToLessons();
   }
 
   // Fetch all lessons
