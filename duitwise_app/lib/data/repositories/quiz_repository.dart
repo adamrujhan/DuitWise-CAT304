@@ -54,7 +54,7 @@ class QuizRepository {
     final questions = await getQuestionsByLessonId(lessonId);
     int totalTime = 0;
     for (var question in questions) {
-      totalTime += question.timePerQuestion; // This should work now
+      totalTime += question.timePerQuestion;
     }
     return totalTime;
   }
@@ -92,16 +92,6 @@ class QuizRepository {
       return null;
     } catch (e) {
       return null;
-    }
-  }
-
-  // Save quiz result (for future - optional)
-  Future<void> saveQuizResult(QuizResult result) async {
-    try {
-      final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      await _db.child('quiz_results/${result.userId}/$timestamp').set(result.toJson());
-    } catch (e) {
-      // Ignore for now
     }
   }
 }

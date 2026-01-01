@@ -1,9 +1,9 @@
-import 'package:duitwise_app/core/widgets/activity_card.dart';
 import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
 import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/mybudget_page.dart';
+import 'package:duitwise_app/modules/platform_management/view/admin_dashboard_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/home_page.dart';
 
 import 'package:duitwise_app/modules/onboarding/view/start_page.dart';
@@ -12,6 +12,8 @@ import 'package:duitwise_app/modules/auth/view/register_page.dart';
 import 'package:duitwise_app/modules/platform_management/view/layout/main_shell.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_setup_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_allocation_page.dart';
+import 'package:duitwise_app/modules/financial_tracking/view/activity_page.dart';
+import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:duitwise_app/modules/user_profile/view/user_profile.dart';
 
 import 'package:flutter/material.dart';
@@ -68,7 +70,30 @@ final routerProvider = Provider<GoRouter>((ref) {
           // -------------------------------
           // HOME
           // -------------------------------
-          GoRoute(path: '/home', builder: (_, _) => const HomePage()),
+          GoRoute(
+            path: '/home',
+            builder: (context, _) {
+              return Consumer(
+                builder: (context, ref, _) {
+                  final userAsync = ref.watch(userStreamProvider);
+
+                  return userAsync.when(
+                    loading: () => const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (e, _) => Scaffold(body: Center(child: Text('$e'))),
+                    data: (user) {
+                      if (user!.isAdmin) {
+                        return const AdminDashboardPage();
+                      }
+
+                      return const HomePage();
+                    },
+                  );
+                },
+              );
+            },
+          ),
 
           // -------------------------------
           // BUDGET
@@ -118,7 +143,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'activity',
                 name: 'budget_activity',
                 builder: (context, state) {
-                  return const ActivityCard();
+                  return const ActivityPage();
                 },
               ),
             ],

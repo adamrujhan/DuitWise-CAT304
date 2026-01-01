@@ -123,7 +123,6 @@ class ProfilePage extends ConsumerWidget {
                                           final label = result.$1;
                                           final amount = result.$2;
 
-                                          // Trigger state update
                                           ref
                                               .read(
                                                 financialControllerProvider
@@ -183,7 +182,6 @@ class ProfilePage extends ConsumerWidget {
                                                     label: label,
                                                     amount: newAmount,
                                                   );
-                                              // same function, update() will overwrite the value
                                             }
                                           },
                                         ),
@@ -240,7 +238,9 @@ class ProfilePage extends ConsumerWidget {
                               ),
                             ),
                             onPressed: () async {
-                              await ref.read(authControllerProvider.notifier).signOut();
+                              await ref
+                                  .read(authControllerProvider.notifier)
+                                  .signOut();
                             },
                             child: const Text(
                               "Logout",
@@ -266,6 +266,12 @@ class ProfilePage extends ConsumerWidget {
   }
 }
 
+const _dialogTitleStyle = TextStyle(fontSize: 22, fontWeight: FontWeight.w700);
+
+const _dialogBodyStyle = TextStyle(fontSize: 15, color: Colors.black87);
+
+const _dialogInset = EdgeInsets.symmetric(horizontal: 24);
+
 Future<(String, int)?> _showAddCommitmentDialog(BuildContext context) {
   final labelController = TextEditingController();
   final amountController = TextEditingController();
@@ -274,69 +280,71 @@ Future<(String, int)?> _showAddCommitmentDialog(BuildContext context) {
     context: context,
     barrierDismissible: false,
     builder: (context) {
-      return AlertDialog(
-        title: const Text("Add Commitment"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: labelController,
-              decoration: const InputDecoration(labelText: "Commitment name"),
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: _dialogInset,
+        child: RoundedCard(
+          borderRadius: 18,
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Add Commitment", style: _dialogTitleStyle),
+
+                const SizedBox(height: 18),
+
+                TextField(
+                  controller: labelController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: "Commitment name",
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: "Allocated amount",
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(null),
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        final label = labelController.text.trim();
+                        final amount = int.tryParse(
+                          amountController.text.trim(),
+                        );
+
+                        if (label.isEmpty || amount == null || amount <= 0) {
+                          return;
+                        }
+
+                        Navigator.of(context).pop((label, amount));
+                      },
+                      child: const Text("Add"),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: amountController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Allocated amount"),
-            ),
-          ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(null),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final label = labelController.text.trim();
-              final amount = int.tryParse(amountController.text.trim());
-
-              if (label.isEmpty || amount == null || amount <= 0) {
-                return;
-              }
-
-              Navigator.of(context).pop((label, amount));
-            },
-            child: const Text("Add"),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<bool?> _confirmDelete(BuildContext context) {
-  return showDialog<bool>(
-    context: context,
-    barrierDismissible: false, // force a decision
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("Delete commitment"),
-        content: const Text(
-          "Are you sure you want to delete this commitment? "
-          "This action cannot be undone.",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text("Delete"),
-          ),
-        ],
       );
     },
   );
@@ -353,40 +361,119 @@ Future<int?> _showEditCommitmentDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) {
-      return AlertDialog(
-        title: const Text("Edit Commitment"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: _dialogInset,
+        child: RoundedCard(
+          borderRadius: 18,
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Edit Commitment", style: _dialogTitleStyle),
+
+                const SizedBox(height: 10),
+
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: "Amount"),
+                ),
+
+                const SizedBox(height: 24),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(null),
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        final value = int.tryParse(controller.text.trim());
+                        if (value == null || value <= 0) return;
+                        Navigator.of(context).pop(value);
+                      },
+                      child: const Text("Save"),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Amount"),
-            ),
-          ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(null),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final value = int.tryParse(controller.text.trim());
+      );
+    },
+  );
+}
 
-              if (value == null || value <= 0) return;
+Future<bool?> _confirmDelete(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: _dialogInset,
+        child: RoundedCard(
+          borderRadius: 18,
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Delete commitment", style: _dialogTitleStyle),
 
-              Navigator.of(context).pop(value);
-            },
-            child: const Text("Save"),
+                const SizedBox(height: 12),
+
+                const Text(
+                  "Are you sure you want to delete this commitment?\n"
+                  "This action cannot be undone.",
+                  style: _dialogBodyStyle,
+                ),
+
+                const SizedBox(height: 26),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text("Delete"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       );
     },
   );

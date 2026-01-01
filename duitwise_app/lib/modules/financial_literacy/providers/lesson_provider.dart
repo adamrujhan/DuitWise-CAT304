@@ -8,7 +8,7 @@ class LessonState {
   final bool isLoading;
   final String? error;
   final Lesson? selectedLesson;
-  
+
   // Support multiple selections
   final List<String> selectedCategories;
   final List<int> selectedDifficulties;
@@ -56,10 +56,14 @@ class LessonNotifier extends Notifier<LessonState> {
 
   LessonRepository get _repository => ref.read(lessonRepositoryProvider);
 
+  void setLessons(List<Lesson> lessons) {
+    // set state.lessons = lessons and then recompute filteredLessons
+  }
+
   // Fetch all lessons
   Future<void> fetchLessons() async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final lessons = await _repository.getAllLessons();
       state = state.copyWith(
@@ -86,17 +90,17 @@ class LessonNotifier extends Notifier<LessonState> {
   }
 
   // --- Filter and Search Methods ---
-  
+
   // Toggle category selection (multiple)
   void toggleCategory(String category) {
     final currentCategories = List<String>.from(state.selectedCategories);
-    
+
     if (currentCategories.contains(category)) {
       currentCategories.remove(category);
     } else {
       currentCategories.add(category);
     }
-    
+
     state = state.copyWith(selectedCategories: currentCategories);
     _applyFiltersToLessons();
   }
@@ -104,13 +108,13 @@ class LessonNotifier extends Notifier<LessonState> {
   // Toggle difficulty selection (multiple)
   void toggleDifficulty(int difficulty) {
     final currentDifficulties = List<int>.from(state.selectedDifficulties);
-    
+
     if (currentDifficulties.contains(difficulty)) {
       currentDifficulties.remove(difficulty);
     } else {
       currentDifficulties.add(difficulty);
     }
-    
+
     state = state.copyWith(selectedDifficulties: currentDifficulties);
     _applyFiltersToLessons();
   }
@@ -171,7 +175,9 @@ class LessonNotifier extends Notifier<LessonState> {
     // Apply difficulty filter (multiple)
     if (state.selectedDifficulties.isNotEmpty) {
       filtered = filtered
-          .where((lesson) => state.selectedDifficulties.contains(lesson.difficulty))
+          .where(
+            (lesson) => state.selectedDifficulties.contains(lesson.difficulty),
+          )
           .toList();
     }
 
@@ -179,10 +185,12 @@ class LessonNotifier extends Notifier<LessonState> {
     if (state.searchQuery.isNotEmpty) {
       final query = state.searchQuery.toLowerCase();
       filtered = filtered
-          .where((lesson) =>
-              lesson.title.toLowerCase().contains(query) ||
-              lesson.description.toLowerCase().contains(query) ||
-              lesson.category.toLowerCase().contains(query))
+          .where(
+            (lesson) =>
+                lesson.title.toLowerCase().contains(query) ||
+                lesson.description.toLowerCase().contains(query) ||
+                lesson.category.toLowerCase().contains(query),
+          )
           .toList();
     }
 
@@ -192,7 +200,9 @@ class LessonNotifier extends Notifier<LessonState> {
   // Get lessons by category
   List<Lesson> getLessonsByCategory(String category) {
     return state.lessons
-        .where((lesson) => lesson.category.toLowerCase() == category.toLowerCase())
+        .where(
+          (lesson) => lesson.category.toLowerCase() == category.toLowerCase(),
+        )
         .toList();
   }
 
@@ -211,3 +221,8 @@ final lessonRepositoryProvider = Provider<LessonRepository>((ref) {
 final lessonProvider = NotifierProvider<LessonNotifier, LessonState>(
   () => LessonNotifier(),
 );
+
+final lessonsStreamProvider = StreamProvider<List<Lesson>>((ref) {
+  final repo = ref.watch(lessonRepositoryProvider);
+  return repo.watchLessons();
+});

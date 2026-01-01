@@ -6,6 +6,7 @@ class UserModel {
   final String name;
   final String email;
   final String photoUrl;
+  final bool isAdmin;
 
   final FinancialModel financial;
   final SettingsModel settings;
@@ -15,6 +16,7 @@ class UserModel {
     required this.name,
     required this.email,
     required this.photoUrl,
+    required this.isAdmin,
     required this.financial,
     required this.settings,
   });
@@ -28,6 +30,7 @@ class UserModel {
       name: map["name"] ?? "",
       email: map["email"] ?? "",
       photoUrl: map["photoUrl"] ?? "",
+      isAdmin: map['isAdmin'] ?? false,
       financial: FinancialModel.fromMap(
         Map<String, dynamic>.from(map["financial"] ?? {}),
       ),
@@ -46,6 +49,7 @@ class UserModel {
       "email": email,
       "uid": uid,
       "photoUrl": photoUrl,
+      'isAdmin': isAdmin,
       "financial": financial.toMap(),
       "settings": settings.toMap(),
     };

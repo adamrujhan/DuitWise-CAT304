@@ -69,7 +69,7 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 15),
 
                       RoundedCard(
                         child: Padding(
@@ -87,7 +87,7 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
                               const SizedBox(height: 16),
 
                               ...commitments.entries.map((entry) {
-                                final name = entry.key; // e.g. "Food"
+                                final name = entry.key;
                                 final allocated = entry.value.toDouble();
 
                                 // REAL USED VALUE from RTDB: financial/used/<name>
@@ -175,11 +175,20 @@ class _MyBudgetPageState extends ConsumerState<MyBudgetPage> {
           floatingActionButton: financialAsync.maybeWhen(
             data: (financial) {
               final categories = financial.commitments.keys.toList();
+
               return FloatingActionButton(
                 onPressed: () =>
                     _showAddTransactionPopup(uid: uid, categories: categories),
-                backgroundColor: Colors.white,
-                child: const Icon(Icons.add, color: Colors.black, size: 32),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                child: RoundedCard(
+                  borderRadius: 18,
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: const Icon(Icons.add, color: Colors.black, size: 32),
+                  ),
+                ),
               );
             },
             orElse: () => const SizedBox.shrink(),

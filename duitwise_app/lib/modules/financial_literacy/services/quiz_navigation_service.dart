@@ -121,11 +121,6 @@ class QuizNavigationService {
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              lesson.difficultyIcon,
-                              size: 20,
-                              color: difficultyColor,
-                            ),
                             const SizedBox(width: 10),
                             Text(
                               "${lesson.difficultyText} Level",

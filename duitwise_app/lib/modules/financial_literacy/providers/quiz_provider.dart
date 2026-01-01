@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:async'; // ADD THIS FOR TIMER
+import 'dart:async';
 import 'package:duitwise_app/data/models/lesson_model.dart';
 import 'package:duitwise_app/data/models/quiz_model.dart';
 import 'package:duitwise_app/data/repositories/quiz_repository.dart';
@@ -9,13 +9,13 @@ final quizRepositoryProvider = Provider<QuizRepository>((ref) {
   return QuizRepository();
 });
 
-// State for quiz session
+// State for quiz session - KEEP TIMER FUNCTIONALITY
 class QuizSessionState {
   final String lessonId;
   final Lesson? lesson;
   final List<QuizQuestion> questions;
   final List<String?> userAnswers;
-  final List<int> timeSpentPerQuestion; // seconds spent on each question
+  final List<int> timeSpentPerQuestion;
   final int currentQuestionIndex;
   final DateTime startedAt;
   final bool isLoading;
@@ -114,10 +114,9 @@ class QuizSessionState {
   }
 }
 
-// Quiz Notifier - Riverpod 3.x syntax
+// Quiz Notifier - KEEP TIMER, REMOVE PREVIOUS QUESTION
 class QuizNotifier extends Notifier<QuizSessionState> {
-// Store userId
-  Timer? _timer; // Timer for countdown
+  Timer? _timer;
   int _currentQuestionTimeElapsed = 0;
   
   @override
@@ -128,13 +127,12 @@ class QuizNotifier extends Notifier<QuizSessionState> {
     );
   }
 
-  // Initialize with lesson ID (called from outside)
+  // Initialize with lesson ID
   void initialize(String lessonId) { 
-    // RESET to initial state
     state = QuizSessionState(
       lessonId: lessonId,
       startedAt: DateTime.now(),
-      isLoading: true, // Show loading
+      isLoading: true,
     );
     
     _loadQuiz();
@@ -225,7 +223,7 @@ class QuizNotifier extends Notifier<QuizSessionState> {
     state = state.copyWith(userAnswers: newAnswers);
   }
 
-  // Move to next question
+  // Move to next question ONLY (REMOVED PREVIOUS QUESTION LOGIC)
   void nextQuestion() {
     _stopTimer();
     
@@ -240,25 +238,10 @@ class QuizNotifier extends Notifier<QuizSessionState> {
     }
   }
 
-  // Move to previous question (if allowed)
-  void previousQuestion() {
-    _stopTimer();
-    
-    if (state.currentQuestionIndex > 0) {
-      state = state.copyWith(
-        currentQuestionIndex: state.currentQuestionIndex - 1,
-      );
-      
-      // Get time already spent on this question
-      if (state.currentQuestionIndex < state.timeSpentPerQuestion.length) {
-        _currentQuestionTimeElapsed = state.timeSpentPerQuestion[state.currentQuestionIndex];
-      }
-      
-      _startTimer(); // Restart timer for this question
-    }
-  }
+  // REMOVE THIS ENTIRE METHOD:
+  // void previousQuestion() { ... }
 
-  // Update time spent on current question
+  // Update time spent on current question (keep for timer)
   void updateTimeSpent(int seconds) {
     if (state.currentQuestionIndex >= state.timeSpentPerQuestion.length) return;
 
