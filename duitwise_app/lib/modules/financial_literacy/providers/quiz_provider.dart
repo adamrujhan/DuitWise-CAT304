@@ -1,3 +1,4 @@
+import 'package:duitwise_app/modules/financial_literacy/controller/quiz_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:duitwise_app/data/models/lesson_model.dart';
@@ -8,6 +9,11 @@ import 'package:duitwise_app/data/repositories/quiz_repository.dart';
 final quizRepositoryProvider = Provider<QuizRepository>((ref) {
   return QuizRepository();
 });
+
+// Provider for QuizController
+final quizControllerProvider = AsyncNotifierProvider<QuizController, void>(
+  QuizController.new,
+);
 
 // State for quiz session - KEEP TIMER FUNCTIONALITY
 class QuizSessionState {
@@ -56,8 +62,8 @@ class QuizSessionState {
   // Calculate remaining time for current question
   int get remainingTimeForCurrentQuestion {
     if (currentQuestion == null) return 0;
-    final timeSpent = currentQuestionIndex < timeSpentPerQuestion.length 
-        ? timeSpentPerQuestion[currentQuestionIndex] 
+    final timeSpent = currentQuestionIndex < timeSpentPerQuestion.length
+        ? timeSpentPerQuestion[currentQuestionIndex]
         : 0;
     return currentQuestion!.timePerQuestion - timeSpent;
   }
@@ -118,23 +124,20 @@ class QuizSessionState {
 class QuizNotifier extends Notifier<QuizSessionState> {
   Timer? _timer;
   int _currentQuestionTimeElapsed = 0;
-  
+
   @override
   QuizSessionState build() {
-    return QuizSessionState(
-      lessonId: '',
-      startedAt: DateTime.now(),
-    );
+    return QuizSessionState(lessonId: '', startedAt: DateTime.now());
   }
 
   // Initialize with lesson ID
-  void initialize(String lessonId) { 
+  void initialize(String lessonId) {
     state = QuizSessionState(
       lessonId: lessonId,
       startedAt: DateTime.now(),
       isLoading: true,
     );
-    
+
     _loadQuiz();
   }
 
@@ -142,20 +145,20 @@ class QuizNotifier extends Notifier<QuizSessionState> {
   void _startTimer() {
     _timer?.cancel();
     _currentQuestionTimeElapsed = 0;
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _currentQuestionTimeElapsed++;
-      
+
       // Update time spent for current question
       if (state.currentQuestionIndex < state.timeSpentPerQuestion.length) {
         final newTimeSpent = List<int>.from(state.timeSpentPerQuestion);
         newTimeSpent[state.currentQuestionIndex] = _currentQuestionTimeElapsed;
         state = state.copyWith(timeSpentPerQuestion: newTimeSpent);
       }
-      
+
       // Check if time's up
       final currentQuestion = state.currentQuestion;
-      if (currentQuestion != null && 
+      if (currentQuestion != null &&
           _currentQuestionTimeElapsed >= currentQuestion.timePerQuestion) {
         _stopTimer();
         timeOutCurrentQuestion();
@@ -172,16 +175,16 @@ class QuizNotifier extends Notifier<QuizSessionState> {
   // Load quiz questions
   Future<void> _loadQuiz() async {
     if (state.lessonId.isEmpty) return;
-    
+
     try {
       final repository = ref.read(quizRepositoryProvider);
-      
+
       // Fetch lesson info
       final lesson = await repository.getLessonForQuiz(state.lessonId);
-      
+
       // Fetch questions
       final questions = await repository.getQuestionsByLessonId(state.lessonId);
-      
+
       if (questions.isEmpty) {
         state = state.copyWith(
           isLoading: false,
@@ -201,10 +204,9 @@ class QuizNotifier extends Notifier<QuizSessionState> {
         timeSpentPerQuestion: timeSpentPerQuestion,
         isLoading: false,
       );
-      
+
       // Start timer for first question
       _startTimer();
-      
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -219,14 +221,14 @@ class QuizNotifier extends Notifier<QuizSessionState> {
 
     final newAnswers = List<String?>.from(state.userAnswers);
     newAnswers[state.currentQuestionIndex] = answer;
-    
+
     state = state.copyWith(userAnswers: newAnswers);
   }
 
   // Move to next question ONLY (REMOVED PREVIOUS QUESTION LOGIC)
   void nextQuestion() {
     _stopTimer();
-    
+
     if (state.isLastQuestion) {
       // Quiz completed
       _completeQuiz();
@@ -247,7 +249,7 @@ class QuizNotifier extends Notifier<QuizSessionState> {
 
     final newTimeSpent = List<int>.from(state.timeSpentPerQuestion);
     newTimeSpent[state.currentQuestionIndex] = seconds;
-    
+
     state = state.copyWith(timeSpentPerQuestion: newTimeSpent);
   }
 

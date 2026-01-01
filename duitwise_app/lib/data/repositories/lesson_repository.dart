@@ -141,7 +141,7 @@ class LessonRepository {
       final newLessonRef = _databaseRef.child(_lessonsPath).push();
       final String lessonId = newLessonRef.key!;
 
-      // ✅ build a map manually (no copyWith / toJson needed)
+      // build a map manually (no copyWith / toJson needed)
       final lessonData = <String, dynamic>{
         'id': lessonId,
         'title': lesson.title,
