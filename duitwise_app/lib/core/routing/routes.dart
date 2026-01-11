@@ -1,4 +1,5 @@
 import 'package:duitwise_app/modules/analytics/view/analytics_page.dart';
+import 'package:duitwise_app/modules/auth/view/forgot_password_page.dart';
 import 'package:duitwise_app/modules/financial_literacy/views/learning_page.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/financial_tracking/view/budget_page.dart';
@@ -39,7 +40,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (authState.isLoading) return null;
 
       final User? user = authState.asData?.value;
-      const publicRoutes = ['/', '/signin', '/register'];
+      const publicRoutes = ['/', '/signin', '/register', '/forgot_password'];
       final isPublic = publicRoutes.contains(state.matchedLocation);
 
       if (user == null) {
@@ -62,6 +63,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (_, _) => const StartPage()),
       GoRoute(path: '/signin', builder: (_, _) => const SignInPage()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterPage()),
+      GoRoute(
+        path: '/forgot_password',
+        builder: (_, _) => const ForgotPasswordPage(),
+      ),
 
       // ---------- PROTECTED ROUTES ----------
       ShellRoute(

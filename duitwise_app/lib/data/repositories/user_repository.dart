@@ -1,4 +1,3 @@
-
 import 'package:duitwise_app/data/services/firebase_realtime_service.dart';
 import 'package:duitwise_app/data/models/user_model.dart';
 

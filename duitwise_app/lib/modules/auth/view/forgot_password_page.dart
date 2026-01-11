@@ -2,20 +2,25 @@ import 'package:duitwise_app/core/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:duitwise_app/services/firebase_auth/auth_controller.dart';
-import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
 
-class SignInPage extends ConsumerWidget {
-  const SignInPage({super.key});
+class ForgotPasswordPage extends ConsumerWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final email = TextEditingController();
-    final password = TextEditingController();
 
     // Watch auth state (loading, data, error)
     ref.listen(authControllerProvider, (prev, next) {
       next.whenOrNull(
+        data: (_) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('If the email exists, check your email to reset your password.')));
+
+          context.pop();
+        },
         error: (err, _) {
           ScaffoldMessenger.of(
             context,
@@ -58,21 +63,13 @@ class SignInPage extends ConsumerWidget {
               const SizedBox(height: 60),
 
               const Text(
-                "Sign in",
+                "Change Password",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ),
 
               const SizedBox(height: 20),
 
               CustomTextField(hint: "Email", controller: email),
-
-              const SizedBox(height: 16),
-
-              CustomTextField(
-                hint: "Password",
-                obscure: true,
-                controller: password,
-              ),
 
               const SizedBox(height: 30),
 
@@ -84,7 +81,7 @@ class SignInPage extends ConsumerWidget {
                       : () {
                           ref
                               .read(authControllerProvider.notifier)
-                              .signIn(email.text, password.text);
+                              .changePassword(email.text);
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -104,65 +101,12 @@ class SignInPage extends ConsumerWidget {
                           ),
                         )
                       : const Text(
-                          "Sign In",
+                          "Submit",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                ),
-              ),
-
-              const SizedBox(height: 18),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => context.push('/forgot_password'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: loading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text(
-                          "Forgot Password?",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
-              ),
-
-              const SizedBox(height: 18),
-
-              RichText(
-                text: TextSpan(
-                  text: "Doesn't have an account? ",
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
-                  children: [
-                    TextSpan(
-                      text: "Register here",
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => context.go('/register'),
-                    ),
-                  ],
                 ),
               ),
 

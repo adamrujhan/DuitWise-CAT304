@@ -99,4 +99,15 @@ class AuthController extends AsyncNotifier<User?> {
     // Do NOT manually set state to null here.
     // The authStateChanges() stream will emit `null` and update state.
   }
+
+  // ---------- FORGET PASSWORD ----------
+  Future<void> changePassword(String email) async {
+    state = const AsyncValue.loading();
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
 }
