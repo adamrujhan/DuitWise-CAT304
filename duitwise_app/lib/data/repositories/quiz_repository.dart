@@ -11,7 +11,7 @@ class QuizRepository {
   Future<List<QuizQuestion>> getQuestionsByLessonId(String lessonId) async {
     try {
       final snapshot = await _db.child('quiz_questions').get();
-      
+
       if (!snapshot.exists) {
         return [];
       }
@@ -27,7 +27,7 @@ class QuizRepository {
         if (value is Map<dynamic, dynamic>) {
           final questionData = Map<String, dynamic>.from(value);
           questionData['id'] = key.toString();
-          
+
           // Only include questions for the specified lesson
           if (questionData['lessonId']?.toString() == lessonId) {
             try {
@@ -42,10 +42,34 @@ class QuizRepository {
 
       // Randomize order
       questions.shuffle();
-      
+
       return questions;
     } catch (e) {
       return [];
+    }
+  }
+
+  // Add New Quiz For a Lesson
+  Future<String?> addQuiz(QuizQuestion quiz, String lessonId ) async {
+    try {
+      final newQuizRef = _db.child('quiz_questions').push();
+      final String quizId = newQuizRef.key!;
+
+      // build a map manually (no copyWith / toJson needed)
+      final quizData = <String, dynamic>{
+        'id': quizId,
+        'lessonId': lessonId,
+        'question': quiz.question,
+        'options': quiz.options,
+        'correctAnswer': quiz.correctAnswer,
+        'points': quiz.points,
+        'timePerQuestion': quiz.timePerQuestion,
+      };
+
+      await newQuizRef.set(quizData);
+      return quizId;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -69,7 +93,7 @@ class QuizRepository {
   Future<Lesson?> getLessonForQuiz(String lessonId) async {
     try {
       final snapshot = await _db.child('lessons').get();
-      
+
       if (!snapshot.exists) {
         return null;
       }
@@ -88,7 +112,7 @@ class QuizRepository {
           }
         }
       }
-      
+
       return null;
     } catch (e) {
       return null;
