@@ -90,7 +90,12 @@ class ProfilePage extends ConsumerWidget {
                         final commitments = financial.commitments;
 
                         if (commitments.isEmpty) {
-                          return const Text("No commitments recorded");
+                          return const RoundedCard(
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text("No commitments recorded"),
+                            ),
+                          );
                         }
 
                         return RoundedCard(
