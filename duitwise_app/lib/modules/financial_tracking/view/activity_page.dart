@@ -1,4 +1,5 @@
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/transaction_provider.dart';
 import 'package:duitwise_app/modules/user_profile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -112,6 +113,32 @@ class ActivityPage extends ConsumerWidget {
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700,
                                           ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete_outline,
+                                          ),
+                                          tooltip: "Delete transaction",
+                                          color: Colors.redAccent,
+                                          onPressed: () async {
+                                            ref
+                                                .read(
+                                                  financialRepositoryProvider,
+                                                )
+                                                .changeUsedAmount(
+                                                  uid: user.uid,
+                                                  category: t.category,
+                                                  changeBy: t.amount,
+                                                );
+                                            ref
+                                                .read(
+                                                  transactionRepositoryProvider,
+                                                )
+                                                .deleteTransaction(
+                                                  user.uid,
+                                                  t.id,
+                                                );
+                                          },
                                         ),
                                       ],
                                     ),
