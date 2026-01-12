@@ -490,7 +490,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                 }),
               ],
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 15),
             ],
           ),
         ),

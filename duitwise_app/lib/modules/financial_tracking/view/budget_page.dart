@@ -236,7 +236,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                       /// Recent Activity (from transactions)
                       RecentActivityCard(activityNum: 6,),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 15),
                     ],
                   ),
                 ),
