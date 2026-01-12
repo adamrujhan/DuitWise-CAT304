@@ -62,4 +62,9 @@ class FinancialRepository {
       return Transaction.success(newTotal);
     });
   }
+
+  Future<void> editIncome({required String uid, required int newIncome}) {
+    final ref = db.ref("users/$uid/financial");
+    return ref.update({"income": newIncome});
+  }
 }

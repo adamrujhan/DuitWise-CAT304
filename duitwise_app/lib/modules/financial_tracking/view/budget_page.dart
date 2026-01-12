@@ -82,7 +82,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                "Total Balance",
+                                "Income",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -90,12 +90,38 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                               ),
                               const SizedBox(height: 4),
 
-                              Text(
-                                "RM$income",
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "RM$income",
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    tooltip: "Edit amount",
+                                    onPressed: () async {
+                                      final newAmount =
+                                          await _showEditIncomeDialog(
+                                            context,
+                                            currentAmount: income,
+                                          );
+
+                                      if (newAmount != null) {
+                                        ref
+                                            .read(financialRepositoryProvider)
+                                            .editIncome(
+                                              uid: uid,
+                                              newIncome: newAmount,
+                                            );
+                                      }
+                                    },
+                                  ),
+                                ],
                               ),
 
                               const SizedBox(height: 16),
@@ -234,7 +260,7 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                       const SizedBox(height: 15),
 
                       /// Recent Activity (from transactions)
-                      RecentActivityCard(activityNum: 6,),
+                      RecentActivityCard(activityNum: 6),
 
                       const SizedBox(height: 15),
                     ],
@@ -247,4 +273,69 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
       },
     );
   }
+}
+
+Future<int?> _showEditIncomeDialog(
+  BuildContext context, {
+  required int currentAmount,
+}) {
+  final controller = TextEditingController(text: currentAmount.toString());
+
+  return showDialog<int>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+
+        child: RoundedCard(
+          borderRadius: 18,
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Edit Income",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                ),
+
+                const SizedBox(height: 10),
+
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: "Amount"),
+                ),
+
+                const SizedBox(height: 24),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(null),
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        final value = int.tryParse(controller.text.trim());
+                        if (value == null || value <= 0) return;
+                        Navigator.of(context).pop(value);
+                      },
+                      child: const Text("Save"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }
