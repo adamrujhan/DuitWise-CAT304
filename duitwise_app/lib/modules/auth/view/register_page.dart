@@ -123,46 +123,6 @@ class RegisterPage extends ConsumerWidget {
 
               const SizedBox(height: 30),
 
-              // OR divider
-              Row(
-                children: const [
-                  Expanded(child: Divider(thickness: 1, color: Colors.black26)),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text("or", style: TextStyle(color: Colors.black54)),
-                  ),
-                  Expanded(child: Divider(thickness: 1, color: Colors.black26)),
-                ],
-              ),
-
-              const SizedBox(height: 30),
-
-              // Continue with...
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Continue with",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 22),
-
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
