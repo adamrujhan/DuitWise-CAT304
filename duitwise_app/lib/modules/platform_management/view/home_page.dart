@@ -1,6 +1,7 @@
 import 'package:duitwise_app/core/widgets/add_transaction_popup.dart';
 import 'package:duitwise_app/core/widgets/recent_activity.dart';
 import 'package:duitwise_app/core/widgets/rounded_card.dart';
+import 'package:duitwise_app/modules/financial_tracking/providers/analytics_provider.dart';
 import 'package:duitwise_app/modules/financial_tracking/providers/financial_provider.dart';
 import 'package:duitwise_app/modules/platform_management/providers/cumulative_daily_spending_provider.dart';
 import 'package:duitwise_app/modules/platform_management/providers/weekly_total_spending_provider.dart';
@@ -24,6 +25,8 @@ class HomePage extends ConsumerWidget {
     final weeklySpendingAsync = ref.watch(weeklyTotalSpendingProvider(uid));
 
     final financialAsync = ref.watch(financialStreamProvider(uid));
+
+    final analyticsAsync = ref.watch(analyticsStreamProvider(uid));
 
     return Scaffold(
       backgroundColor: const Color(0xFFA0E5C7),
@@ -60,38 +63,97 @@ class HomePage extends ConsumerWidget {
 
                       const SizedBox(height: 15),
 
-                      RoundedCard(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Spending",
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 18),
-                              SizedBox(
-                                height: 220,
-                                child: cumulativeDailySpendingAsync.when(
-                                  loading: () => const SizedBox(
-                                    height: 220,
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  ),
-                                  error: (e, _) => Text('Chart error: $e'),
-                                  data: (spots) => LineChart(_chartData(spots)),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      analyticsAsync.when(
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (err, stack) =>
+                            Center(child: Text('Error: $err')),
+                        data: (data) {
+                          // 1. Calculate the total
+                          final totalSpent = data.used.values.fold(
+                            0.0,
+                            (sum, item) => sum + item,
+                          );
 
+                          // 2. Return the appropriate widget based on the total
+                          if (totalSpent == 0) {
+                            // EMPTY STATE
+                            return RoundedCard(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 40,
+                                  horizontal: 20,
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.account_balance_wallet_outlined,
+                                        size: 48,
+                                        color: Colors.teal.withValues(
+                                          alpha: 0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        "You have not spent anything yet",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const Text(
+                                        "Track your expenses to see analytics.",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          } else {
+                            // CHART STATE
+                            return RoundedCard(
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Spending",
+                                      style: TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 18),
+                                    SizedBox(
+                                      height: 220,
+                                      child: cumulativeDailySpendingAsync.when(
+                                        loading: () => const SizedBox(
+                                          height: 220,
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        ),
+                                        error: (e, _) =>
+                                            Text('Chart error: $e'),
+                                        data: (spots) =>
+                                            LineChart(_chartData(spots)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
                       const SizedBox(height: 15),
 
                       RoundedCard(
